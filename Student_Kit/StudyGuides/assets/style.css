@@ -1,0 +1,4 @@
+/* Shared base for the CAIP AIP-210 study guides. Core layout is also inlined in each guide. */
+*,*::before,*::after{box-sizing:border-box}
+img{max-width:100%;height:auto}
+@media print{.copy-btn,.progress,nav.dock{display:none!important}pre{white-space:pre-wrap}}

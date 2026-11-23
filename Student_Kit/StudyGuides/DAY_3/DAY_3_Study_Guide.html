@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 3 Study Guide: Classification, Clustering and Tree-Based Models | CAIP AIP-210</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+:root{--bg:#f6f7f9;--panel:#fff;--ink:#1b2430;--muted:#5b6675;--line:#e3e7ee;--brand:#0b5e6b;--gold:#c8963e;
+--code-bg:#0f1720;--code-ink:#e6edf3;--what:#eef6f7;--ana:#fbf5ea;--fin:#eef8f1;--warn:#fdf0ee;--warn-line:#d9534f;
+--tip:#eef2fb;--ok:#1f8f5f}
+@media (prefers-color-scheme:dark){:root{--bg:#0d1117;--panel:#141a22;--ink:#e6edf3;--muted:#9aa6b2;--line:#263040;
+--brand:#4fb3c2;--what:#12262a;--ana:#2a2214;--fin:#122319;--warn:#2d1717;--tip:#151d2d;--code-bg:#0a0f15}}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+.progress{position:fixed;top:0;left:0;height:4px;width:0;background:var(--gold);z-index:50}
+nav.dock{display:flex;gap:8px;overflow-x:auto;padding:10px 16px;background:var(--brand);position:sticky;top:0;z-index:40;
+-webkit-overflow-scrolling:touch}
+nav.dock a{color:#fff;text-decoration:none;font-size:13px;white-space:nowrap;padding:6px 12px;border:1px solid rgba(255,255,255,.35);
+border-radius:999px;transition:transform .2s,background .2s}
+nav.dock a:hover,nav.dock a:focus-visible{transform:scale(1.06);background:rgba(255,255,255,.18)}
+main{max-width:980px;margin:0 auto;padding:0 16px 64px}
+.hero{padding:44px 0 24px}
+.hero .eyebrow{color:var(--gold);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:13px}
+.hero h1{font-size:clamp(1.9rem,6vw,3rem);line-height:1.15;margin:.3em 0;color:var(--brand)}
+.hero p.sub{color:var(--muted);font-size:1.05rem;margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.chips span{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:13px}
+section.summary,section.deep,section.pitfalls,section.quiz,section.cheat{background:var(--panel);border:1px solid var(--line);
+border-radius:14px;padding:20px 16px;margin:20px 0}
+h2{font-size:1.5rem;line-height:1.25;margin:0 0 14px;color:var(--brand)}
+h3{font-size:1.1rem;margin:18px 0 6px}
+.summary ul,.summary ol{padding-left:20px;margin:8px 0}
+.summary li{margin:6px 0}
+.blk{border-radius:10px;padding:14px 14px 10px;margin:12px 0;border-left:4px solid var(--line)}
+.blk p{margin:.5em 0}.blk ul{padding-left:20px}
+.blk .tag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+.what{background:var(--what);border-left-color:var(--brand)}.what .tag{color:var(--brand)}
+.analogy{background:var(--ana);border-left-color:var(--gold)}.analogy .tag{color:#9a6b12}
+.finance{background:var(--fin);border-left-color:var(--ok)}.finance .tag{color:var(--ok)}
+.code-wrap{margin:14px 0}
+.code-cap{font-size:13px;color:var(--muted);margin-bottom:4px}
+pre{position:relative;margin:0;background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:16px 14px;overflow-x:auto;
+font:13px/1.55 "Cascadia Code",Consolas,Menlo,monospace;-webkit-overflow-scrolling:touch}
+code{font-family:inherit}
+p code,li code,td code{background:rgba(127,127,127,.15);padding:1px 6px;border-radius:5px;font-size:.9em}
+.copy-btn{position:absolute;top:8px;right:8px;background:#26313d;color:#e6edf3;border:1px solid #3a4756;border-radius:6px;
+padding:6px 12px;font-size:12px;cursor:pointer;min-height:32px;transition:transform .15s,background .2s}
+.copy-btn:hover{transform:scale(1.08)}
+.copy-btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.callout{border-radius:10px;padding:12px 14px;margin:14px 0;transition:transform .2s,box-shadow .2s;border-left:4px solid var(--brand);background:var(--tip)}
+.callout:hover{transform:translateY(-2px) scale(1.01);box-shadow:0 8px 20px rgba(0,0,0,.12)}
+.callout strong{display:block;margin-bottom:4px}
+.callout.warn{background:var(--warn);border-left-color:var(--warn-line)}
+.callout div p{margin:.3em 0}
+figure{margin:16px 0;text-align:center}
+figcaption{font-size:13px;color:var(--muted);margin-top:6px}
+.diagram .mermaid{background:var(--panel);border:1px dashed var(--line);border-radius:10px;padding:12px;overflow-x:auto}
+.gif-ph{border:2px dashed var(--line);border-radius:10px;padding:28px 12px;color:var(--muted);font-size:14px}
+.animated-asset{border-radius:10px}
+.tbl{overflow-x:auto;margin:14px 0}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:520px}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--what)}
+.pit{display:grid;gap:12px}
+.pit .callout{margin:0}
+.qa{border:1px solid var(--line);border-radius:12px;padding:14px;margin:12px 0}
+.qa .q{font-weight:600;margin:0 0 10px}
+.qa button{background:var(--brand);color:#fff;border:0;border-radius:8px;padding:10px 16px;min-height:44px;cursor:pointer;
+font-size:14px;transition:transform .15s}
+.qa button:hover{transform:scale(1.05)}
+.qa .ans{display:none;margin-top:12px;padding:12px;border-radius:8px;background:var(--fin);border-left:4px solid var(--ok);
+transform-origin:top center;perspective:600px}
+.pager{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:28px}
+.pager a{background:var(--brand);color:#fff;text-decoration:none;padding:12px 18px;border-radius:10px;min-height:44px;
+transition:transform .15s}
+.pager a:hover{transform:scale(1.05)}
+footer{color:var(--muted);font-size:13px;margin-top:24px}
+@media (min-width:768px){
+ body{font-size:17px}
+ main{padding:0 28px 80px}
+ section.summary,section.deep,section.pitfalls,section.quiz,section.cheat{padding:28px 30px}
+ .pit{grid-template-columns:1fr 1fr}
+ .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+</head>
+<body id="top">
+<div class="progress" aria-hidden="true"></div>
+<nav class="dock" aria-label="Sections"><a href="#top">Top</a><a href="#logit">Logistic</a><a href="#knn">kNN</a><a href="#metrics">Metrics</a><a href="#imbalance">Imbalance</a><a href="#kmeans">k-Means</a><a href="#hier">Hierarchical</a><a href="#trees">Trees &amp;amp; RF</a><a href="#pitfalls">Pitfalls</a><a href="#check">Quiz</a></nav>
+<main>
+<header class="hero">
+  <div class="eyebrow">CAIP AIP-210 &middot; Day 3 Study Guide &middot; Horizon Gulf Bank (fictional)</div>
+  <h1>Day 3: Classification, Clustering &amp; Tree-Based Models</h1>
+  <p class="sub">Predict categories like fraud and risk grade, discover customer segments, and build explainable trees and forests.</p>
+  <div class="chips"><span>Logistic regression</span><span>kNN</span><span>Precision/Recall/AUC</span><span>Imbalance</span><span>k-Means &amp;amp; hierarchical</span><span>Trees &amp;amp; forests</span></div>
+</header>
+
+<section class="summary" id="summary">
+  <h2>Executive Summary (TL;DR)</h2>
+  <p>Day 3 moves from predicting numbers to predicting categories. You will use logistic regression and kNN, judge them with the confusion matrix, precision, recall, F1, ROC/AUC and threshold trade-offs, handle class imbalance, group customers with k-Means and hierarchical clustering, and compare single decision trees with random forests.</p>
+  <h3>By the end of this guide you can&hellip;</h3>
+  <ul><li>Build binary and multi-class classifiers and set a business-driven decision threshold.</li><li>Explain why distance-based models need feature scaling.</li><li>Read a confusion matrix and choose between accuracy, precision, recall, F1, ROC-AUC and PR-AUC.</li><li>Handle imbalanced data with stratification, class weights, thresholds and suitable scoring.</li><li>Choose k for k-Means and interpret a dendrogram.</li><li>Explain Gini, entropy, pruning, bagging and feature importance.</li></ul>
+  <aside class="callout "><strong>How to use this guide</strong><div>Read each concept in order: <b>what &amp; why</b>, then the <b>analogy</b>, then the <b>banking example</b>, then the <b>code</b>. Dataset paths are relative to the courseware root (<code>data/...</code>). All data is synthetic; Horizon Gulf Bank is fictional.</div></aside>
+</section>
+
+<section class="deep" id="logit"><h2>1. Logistic Regression, Probabilities and Decision Thresholds</h2>
+<div class="blk what"><span class="tag">What &amp; Why</span><p>Despite the name, <b>logistic regression</b> is a <i>classifier</i>. It computes a linear score and passes it through the <b>sigmoid</b>
+function to produce a <b>probability</b> between 0 and 1 of the positive class. A <b>decision threshold</b> (default 0.5) turns that probability into a label.
+The threshold is a <b>business choice</b>, not a law: lowering it catches more positives (higher recall) at the cost of more false alarms (lower precision).</p>
+<p>Coefficients are log-odds: a positive coefficient raises the probability of the positive class. This transparency is why logistic regression is a workhorse in credit scoring.</p></div>
+<div class="blk analogy"><span class="tag">Analogy</span>A smoke alarm with a sensitivity dial: turn it up and it catches every fire but also burns toast alarms; turn it down and it stays quiet but may miss a real fire.</div>
+<div class="blk finance"><span class="tag">Finance example</span><p>A fraud model outputs 0.18 for a card payment. At threshold 0.5 it is approved; if the fraud team lowers the threshold to 0.10 for high-value transactions, the same payment is sent for step-up authentication.</p></div>
+<div class="code-wrap"><div class="code-cap">Fit logistic regression and move the threshold</div><pre><code class="language-python">import pandas as pd
+from sklearn.model_selection import train_test_split
+
+tx = pd.read_csv(&quot;data/card_transactions.csv.gz&quot;)          # pandas reads .gz directly
+feats = [&quot;amount_aed&quot;, &quot;merchant_risk_score&quot;, &quot;distance_from_home_km&quot;,
+         &quot;customer_age&quot;, &quot;card_tenure_months&quot;, &quot;customer_monthly_salary_aed&quot;]
+X = tx[feats].fillna(tx[feats].median())
+y = tx[&quot;is_fraud&quot;]
+# Large file: sample for teaching speed (keep stratification so fraud rows survive)
+X, _, y, _ = train_test_split(X, y, train_size=200_000, stratify=y, random_state=42)
+X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)
+
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+
+clf = make_pipeline(StandardScaler(), LogisticRegression(class_weight=&quot;balanced&quot;, max_iter=1000))
+clf.fit(X_tr, y_tr)
+
+proba = clf.predict_proba(X_te)[:, 1]          # probability of the positive class (fraud)
+for t in (0.3, 0.5, 0.8):
+    flagged = (proba &gt;= t).sum()
+    print(f&quot;threshold {t}: {flagged} transactions flagged&quot;)</code></pre></div>
+</section><section class="deep" id="knn"><h2>2. k-Nearest Neighbours, Feature Scaling and Multi-class Classification</h2>
+<div class="blk what"><span class="tag">What &amp; Why</span><p><b>kNN</b> classifies a point by the majority class among its <i>k</i> closest training points (usually Euclidean distance). There is no training step; it stores the data
+(a "lazy learner") and does the work at prediction time. Small k = flexible and noisy (overfit); large k = smooth (underfit). Because it uses distance, <b>feature scaling is essential</b>.</p>
+<p><b>Multi-class</b> problems have more than two classes (for example risk grade A to E). Models either handle it natively (kNN, trees, logistic regression via softmax) or via
+one-vs-rest / one-vs-one strategies. Evaluate with per-class precision/recall and macro or weighted averages.</p></div>
+<div class="blk analogy"><span class="tag">Analogy</span>Asking your five closest neighbours which restaurant they recommend and going with the majority, but first making sure "closest" is measured fairly (a distance in metres, not mixed with a rating out of 5).</div>
+<div class="blk finance"><span class="tag">Finance example</span><p>Classifying a loan application into a risk grade by looking at the most similar past applications. Without scaling, AED loan amounts (tens of thousands) would swamp the AECB score (hundreds) in the distance calculation.</p></div>
+<div class="code-wrap"><div class="code-cap">kNN needs scaling: compare AUC with and without (loan defaults)</div><pre><code class="language-python">import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import roc_auc_score
+
+loans = pd.read_csv(&quot;data/loan_applications.csv&quot;)
+f = [&quot;loan_amount_aed&quot;, &quot;monthly_salary_aed&quot;, &quot;aecb_score&quot;, &quot;debt_burden_ratio&quot;, &quot;num_bureau_inquiries_6m&quot;]
+X, y = loans[f].fillna(loans[f].median()), loans[&quot;default_12m&quot;]
+X, _, y, _ = train_test_split(X, y, train_size=30_000, stratify=y, random_state=42)   # speed
+X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)
+
+raw = KNeighborsClassifier(n_neighbors=25).fit(X_tr, y_tr)
+scaled = make_pipeline(StandardScaler(), KNeighborsClassifier(n_neighbors=25)).fit(X_tr, y_tr)
+print(&quot;AUC unscaled:&quot;, roc_auc_score(y_te, raw.predict_proba(X_te)[:, 1]))     # about 0.54 when run
+print(&quot;AUC scaled  :&quot;, roc_auc_score(y_te, scaled.predict_proba(X_te)[:, 1]))  # about 0.74 when run</code></pre></div>
+<div class="code-wrap"><div class="code-cap">Multi-class: predicting loan risk grade</div><pre><code class="language-python">import pandas as pd
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+
+loans = pd.read_csv(&quot;data/loan_applications.csv&quot;)
+f = [&quot;loan_amount_aed&quot;, &quot;monthly_salary_aed&quot;, &quot;aecb_score&quot;, &quot;debt_burden_ratio&quot;, &quot;num_bureau_inquiries_6m&quot;]
+X = loans[f].fillna(loans[f].median()); y = loans[&quot;risk_grade&quot;]       # several classes
+Xtr, Xte, ytr, yte = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)
+
+m = make_pipeline(StandardScaler(), LogisticRegression(max_iter=2000)).fit(Xtr, ytr)
+print(classification_report(yte, m.predict(Xte)))                     # per-class precision/recall/F1</code></pre></div>
+</section><section class="deep" id="metrics"><h2>3. Classification Metrics: Confusion Matrix, Precision, Recall, F1, ROC and AUC</h2>
+<div class="blk what"><span class="tag">What &amp; Why</span><p>Accuracy alone misleads when classes are imbalanced. Start from the <b>confusion matrix</b>:</p><div class="tbl"><table><thead><tr><th></th><th>Predicted positive</th><th>Predicted negative</th></tr></thead><tbody><tr><td><b>Actually positive</b></td><td>True Positive (TP)</td><td>False Negative (FN): missed fraud</td></tr><tr><td><b>Actually negative</b></td><td>False Positive (FP): false alarm</td><td>True Negative (TN)</td></tr></tbody></table></div><ul>
+<li><b>Accuracy</b> = (TP+TN) / all.</li>
+<li><b>Precision</b> = TP / (TP+FP): of the alerts raised, how many were real?</li>
+<li><b>Recall</b> (sensitivity) = TP / (TP+FN): of the real cases, how many did we catch?</li>
+<li><b>F1</b> = harmonic mean of precision and recall.</li>
+<li><b>ROC curve</b>: true-positive rate vs false-positive rate across all thresholds; <b>AUC</b> is the area under it (0.5 = random, 1.0 = perfect), and is threshold-independent.</li>
+<li><b>Precision-Recall AUC</b> (average precision) is more informative than ROC AUC when positives are very rare.</li>
+</ul></div>
+<div class="blk analogy"><span class="tag">Analogy</span>A fisherman's net: precision is "how much of what I pulled up is actually fish", recall is "how much of the fish in the lake did I catch".</div>
+<div class="blk finance"><span class="tag">Finance example</span><p>If only 0.1% of transactions are fraud, a model that always says "not fraud" is 99.9% accurate and catches nothing. Fraud teams track recall (money saved) and precision (customer friction and analyst workload) together.</p></div>
+<div class="code-wrap"><div class="code-cap">Evaluate beyond accuracy</div><pre><code class="language-python">import pandas as pd
+from sklearn.model_selection import train_test_split
+
+tx = pd.read_csv(&quot;data/card_transactions.csv.gz&quot;)          # pandas reads .gz directly
+feats = [&quot;amount_aed&quot;, &quot;merchant_risk_score&quot;, &quot;distance_from_home_km&quot;,
+         &quot;customer_age&quot;, &quot;card_tenure_months&quot;, &quot;customer_monthly_salary_aed&quot;]
+X = tx[feats].fillna(tx[feats].median())
+y = tx[&quot;is_fraud&quot;]
+# Large file: sample for teaching speed (keep stratification so fraud rows survive)
+X, _, y, _ = train_test_split(X, y, train_size=200_000, stratify=y, random_state=42)
+X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)
+
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import (confusion_matrix, classification_report,
+                             roc_auc_score, average_precision_score)
+
+clf = make_pipeline(StandardScaler(), LogisticRegression(class_weight=&quot;balanced&quot;, max_iter=1000)).fit(X_tr, y_tr)
+pred = clf.predict(X_te)
+proba = clf.predict_proba(X_te)[:, 1]
+
+print(confusion_matrix(y_te, pred))                  # rows = actual, columns = predicted
+print(classification_report(y_te, pred, digits=3))
+print(&quot;ROC AUC:&quot;, roc_auc_score(y_te, proba))
+print(&quot;PR  AUC:&quot;, average_precision_score(y_te, proba))   # prefer this when fraud is rare</code></pre></div>
+</section><section class="deep" id="imbalance"><h2>4. Class Imbalance and Tuning Classifiers</h2>
+<div class="blk what"><span class="tag">What &amp; Why</span><p>When one class is rare, models drift toward the majority class. Options (try in this order): choose the right metric (PR-AUC, recall at a precision target),
+use <b>stratified</b> splits, apply <b>class weights</b> (<code>class_weight="balanced"</code>), tune the <b>decision threshold</b>, and only then consider resampling
+(over-sampling the minority or under-sampling the majority). Resample <i>only the training data</i>, never the test set. Libraries such as <code>imbalanced-learn</code>
+(SMOTE) are third-party add-ons to scikit-learn.</p>
+<p>Tune with <code>GridSearchCV</code> or <code>RandomizedSearchCV</code> using a <b>scoring</b> metric that matches the business goal (for example <code>"average_precision"</code> or <code>"f1"</code>), not the default accuracy.</p></div>
+<div class="blk analogy"><span class="tag">Analogy</span>Training a lifeguard using footage where 999 of 1,000 swimmers are fine: unless you emphasise the rare drowning clips, they will learn to ignore them.</div>
+<div class="blk finance"><span class="tag">Finance example</span><p>The card fraud rate is a tiny fraction of volume. The tuned model is judged on how much fraud it catches at an acceptable alert volume, not on accuracy.</p></div>
+<div class="code-wrap"><div class="code-cap">Tuning for the metric that matters (PR-AUC)</div><pre><code class="language-python">import pandas as pd
+from sklearn.model_selection import train_test_split
+
+tx = pd.read_csv(&quot;data/card_transactions.csv.gz&quot;)          # pandas reads .gz directly
+feats = [&quot;amount_aed&quot;, &quot;merchant_risk_score&quot;, &quot;distance_from_home_km&quot;,
+         &quot;customer_age&quot;, &quot;card_tenure_months&quot;, &quot;customer_monthly_salary_aed&quot;]
+X = tx[feats].fillna(tx[feats].median())
+y = tx[&quot;is_fraud&quot;]
+# Large file: sample for teaching speed (keep stratification so fraud rows survive)
+X, _, y, _ = train_test_split(X, y, train_size=200_000, stratify=y, random_state=42)
+X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)
+
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import GridSearchCV, StratifiedKFold
+
+search = GridSearchCV(
+    RandomForestClassifier(class_weight=&quot;balanced_subsample&quot;, random_state=42, n_jobs=-1),
+    param_grid={&quot;n_estimators&quot;: [100, 200], &quot;max_depth&quot;: [6, 12], &quot;min_samples_leaf&quot;: [5, 20]},
+    cv=StratifiedKFold(n_splits=3, shuffle=True, random_state=42),
+    scoring=&quot;average_precision&quot;)                     # PR-AUC, suited to rare positives
+search.fit(X_tr, y_tr)
+print(search.best_params_, round(search.best_score_, 4))</code></pre></div>
+</section><section class="deep" id="kmeans"><h2>5. Clustering with k-Means</h2>
+<div class="blk what"><span class="tag">What &amp; Why</span><p><b>Unsupervised learning</b> finds structure without a target. <b>k-Means</b> partitions data into <i>k</i> groups: it places <i>k</i> centroids, assigns each point to the nearest one,
+moves each centroid to the mean of its points, and repeats until stable. You must choose <i>k</i> in advance and <b>scale features first</b>.</p>
+<p>Choosing k: the <b>elbow method</b> (plot <b>inertia</b>, the within-cluster sum of squared distances, against k and look for the bend) and the <b>silhouette score</b>
+(from -1 to 1; higher means tighter, better-separated clusters). Always check that clusters are <i>interpretable and actionable</i> for the business, not just statistically neat.</p></div>
+<div class="blk analogy"><span class="tag">Analogy</span>Sorting a pile of unlabelled photos into piles that look alike, then naming each pile afterwards ("beach", "city", "family").</div>
+<div class="blk finance"><span class="tag">Finance example</span><p>Marketing segments customers by balance, spend, digital logins and tenure into groups such as "digital-first spenders" or "dormant savers", each getting a different offer.</p></div>
+<div class="code-wrap"><div class="code-cap">Segment customers and choose k</div><pre><code class="language-python">import pandas as pd
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+from sklearn.preprocessing import StandardScaler
+
+df = pd.read_csv(&quot;data/customers_raw.csv&quot;)
+cols = [&quot;avg_balance_aed&quot;, &quot;card_spend_monthly_aed&quot;, &quot;digital_logins_30d&quot;, &quot;tenure_months&quot;, &quot;num_products&quot;]
+Z = StandardScaler().fit_transform(df[cols].fillna(df[cols].median()))     # scale before clustering
+
+for k in range(2, 8):
+    km = KMeans(n_clusters=k, n_init=&quot;auto&quot;, random_state=42).fit(Z)
+    sil = silhouette_score(Z, km.labels_, sample_size=10_000, random_state=42)
+    print(f&quot;k={k}  inertia={km.inertia_:,.0f}  silhouette={sil:.3f}&quot;)
+
+best = KMeans(n_clusters=4, n_init=&quot;auto&quot;, random_state=42).fit(Z)
+df[&quot;segment&quot;] = best.labels_
+print(df.groupby(&quot;segment&quot;)[cols].mean().round(1))          # profile each cluster</code></pre></div>
+</section><section class="deep" id="hier"><h2>6. Hierarchical Clustering and Dendrograms</h2>
+<div class="blk what"><span class="tag">What &amp; Why</span><p><b>Agglomerative hierarchical clustering</b> starts with every point as its own cluster and repeatedly merges the two closest clusters until one remains. The merge history is drawn as a
+<b>dendrogram</b>: the height of a join shows how far apart the merged clusters were. <b>Cutting</b> the dendrogram at a chosen height gives a number of clusters. The <b>linkage</b> rule defines
+"closest" (ward, complete, average, single). Unlike k-Means you do not need to pick k up front, but it does not scale well to very large data.</p></div>
+<div class="blk analogy"><span class="tag">Analogy</span>A family tree built from the bottom: first siblings join, then cousins, then whole branches, until everyone is under one ancestor.</div>
+<div class="blk finance"><span class="tag">Finance example</span><p>Grouping a few hundred branches by their transaction profile so that similar branches can share staffing and cash-handling policies; the dendrogram shows which branches are near-twins.</p></div>
+<div class="code-wrap"><div class="code-cap">Dendrogram on a sample (hierarchical clustering is memory-hungry)</div><pre><code class="language-python">import matplotlib.pyplot as plt
+from scipy.cluster.hierarchy import linkage, dendrogram
+from sklearn.cluster import AgglomerativeClustering
+
+sample = Z[:300]                                    # Z from the k-Means example above
+plt.figure(figsize=(10, 4))
+dendrogram(linkage(sample, method=&quot;ward&quot;), no_labels=True)
+plt.title(&quot;Customer dendrogram (ward linkage)&quot;); plt.ylabel(&quot;Merge distance&quot;); plt.show()
+
+labels = AgglomerativeClustering(n_clusters=4, linkage=&quot;ward&quot;).fit_predict(sample)</code></pre></div>
+</section><section class="deep" id="trees"><h2>7. Decision Trees and Random Forests</h2>
+<div class="blk what"><span class="tag">What &amp; Why</span><p>A <b>decision tree</b> asks a sequence of yes/no questions. The <b>root</b> is the first split, <b>nodes</b> are decisions, <b>branches</b> are answers and <b>leaves</b> are final predictions.
+At each node the algorithm picks the feature and threshold that best reduces <b>impurity</b>:</p>
+<ul>
+<li><b>Gini</b> = 1 - sum(p_i&sup2;) (0 = pure node).</li>
+<li><b>Entropy</b> = - sum(p_i * log2 p_i) (0 = pure node); the drop in entropy is the <i>information gain</i>.</li>
+</ul>
+<p>Unrestricted trees overfit. Control with <code>max_depth</code>, <code>min_samples_leaf</code> and cost-complexity <b>pruning</b> (<code>ccp_alpha</code>). Trees also do regression (<code>DecisionTreeRegressor</code>); leaves predict the average target.
+They need no feature scaling and are easy to explain.</p>
+<p>A <b>random forest</b> averages many trees, each trained on a bootstrap sample of the rows and a random subset of features at each split (<b>bagging</b> + feature randomness).
+Combining many decorrelated trees lowers variance and overfitting. <code>feature_importances_</code> gives impurity-based importance, which can be biased toward high-cardinality or continuous features;
+<code>permutation_importance</code> on held-out data is a more reliable cross-check.</p></div>
+<div class="blk analogy"><span class="tag">Analogy</span>One expert's checklist can be quirky; ask a hundred experts who each saw slightly different cases and let them vote, and the quirks cancel out.</div>
+<div class="blk finance"><span class="tag">Finance example</span><p>A single tree gives credit officers a readable rule path ("AECB score &lt; 650 and debt burden &gt; 0.5 leads to high risk"). A random forest usually predicts more accurately but is harder to explain, so teams often pair it with importance reports.</p></div>
+<figure class="gif"><img class="animated-asset" src="../assets/gif/random_forest_vote.gif" alt="Random forest: many trees voting on one transaction" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'gif-ph',textContent:'Animation placeholder: '+this.alt}))"><!-- AI IMAGE PROMPT: Create a GIF showing 5 small decision trees each processing the same card transaction, each casting a coloured vote (fraud / not fraud), and a final majority-vote tally appearing on the right. --><figcaption>Random forest: many trees voting on one transaction</figcaption></figure>
+<div class="code-wrap"><div class="code-cap">A pruned tree you can print, then a random forest with importances</div><pre><code class="language-python">import pandas as pd
+from sklearn.model_selection import train_test_split
+
+tx = pd.read_csv(&quot;data/card_transactions.csv.gz&quot;)          # pandas reads .gz directly
+feats = [&quot;amount_aed&quot;, &quot;merchant_risk_score&quot;, &quot;distance_from_home_km&quot;,
+         &quot;customer_age&quot;, &quot;card_tenure_months&quot;, &quot;customer_monthly_salary_aed&quot;]
+X = tx[feats].fillna(tx[feats].median())
+y = tx[&quot;is_fraud&quot;]
+# Large file: sample for teaching speed (keep stratification so fraud rows survive)
+X, _, y, _ = train_test_split(X, y, train_size=200_000, stratify=y, random_state=42)
+X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)
+
+from sklearn.tree import DecisionTreeClassifier, export_text
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.inspection import permutation_importance
+from sklearn.metrics import average_precision_score
+import pandas as pd
+
+tree = DecisionTreeClassifier(max_depth=4, min_samples_leaf=50, class_weight=&quot;balanced&quot;, random_state=42).fit(X_tr, y_tr)
+print(export_text(tree, feature_names=list(X_tr.columns)))          # human-readable rules
+
+rf = RandomForestClassifier(n_estimators=200, min_samples_leaf=5, class_weight=&quot;balanced_subsample&quot;,
+                            n_jobs=-1, random_state=42).fit(X_tr, y_tr)
+print(&quot;RF PR-AUC:&quot;, average_precision_score(y_te, rf.predict_proba(X_te)[:, 1]))
+
+imp = pd.Series(rf.feature_importances_, index=X_tr.columns).sort_values(ascending=False)
+print(imp)                                                          # impurity-based (can be biased)
+
+# More reliable cross-check on held-out data (use a subsample for speed)
+idx = X_te.sample(5000, random_state=1).index
+perm = permutation_importance(rf, X_te.loc[idx], y_te.loc[idx], scoring=&quot;average_precision&quot;,
+                              n_repeats=5, random_state=42, n_jobs=-1)
+print(pd.Series(perm.importances_mean, index=X_te.columns).sort_values(ascending=False))</code></pre></div>
+</section>
+
+<section class="pitfalls" id="pitfalls">
+  <h2>Common Pitfalls &amp; Anti-Patterns</h2>
+  <div class="pit"><aside class="callout warn"><strong>&#9888; Reporting accuracy on imbalanced fraud data</strong><div><p>"Predict never fraud" scores 99.9% and catches nothing. Report recall, precision and PR-AUC.</p></div></aside><aside class="callout warn"><strong>&#9888; Using the default 0.5 threshold blindly</strong><div><p>The right cut-off depends on the cost of a missed fraud versus a blocked customer. Choose it with the business.</p></div></aside><aside class="callout warn"><strong>&#9888; Clustering unscaled data</strong><div><p>k-Means and kNN are distance-based; the largest-unit feature dominates. Standardise first.</p></div></aside><aside class="callout warn"><strong>&#9888; Oversampling before the split</strong><div><p>Duplicated minority rows then appear in both train and test, inflating results. Resample only inside training folds.</p></div></aside><aside class="callout warn"><strong>&#9888; Trusting impurity importances as causes</strong><div><p>They show what the model used, not what causes fraud, and can favour high-cardinality features. Cross-check with permutation importance.</p></div></aside><aside class="callout warn"><strong>&#9888; Letting a deep tree run free</strong><div><p>An unpruned tree memorises the training set. Limit depth, leaf size or use <code>ccp_alpha</code>.</p></div></aside></div>
+</section>
+
+<section class="quiz" id="check">
+  <h2>Interactive Knowledge Check</h2>
+  <p>Answer in your head (or out loud with a colleague) first, then reveal.</p>
+  <div class="qa"><p class="q">1. Fraud is 0.1% of transactions. A model has 99.9% accuracy. Is it good?</p><button type="button">Reveal answer</button><div class="ans">Not necessarily: always predicting "not fraud" gives the same accuracy. Check recall, precision, PR-AUC and the confusion matrix.</div></div><div class="qa"><p class="q">2. You lower the fraud threshold from 0.5 to 0.2. What happens to recall and precision?</p><button type="button">Reveal answer</button><div class="ans">Recall usually <b>rises</b> (more fraud caught) and precision usually <b>falls</b> (more false alarms).</div></div><div class="qa"><p class="q">3. Why is scaling required for kNN but not for a decision tree?</p><button type="button">Reveal answer</button><div class="ans">kNN relies on distances, so large-unit features dominate. Trees split on one feature at a time, so scale does not matter.</div></div><div class="qa"><p class="q">4. What does an AUC of 0.5 mean?</p><button type="button">Reveal answer</button><div class="ans">The model ranks positives and negatives no better than random chance.</div></div><div class="qa"><p class="q">5. How does a random forest reduce overfitting compared with one deep tree?</p><button type="button">Reveal answer</button><div class="ans">It averages many trees trained on bootstrap samples and random feature subsets, which decorrelates them and lowers variance.</div></div>
+</section>
+
+<div class="pager"><a href="../DAY_2/DAY_2_Study_Guide.html">&larr; Day 2</a><a href="../DAY_4/DAY_4_Study_Guide.html">Day 4 &rarr;</a></div>
+<footer>Study guide for the CAIP AIP-210 5-day program (23&ndash;27 November 2026). Code snippets are teaching examples: pin your own library versions and test before reuse.</footer>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var hasG = !!window.gsap && !reduce;
+
+  // ---- copy buttons with visual feedback
+  document.querySelectorAll('pre').forEach(function (pre) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'copy-btn'; b.textContent = 'Copy';
+    b.setAttribute('aria-label', 'Copy code to clipboard');
+    b.addEventListener('click', function () {
+      var text = pre.querySelector('code').innerText;
+      function done(ok) {
+        b.textContent = ok ? 'Copied ✓' : 'Press Ctrl+C';
+        if (ok) b.classList.add('ok');
+        setTimeout(function () { b.textContent = 'Copy'; b.classList.remove('ok'); }, 1600);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
+      } else {
+        var ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select();
+        var ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
+        document.body.removeChild(ta); done(ok);
+      }
+    });
+    pre.appendChild(b);
+  });
+
+  // ---- Mermaid diagrams
+  if (window.mermaid) {
+    try {
+      mermaid.initialize({ startOnLoad: false, theme: 'neutral', securityLevel: 'strict' });
+      mermaid.run({ querySelector: '.mermaid' });
+    } catch (e) { console.warn('Mermaid failed', e); }
+  }
+
+  // ---- reading progress bar
+  var bar = document.querySelector('.progress');
+  addEventListener('scroll', function () {
+    var h = document.documentElement;
+    bar.style.width = (100 * h.scrollTop / Math.max(1, h.scrollHeight - h.clientHeight)) + '%';
+  }, { passive: true });
+
+  // ---- GSAP: hero, scroll reveals, staggers
+  if (hasG) {
+    if (window.ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
+    var tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    tl.from('.hero .eyebrow', { y: 16, opacity: 0, duration: .5 })
+      .from('.hero h1', { y: 40, opacity: 0, duration: .8 }, '-=.2')
+      .from('.hero .sub', { y: 20, opacity: 0, duration: .6 }, '-=.4')
+      .from('.hero .chips span', { scale: .8, opacity: 0, duration: .4, stagger: .08 }, '-=.3');
+    if (window.ScrollTrigger) {
+      document.querySelectorAll('section').forEach(function (sec) {
+        gsap.from(sec.querySelector('h2'), { scrollTrigger: { trigger: sec, start: 'top 88%' },
+          y: 28, opacity: 0, duration: .7, ease: 'power2.out' });
+        var items = sec.querySelectorAll(':scope > .blk, :scope > .code-wrap, :scope > .pit .callout, :scope > ul > li, :scope > ol > li');
+        if (items.length) gsap.from(items, { scrollTrigger: { trigger: sec, start: 'top 80%' },
+          y: 26, opacity: 0, duration: .55, stagger: .12, ease: 'power2.out' });
+      });
+    }
+  }
+
+  // ---- knowledge check: click to reveal with a GSAP flip / fade
+  document.querySelectorAll('.qa').forEach(function (qa) {
+    var btn = qa.querySelector('button'), ans = qa.querySelector('.ans');
+    btn.setAttribute('aria-expanded', 'false');
+    btn.addEventListener('click', function () {
+      var open = ans.style.display === 'block';
+      if (!open) {
+        ans.style.display = 'block'; btn.textContent = 'Hide answer'; btn.setAttribute('aria-expanded', 'true');
+        if (hasG) gsap.fromTo(ans, { opacity: 0, rotationX: -80 }, { opacity: 1, rotationX: 0, duration: .55, ease: 'back.out(1.4)' });
+      } else {
+        btn.textContent = 'Reveal answer'; btn.setAttribute('aria-expanded', 'false');
+        if (hasG) gsap.to(ans, { opacity: 0, duration: .25, onComplete: function () { ans.style.display = 'none'; } });
+        else ans.style.display = 'none';
+      }
+    });
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 5 Study Guide: Operationalising, Securing and Maintaining ML | CAIP AIP-210</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+:root{--bg:#f6f7f9;--panel:#fff;--ink:#1b2430;--muted:#5b6675;--line:#e3e7ee;--brand:#0b5e6b;--gold:#c8963e;
+--code-bg:#0f1720;--code-ink:#e6edf3;--what:#eef6f7;--ana:#fbf5ea;--fin:#eef8f1;--warn:#fdf0ee;--warn-line:#d9534f;
+--tip:#eef2fb;--ok:#1f8f5f}
+@media (prefers-color-scheme:dark){:root{--bg:#0d1117;--panel:#141a22;--ink:#e6edf3;--muted:#9aa6b2;--line:#263040;
+--brand:#4fb3c2;--what:#12262a;--ana:#2a2214;--fin:#122319;--warn:#2d1717;--tip:#151d2d;--code-bg:#0a0f15}}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+.progress{position:fixed;top:0;left:0;height:4px;width:0;background:var(--gold);z-index:50}
+nav.dock{display:flex;gap:8px;overflow-x:auto;padding:10px 16px;background:var(--brand);position:sticky;top:0;z-index:40;
+-webkit-overflow-scrolling:touch}
+nav.dock a{color:#fff;text-decoration:none;font-size:13px;white-space:nowrap;padding:6px 12px;border:1px solid rgba(255,255,255,.35);
+border-radius:999px;transition:transform .2s,background .2s}
+nav.dock a:hover,nav.dock a:focus-visible{transform:scale(1.06);background:rgba(255,255,255,.18)}
+main{max-width:980px;margin:0 auto;padding:0 16px 64px}
+.hero{padding:44px 0 24px}
+.hero .eyebrow{color:var(--gold);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:13px}
+.hero h1{font-size:clamp(1.9rem,6vw,3rem);line-height:1.15;margin:.3em 0;color:var(--brand)}
+.hero p.sub{color:var(--muted);font-size:1.05rem;margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.chips span{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:13px}
+section.summary,section.deep,section.pitfalls,section.quiz,section.cheat{background:var(--panel);border:1px solid var(--line);
+border-radius:14px;padding:20px 16px;margin:20px 0}
+h2{font-size:1.5rem;line-height:1.25;margin:0 0 14px;color:var(--brand)}
+h3{font-size:1.1rem;margin:18px 0 6px}
+.summary ul,.summary ol{padding-left:20px;margin:8px 0}
+.summary li{margin:6px 0}
+.blk{border-radius:10px;padding:14px 14px 10px;margin:12px 0;border-left:4px solid var(--line)}
+.blk p{margin:.5em 0}.blk ul{padding-left:20px}
+.blk .tag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+.what{background:var(--what);border-left-color:var(--brand)}.what .tag{color:var(--brand)}
+.analogy{background:var(--ana);border-left-color:var(--gold)}.analogy .tag{color:#9a6b12}
+.finance{background:var(--fin);border-left-color:var(--ok)}.finance .tag{color:var(--ok)}
+.code-wrap{margin:14px 0}
+.code-cap{font-size:13px;color:var(--muted);margin-bottom:4px}
+pre{position:relative;margin:0;background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:16px 14px;overflow-x:auto;
+font:13px/1.55 "Cascadia Code",Consolas,Menlo,monospace;-webkit-overflow-scrolling:touch}
+code{font-family:inherit}
+p code,li code,td code{background:rgba(127,127,127,.15);padding:1px 6px;border-radius:5px;font-size:.9em}
+.copy-btn{position:absolute;top:8px;right:8px;background:#26313d;color:#e6edf3;border:1px solid #3a4756;border-radius:6px;
+padding:6px 12px;font-size:12px;cursor:pointer;min-height:32px;transition:transform .15s,background .2s}
+.copy-btn:hover{transform:scale(1.08)}
+.copy-btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.callout{border-radius:10px;padding:12px 14px;margin:14px 0;transition:transform .2s,box-shadow .2s;border-left:4px solid var(--brand);background:var(--tip)}
+.callout:hover{transform:translateY(-2px) scale(1.01);box-shadow:0 8px 20px rgba(0,0,0,.12)}
+.callout strong{display:block;margin-bottom:4px}
+.callout.warn{background:var(--warn);border-left-color:var(--warn-line)}
+.callout div p{margin:.3em 0}
+figure{margin:16px 0;text-align:center}
+figcaption{font-size:13px;color:var(--muted);margin-top:6px}
+.diagram .mermaid{background:var(--panel);border:1px dashed var(--line);border-radius:10px;padding:12px;overflow-x:auto}
+.gif-ph{border:2px dashed var(--line);border-radius:10px;padding:28px 12px;color:var(--muted);font-size:14px}
+.animated-asset{border-radius:10px}
+.tbl{overflow-x:auto;margin:14px 0}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:520px}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--what)}
+.pit{display:grid;gap:12px}
+.pit .callout{margin:0}
+.qa{border:1px solid var(--line);border-radius:12px;padding:14px;margin:12px 0}
+.qa .q{font-weight:600;margin:0 0 10px}
+.qa button{background:var(--brand);color:#fff;border:0;border-radius:8px;padding:10px 16px;min-height:44px;cursor:pointer;
+font-size:14px;transition:transform .15s}
+.qa button:hover{transform:scale(1.05)}
+.qa .ans{display:none;margin-top:12px;padding:12px;border-radius:8px;background:var(--fin);border-left:4px solid var(--ok);
+transform-origin:top center;perspective:600px}
+.pager{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:28px}
+.pager a{background:var(--brand);color:#fff;text-decoration:none;padding:12px 18px;border-radius:10px;min-height:44px;
+transition:transform .15s}
+.pager a:hover{transform:scale(1.05)}
+footer{color:var(--muted);font-size:13px;margin-top:24px}
+@media (min-width:768px){
+ body{font-size:17px}
+ main{padding:0 28px 80px}
+ section.summary,section.deep,section.pitfalls,section.quiz,section.cheat{padding:28px 30px}
+ .pit{grid-template-columns:1fr 1fr}
+ .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+</head>
+<body id="top">
+<div class="progress" aria-hidden="true"></div>
+<nav class="dock" aria-label="Sections"><a href="#top">Top</a><a href="#serialize">Artefacts</a><a href="#serving">Serving</a><a href="#mlops">MLOps</a><a href="#monitor">Monitoring</a><a href="#maintain">Maintain &amp;amp; secure</a><a href="#rai">Responsible AI</a><a href="#exam">Exam cheat sheet</a><a href="#pitfalls">Pitfalls</a><a href="#check">Quiz</a></nav>
+<main>
+<header class="hero">
+  <div class="eyebrow">CAIP AIP-210 &middot; Day 5 Study Guide &middot; Horizon Gulf Bank (fictional)</div>
+  <h1>Day 5: Operationalising, Securing &amp; Maintaining ML Systems</h1>
+  <p class="sub">Ship a model safely, keep it healthy in production, and consolidate the whole AIP-210 lifecycle.</p>
+  <div class="chips"><span>Serialisation</span><span>Batch vs real-time</span><span>MLOps &amp;amp; registry</span><span>Drift</span><span>Security</span><span>Responsible AI</span></div>
+</header>
+
+<section class="summary" id="summary">
+  <h2>Executive Summary (TL;DR)</h2>
+  <p>Day 5 takes a trained model into production: serialise it, serve it as a batch job or a real-time API, track and version it through MLOps and CI/CD, monitor data quality and drift, retrain or roll back safely, secure the pipeline, apply fairness and explainability, and consolidate the full lifecycle for the exam.</p>
+  <h3>By the end of this guide you can&hellip;</h3>
+  <ul><li>Distinguish training from inference and serialise a full pipeline as an artefact.</li><li>Choose batch or real-time inference and outline a scoring service.</li><li>Explain experiment tracking, model registry and CI/CD for ML.</li><li>Differentiate data drift, concept drift and schema problems, and compute PSI.</li><li>Describe retraining, recalibration, rollback and core security controls.</li><li>Apply fairness, explainability and human-oversight principles, and reason through exam-style scenarios.</li></ul>
+  <aside class="callout "><strong>How to use this guide</strong><div>Read each concept in order: <b>what &amp; why</b>, then the <b>analogy</b>, then the <b>banking example</b>, then the <b>code</b>. Dataset paths are relative to the courseware root (<code>data/...</code>). All data is synthetic; Horizon Gulf Bank is fictional.</div></aside>
+</section>
+
+<section class="deep" id="serialize"><h2>1. Training vs Inference and Model Serialisation</h2>
+<div class="blk what"><span class="tag">What &amp; Why</span><p><b>Training</b> is the expensive, offline step that learns parameters from historical data. <b>Inference</b> (scoring) applies the frozen model to new data, and must be fast, reliable and reproducible.
+To move a model from a notebook to production you <b>serialise</b> it into a <b>model artefact</b> (a file) that another process loads.</p>
+<ul>
+<li>scikit-learn: <code>joblib.dump</code> / <code>joblib.load</code> (pickle-based). Save the whole <b>Pipeline</b> so preprocessing travels with the model.</li>
+<li>Keras: <code>model.save("model.keras")</code> and <code>keras.models.load_model</code>.</li>
+<li>Portable formats such as ONNX exist for cross-framework serving.</li>
+<li>Record the library versions used; artefacts can break across versions.</li>
+</ul>
+<p><b>Security:</b> pickle/joblib files can execute code when loaded. Only load artefacts from a trusted, access-controlled registry; never from an untrusted source.</p></div>
+<div class="blk analogy"><span class="tag">Analogy</span>Training is writing and printing a cookbook; inference is a cook following one recipe, quickly, a thousand times a day. The artefact is the printed recipe card that must reach the kitchen intact.</div>
+<div class="blk finance"><span class="tag">Finance example</span><p>The fraud-scoring pipeline is trained overnight, saved with its scaler and feature list, and loaded by a scoring service that must answer in milliseconds for each card swipe.</p></div>
+<div class="code-wrap"><div class="code-cap">Save and reload a whole pipeline, with metadata</div><pre><code class="language-python">import json, joblib, sklearn
+from datetime import datetime, timezone
+
+# `model` is a fitted sklearn Pipeline (preprocessing + estimator)
+joblib.dump(model, &quot;fraud_model_v1.joblib&quot;)
+
+meta = {&quot;model_version&quot;: &quot;1.0.0&quot;,
+        &quot;trained_at&quot;: datetime.now(timezone.utc).isoformat(),
+        &quot;sklearn_version&quot;: sklearn.__version__,
+        &quot;features&quot;: [&quot;amount_aed&quot;, &quot;merchant_risk_score&quot;, &quot;distance_from_home_km&quot;]}
+with open(&quot;fraud_model_v1.meta.json&quot;, &quot;w&quot;) as f:
+    json.dump(meta, f, indent=2)
+
+loaded = joblib.load(&quot;fraud_model_v1.joblib&quot;)     # only load artefacts from a TRUSTED source</code></pre></div>
+</section><section class="deep" id="serving"><h2>2. Batch vs Real-time Inference and Serving a Model as a Service</h2>
+<div class="blk what"><span class="tag">What &amp; Why</span><ul>
+<li><b>Batch inference</b>: score many records on a schedule (nightly churn list, monthly credit-line review). Simple and cheap; results can be stale.</li>
+<li><b>Real-time (online) inference</b>: score one request on demand behind an API (card authorisation, instant loan pre-approval). Needs low latency, high availability and scaling.</li>
+<li>Typical service design: load the model <b>once at startup</b>, <b>validate</b> the input schema, return the score plus the model version, log every request, and add health checks and authentication.</li>
+</ul></div>
+<div class="blk analogy"><span class="tag">Analogy</span>Batch is a bakery baking tomorrow's bread overnight; real-time is a barista making each coffee when the customer orders.</div>
+<div class="blk finance"><span class="tag">Finance example</span><p>Card fraud scoring must answer inside the payment authorisation window, so it is a real-time service. The monthly "who may deserve a limit increase" list is a batch job.</p></div>
+<figure class="diagram"><div class="mermaid">
+flowchart LR
+  C[Card switch] -->|JSON request| API[Scoring API]
+  API --> V[Validate schema]
+  V --> M[Loaded model]
+  M --> R[Score + model version]
+  R --> C
+  API --> LOG[(Audit log & monitoring)]
+</div><figcaption>Real-time scoring service</figcaption></figure>
+<div class="code-wrap"><div class="code-cap">A minimal FastAPI scoring service (save as app.py, run: uvicorn app:app)</div><pre><code class="language-python">import joblib
+from fastapi import FastAPI
+from pydantic import BaseModel, Field
+
+app = FastAPI(title=&quot;Fraud Scoring Service&quot;)
+MODEL = joblib.load(&quot;fraud_model_v1.joblib&quot;)          # load once, at startup
+MODEL_VERSION = &quot;1.0.0&quot;
+
+class Txn(BaseModel):                                  # input validation (schema)
+    amount_aed: float = Field(ge=0)
+    merchant_risk_score: float = Field(ge=0, le=1)
+    distance_from_home_km: float = Field(ge=0)
+
+@app.get(&quot;/health&quot;)
+def health():
+    return {&quot;status&quot;: &quot;ok&quot;, &quot;model_version&quot;: MODEL_VERSION}
+
+@app.post(&quot;/score&quot;)
+def score(t: Txn):
+    row = [[t.amount_aed, t.merchant_risk_score, t.distance_from_home_km]]
+    p = float(MODEL.predict_proba(row)[0, 1])
+    return {&quot;fraud_probability&quot;: p, &quot;model_version&quot;: MODEL_VERSION}
+# Note: the training feature order must match this row order exactly.
+# For production, authenticate callers, log requests, and handle timeouts.</code></pre></div>
+</section><section class="deep" id="mlops"><h2>3. MLOps: Experiment Tracking, Versioning, Registries and CI/CD</h2>
+<div class="blk what"><span class="tag">What &amp; Why</span><p><b>MLOps</b> applies DevOps discipline to ML so that delivery is repeatable, auditable and governed. Its building blocks:</p>
+<ul>
+<li><b>Experiment tracking</b>: log parameters, metrics, data version and code version for every run so results are reproducible.</li>
+<li><b>Model versioning and registry</b>: a catalogue of model versions with stages/aliases (for example staging, production) and approval history.</li>
+<li><b>CI/CD for ML</b>: automated tests (data validation, unit tests, model-quality gates), packaging and deployment on every change; often plus <b>continuous training</b> when new data arrives.</li>
+<li><b>Reproducibility</b>: pinned dependencies, fixed random seeds, versioned data snapshots.</li>
+</ul></div>
+<div class="blk analogy"><span class="tag">Analogy</span>Lab notebooks and a controlled document system: any scientist can see exactly what was run, and only approved versions reach the factory floor.</div>
+<div class="blk finance"><span class="tag">Finance example</span><p>A model-risk committee asks "which exact model scored this customer in March, trained on which data?". With tracking and a registry the answer is one lookup instead of an investigation.</p></div>
+<figure class="diagram"><div class="mermaid">
+flowchart LR
+  A[Code & data change] --> B[CI: tests + data checks]
+  B --> C[Train & evaluate]
+  C --> D{Quality gate passed?}
+  D -- No --> X[Reject & report]
+  D -- Yes --> E[Register model version]
+  E --> F[Approval / validation]
+  F --> G[Deploy: staging -> production]
+  G --> H[Monitor]
+  H --> A
+</div><figcaption>ML CI/CD loop</figcaption></figure>
+<div class="code-wrap"><div class="code-cap">Tracking a run and registering a model with MLflow</div><pre><code class="language-python">import mlflow
+import mlflow.sklearn
+from sklearn.metrics import average_precision_score
+
+mlflow.set_experiment(&quot;fraud-scoring&quot;)
+
+with mlflow.start_run(run_name=&quot;rf_baseline&quot;):
+    mlflow.log_param(&quot;n_estimators&quot;, 200)
+    mlflow.log_param(&quot;class_weight&quot;, &quot;balanced_subsample&quot;)
+    # ... fit `model` ...
+    pr_auc = average_precision_score(y_te, model.predict_proba(X_te)[:, 1])
+    mlflow.log_metric(&quot;pr_auc&quot;, pr_auc)
+    mlflow.sklearn.log_model(model, &quot;model&quot;)          # stores the artefact with this run
+    # The registry needs a database-backed tracking server; check your installed MLflow
+    # version&#x27;s docs for the exact register_model / aliases API.</code></pre></div>
+</section><section class="deep" id="monitor"><h2>4. Production Monitoring: Data Quality, Data Drift and Concept Drift</h2>
+<div class="blk what"><span class="tag">What &amp; Why</span><p>A deployed model decays because the world changes. Monitor three layers:</p>
+<ul>
+<li><b>Operational</b>: latency, error rate, throughput, uptime.</li>
+<li><b>Data quality and schema</b>: missing values, new categories, out-of-range values, changed column types.</li>
+<li><b>Model quality</b>: <b>data drift</b> (input distributions shift, e.g. average ticket size rises) and <b>concept drift</b> (the relationship between inputs and target changes, e.g. fraudsters adopt a new tactic).
+Labels often arrive late (chargebacks take weeks), so use drift in inputs and prediction scores as an early warning and track true performance when labels land.</li>
+</ul>
+<p>Common drift measures: the <b>Population Stability Index (PSI)</b> and the <b>Kolmogorov-Smirnov</b> test. A widely used industry rule of thumb reads PSI &lt; 0.1 as stable, 0.1-0.25 as moderate shift and &gt; 0.25 as significant, but these are conventions, not statistical laws; agree thresholds with model risk.</p></div>
+<div class="blk analogy"><span class="tag">Analogy</span>A car's dashboard: speed and fuel gauges (operational), a check-engine light (data quality) and a strange noise that only a mechanic recognises (concept drift): you need all three.</div>
+<div class="blk finance"><span class="tag">Finance example</span><p>After a new payment wallet launches, transaction amounts and merchant mix shift (data drift). Later, fraud rings change tactics so previously strong signals stop working (concept drift). Monitoring catches the first early and the second when chargebacks arrive.</p></div>
+<figure class="gif"><img class="animated-asset" src="../assets/gif/drift_shift.gif" alt="Training vs live distribution drifting apart" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'gif-ph',textContent:'Animation placeholder: '+this.alt}))"><!-- AI IMAGE PROMPT: Create a GIF of two overlaid histograms (blue = training, orange = live). The orange histogram gradually slides right across frames while a PSI gauge on the side moves from green to amber to red. --><figcaption>Training vs live distribution drifting apart</figcaption></figure>
+<div class="code-wrap"><div class="code-cap">PSI and a KS test between training and live data</div><pre><code class="language-python">import numpy as np
+from scipy.stats import ks_2samp
+
+def psi(expected, actual, bins=10, eps=1e-6):
+    # Population Stability Index; bin edges come from the training (&#x27;expected&#x27;) data
+    edges = np.quantile(expected, np.linspace(0, 1, bins + 1))
+    edges[0], edges[-1] = -np.inf, np.inf
+    e = np.histogram(expected, bins=edges)[0] / len(expected)
+    a = np.histogram(actual, bins=edges)[0] / len(actual)
+    e, a = np.clip(e, eps, None), np.clip(a, eps, None)
+    return float(np.sum((a - e) * np.log(a / e)))
+
+train_amount = X_tr[&quot;amount_aed&quot;].to_numpy()
+live_amount = train_amount * 1.3                   # simulate a shift; use real live data in production
+
+print(&quot;PSI:&quot;, round(psi(train_amount, live_amount), 3))
+stat, p = ks_2samp(train_amount, live_amount)
+print(&quot;KS statistic:&quot;, round(stat, 3), &quot; p-value:&quot;, p)</code></pre></div>
+</section><section class="deep" id="maintain"><h2>5. Retraining, Recalibration, Rollback and Securing the Pipeline</h2>
+<div class="blk what"><span class="tag">What &amp; Why</span><ul>
+<li><b>Retraining</b>: refit on fresh data on a schedule or when monitoring triggers. Re-run the full evaluation; a retrained model is a <i>new</i> model that needs validation and approval.</li>
+<li><b>Recalibration</b>: adjust predicted probabilities (for example Platt scaling or isotonic regression via <code>CalibratedClassifierCV</code>) when ranking is still good but the scores no longer match observed rates.</li>
+<li><b>Rollback</b>: keep the previous approved version deployable so a bad release can be reverted fast. Prefer staged rollouts: shadow mode, then canary traffic, then full.</li>
+<li><b>Security</b>: authenticate and authorise endpoint callers, encrypt data in transit and at rest, restrict who can push to the registry, scan and pin dependencies, only load trusted artefacts (pickle risk), rate-limit endpoints, and protect against attempts to probe or extract the model or craft adversarial inputs.</li>
+<li><b>Integrity and auditability</b>: hash artefacts, keep immutable logs of who deployed what and when, and store the inputs, outputs and model version for each decision.</li>
+</ul></div>
+<div class="blk analogy"><span class="tag">Analogy</span>Aeroplane maintenance: scheduled inspections (retraining), recalibrating instruments, a safe way back to the last certified configuration (rollback), and locked, logged access to the hangar (security).</div>
+<div class="blk finance"><span class="tag">Finance example</span><p>When drift crosses the agreed threshold, the team retrains, validates the candidate against the current champion on recent labelled data, canaries it on 5% of traffic, and rolls back automatically if the alert rate behaves abnormally.</p></div>
+<div class="code-wrap"><div class="code-cap">Probability recalibration and an artefact integrity check</div><pre><code class="language-python">import hashlib
+from sklearn.calibration import CalibratedClassifierCV
+
+# Calibrate probabilities with cross-validation (method: &quot;sigmoid&quot; or &quot;isotonic&quot;).
+# `base_model` is an UNFITTED estimator; it is cloned and fitted on each fold.
+# (Calibrating an already-fitted model has changed across sklearn versions: check the docs.)
+cal = CalibratedClassifierCV(estimator=base_model, method=&quot;isotonic&quot;, cv=3)
+cal.fit(X_val, y_val)
+
+def sha256_file(path):
+    h = hashlib.sha256()
+    with open(path, &quot;rb&quot;) as f:
+        for chunk in iter(lambda: f.read(8192), b&quot;&quot;):
+            h.update(chunk)
+    return h.hexdigest()
+
+# Record the hash at registration; verify before loading in production
+print(sha256_file(&quot;fraud_model_v1.joblib&quot;))</code></pre></div>
+</section><section class="deep" id="rai"><h2>6. Responsible AI: Fairness, Explainability and Human Oversight</h2>
+<div class="blk what"><span class="tag">What &amp; Why</span><ul>
+<li><b>Fairness</b>: models can reproduce or amplify bias in historical data. Compare outcomes (selection rate, error rates) across groups, e.g. with the demographic-parity difference or equal-opportunity (recall) gap, and investigate proxies for sensitive attributes. No single metric fits every case; the choice is a policy decision.</li>
+<li><b>Explainability</b>: <i>global</i> (which features matter overall: coefficients, permutation importance) and <i>local</i> (why this one decision: tools such as SHAP or LIME, which are third-party libraries). Adverse decisions on customers usually need understandable reasons.</li>
+<li><b>Human oversight</b>: keep a person in the loop for high-impact decisions, with the ability to review, override and contest model outputs, and clear accountability.</li>
+<li><b>Governance</b>: model inventory, documentation, validation, approval and periodic review. Follow your institution's policies and the guidance of your regulators; ask your compliance and model-risk teams which rules apply.</li>
+</ul></div>
+<div class="blk analogy"><span class="tag">Analogy</span>A referee with video review: decisions are made fast, but they can be explained, challenged and overruled, and the referees are checked for consistency across teams.</div>
+<div class="blk finance"><span class="tag">Finance example</span><p>A loan-approval model is audited for approval rates across nationality groups and genders. A large gap triggers a review of features that act as proxies and, where needed, mitigation before go-live.</p></div>
+<div class="code-wrap"><div class="code-cap">A simple fairness audit: selection rate per group</div><pre><code class="language-python">import pandas as pd
+
+# `scored` has one row per application: model decision (1 = approve), true outcome and a group column
+scored = pd.DataFrame({&quot;group&quot;: g_te, &quot;approved&quot;: (proba_te &lt; 0.2).astype(int), &quot;default&quot;: y_te.values})
+
+rates = scored.groupby(&quot;group&quot;)[&quot;approved&quot;].mean()
+print(rates)
+print(&quot;max gap in approval rate:&quot;, round(rates.max() - rates.min(), 3))     # demographic-parity difference
+
+# Equal-opportunity view: among applicants who did NOT default, how often were they approved?
+good = scored[scored[&quot;default&quot;] == 0]
+print(good.groupby(&quot;group&quot;)[&quot;approved&quot;].mean())</code></pre></div>
+</section><section class="cheat" id="exam"><h2>7. Certification Readiness: Whole-Lifecycle Cheat Sheet</h2><figure class="diagram"><div class="mermaid">
+flowchart LR
+  A[Business problem] --> B[Data: collect, clean, split]
+  B --> C[Features]
+  C --> D[Train, tune, validate]
+  D --> E[Evaluate on test vs baseline]
+  E --> F[Deploy / serve]
+  F --> G[Monitor, drift, retrain]
+  G --> B
+</div><figcaption>The AIP-210 lifecycle in one picture</figcaption></figure><div class="tbl"><table><thead><tr><th>Scenario in the question</th><th>Think of</th><th>Key metric / concept</th></tr></thead><tbody><tr><td>Predict a house price</td><td>Regression (linear, Ridge/Lasso, tree/forest)</td><td>MAE, RMSE, R&sup2;</td></tr><tr><td>Predict fraud / default / churn</td><td>Classification (logistic, forest, SVM)</td><td>Precision, recall, F1, PR-AUC, threshold</td></tr><tr><td>Group customers, no labels</td><td>Clustering (k-Means, hierarchical)</td><td>Inertia, silhouette, dendrogram</td></tr><tr><td>Forecast ATM cash</td><td>Time series (lags, SARIMAX, LSTM)</td><td>Chronological split, naive baseline</td></tr><tr><td>Images of ID documents</td><td>CNN</td><td>Filters, pooling</td></tr><tr><td>Train score high, validation low</td><td>Overfitting</td><td>Regularise, simplify, more data, CV</td></tr><tr><td>Test score unrealistically high</td><td>Data leakage</td><td>Split first, Pipeline, drop post-event columns</td></tr><tr><td>Inputs changed after launch</td><td>Data drift</td><td>PSI / KS, retrain</td></tr><tr><td>Input-to-target relationship changed</td><td>Concept drift</td><td>Performance monitoring, retrain</td></tr><tr><td>Need to explain a decision</td><td>Explainability</td><td>Coefficients, importance, SHAP/LIME</td></tr></tbody></table></div><p>Final revision tip: for every scenario question, name the <b>data type</b>, the <b>target</b>, the <b>risk</b> (leakage, imbalance, overfit, drift) and the <b>metric</b> that matches the business cost.</p></section>
+
+<section class="pitfalls" id="pitfalls">
+  <h2>Common Pitfalls &amp; Anti-Patterns</h2>
+  <div class="pit"><aside class="callout warn"><strong>&#9888; Loading pickled models from untrusted places</strong><div><p>Unpickling can run arbitrary code. Use a controlled registry, verify hashes and restrict write access.</p></div></aside><aside class="callout warn"><strong>&#9888; Saving only the estimator, not the preprocessing</strong><div><p>Serve the full Pipeline, or training and production features will silently differ (training-serving skew).</p></div></aside><aside class="callout warn"><strong>&#9888; No monitoring because "accuracy was high at launch"</strong><div><p>Models decay. Track data quality, drift, score distribution and delayed-label performance.</p></div></aside><aside class="callout warn"><strong>&#9888; Retraining automatically and deploying with no validation</strong><div><p>A bad retrain can ship bias or errors. Require quality gates and approval, and keep rollback ready.</p></div></aside><aside class="callout warn"><strong>&#9888; Logging raw customer data carelessly</strong><div><p>Logs are data too. Minimise, mask and control access to personal and financial data.</p></div></aside><aside class="callout warn"><strong>&#9888; Treating fairness as one number</strong><div><p>Different metrics can conflict. Choose and justify them with compliance and model risk.</p></div></aside></div>
+</section>
+
+<section class="quiz" id="check">
+  <h2>Interactive Knowledge Check</h2>
+  <p>Answer in your head (or out loud with a colleague) first, then reveal.</p>
+  <div class="qa"><p class="q">1. Why save the full scikit-learn Pipeline rather than just the classifier?</p><button type="button">Reveal answer</button><div class="ans">So preprocessing (scaling, encoding, imputation) is applied identically at inference, avoiding training-serving skew.</div></div><div class="qa"><p class="q">2. Card authorisation needs an answer in milliseconds. Batch or real-time inference?</p><button type="button">Reveal answer</button><div class="ans"><b>Real-time</b> (online) inference behind an API; batch is for scheduled scoring of many records.</div></div><div class="qa"><p class="q">3. What is the difference between data drift and concept drift?</p><button type="button">Reveal answer</button><div class="ans">Data drift: the <i>input</i> distribution changes. Concept drift: the <i>relationship</i> between inputs and the target changes.</div></div><div class="qa"><p class="q">4. PSI on a key feature is 0.31. What is a sensible response?</p><button type="button">Reveal answer</button><div class="ans">Treat it as a significant shift under the common rule of thumb: investigate the cause, check model performance (labels permitting), and consider retraining. Confirm thresholds with your model-risk policy.</div></div><div class="qa"><p class="q">5. Name two security risks specific to ML artefacts and endpoints.</p><button type="button">Reveal answer</button><div class="ans">Malicious pickle/serialised artefacts executing code on load; unauthenticated endpoints enabling data exfiltration, model extraction or adversarial inputs. (Also tampered models without integrity checks.)</div></div>
+</section>
+
+<div class="pager"><a href="../DAY_4/DAY_4_Study_Guide.html">&larr; Day 4</a><span></span></div>
+<footer>Study guide for the CAIP AIP-210 5-day program (23&ndash;27 November 2026). Code snippets are teaching examples: pin your own library versions and test before reuse.</footer>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var hasG = !!window.gsap && !reduce;
+
+  // ---- copy buttons with visual feedback
+  document.querySelectorAll('pre').forEach(function (pre) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'copy-btn'; b.textContent = 'Copy';
+    b.setAttribute('aria-label', 'Copy code to clipboard');
+    b.addEventListener('click', function () {
+      var text = pre.querySelector('code').innerText;
+      function done(ok) {
+        b.textContent = ok ? 'Copied ✓' : 'Press Ctrl+C';
+        if (ok) b.classList.add('ok');
+        setTimeout(function () { b.textContent = 'Copy'; b.classList.remove('ok'); }, 1600);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
+      } else {
+        var ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select();
+        var ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
+        document.body.removeChild(ta); done(ok);
+      }
+    });
+    pre.appendChild(b);
+  });
+
+  // ---- Mermaid diagrams
+  if (window.mermaid) {
+    try {
+      mermaid.initialize({ startOnLoad: false, theme: 'neutral', securityLevel: 'strict' });
+      mermaid.run({ querySelector: '.mermaid' });
+    } catch (e) { console.warn('Mermaid failed', e); }
+  }
+
+  // ---- reading progress bar
+  var bar = document.querySelector('.progress');
+  addEventListener('scroll', function () {
+    var h = document.documentElement;
+    bar.style.width = (100 * h.scrollTop / Math.max(1, h.scrollHeight - h.clientHeight)) + '%';
+  }, { passive: true });
+
+  // ---- GSAP: hero, scroll reveals, staggers
+  if (hasG) {
+    if (window.ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
+    var tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    tl.from('.hero .eyebrow', { y: 16, opacity: 0, duration: .5 })
+      .from('.hero h1', { y: 40, opacity: 0, duration: .8 }, '-=.2')
+      .from('.hero .sub', { y: 20, opacity: 0, duration: .6 }, '-=.4')
+      .from('.hero .chips span', { scale: .8, opacity: 0, duration: .4, stagger: .08 }, '-=.3');
+    if (window.ScrollTrigger) {
+      document.querySelectorAll('section').forEach(function (sec) {
+        gsap.from(sec.querySelector('h2'), { scrollTrigger: { trigger: sec, start: 'top 88%' },
+          y: 28, opacity: 0, duration: .7, ease: 'power2.out' });
+        var items = sec.querySelectorAll(':scope > .blk, :scope > .code-wrap, :scope > .pit .callout, :scope > ul > li, :scope > ol > li');
+        if (items.length) gsap.from(items, { scrollTrigger: { trigger: sec, start: 'top 80%' },
+          y: 26, opacity: 0, duration: .55, stagger: .12, ease: 'power2.out' });
+      });
+    }
+  }
+
+  // ---- knowledge check: click to reveal with a GSAP flip / fade
+  document.querySelectorAll('.qa').forEach(function (qa) {
+    var btn = qa.querySelector('button'), ans = qa.querySelector('.ans');
+    btn.setAttribute('aria-expanded', 'false');
+    btn.addEventListener('click', function () {
+      var open = ans.style.display === 'block';
+      if (!open) {
+        ans.style.display = 'block'; btn.textContent = 'Hide answer'; btn.setAttribute('aria-expanded', 'true');
+        if (hasG) gsap.fromTo(ans, { opacity: 0, rotationX: -80 }, { opacity: 1, rotationX: 0, duration: .55, ease: 'back.out(1.4)' });
+      } else {
+        btn.textContent = 'Reveal answer'; btn.setAttribute('aria-expanded', 'false');
+        if (hasG) gsap.to(ans, { opacity: 0, duration: .25, onComplete: function () { ans.style.display = 'none'; } });
+        else ans.style.display = 'none';
+      }
+    });
+  });
+});
+</script>
+</body>
+</html>

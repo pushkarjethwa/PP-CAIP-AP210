@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 4 Study Guide: Support Vector Machines and Neural Networks | CAIP AIP-210</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+:root{--bg:#f6f7f9;--panel:#fff;--ink:#1b2430;--muted:#5b6675;--line:#e3e7ee;--brand:#0b5e6b;--gold:#c8963e;
+--code-bg:#0f1720;--code-ink:#e6edf3;--what:#eef6f7;--ana:#fbf5ea;--fin:#eef8f1;--warn:#fdf0ee;--warn-line:#d9534f;
+--tip:#eef2fb;--ok:#1f8f5f}
+@media (prefers-color-scheme:dark){:root{--bg:#0d1117;--panel:#141a22;--ink:#e6edf3;--muted:#9aa6b2;--line:#263040;
+--brand:#4fb3c2;--what:#12262a;--ana:#2a2214;--fin:#122319;--warn:#2d1717;--tip:#151d2d;--code-bg:#0a0f15}}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+.progress{position:fixed;top:0;left:0;height:4px;width:0;background:var(--gold);z-index:50}
+nav.dock{display:flex;gap:8px;overflow-x:auto;padding:10px 16px;background:var(--brand);position:sticky;top:0;z-index:40;
+-webkit-overflow-scrolling:touch}
+nav.dock a{color:#fff;text-decoration:none;font-size:13px;white-space:nowrap;padding:6px 12px;border:1px solid rgba(255,255,255,.35);
+border-radius:999px;transition:transform .2s,background .2s}
+nav.dock a:hover,nav.dock a:focus-visible{transform:scale(1.06);background:rgba(255,255,255,.18)}
+main{max-width:980px;margin:0 auto;padding:0 16px 64px}
+.hero{padding:44px 0 24px}
+.hero .eyebrow{color:var(--gold);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:13px}
+.hero h1{font-size:clamp(1.9rem,6vw,3rem);line-height:1.15;margin:.3em 0;color:var(--brand)}
+.hero p.sub{color:var(--muted);font-size:1.05rem;margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.chips span{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:13px}
+section.summary,section.deep,section.pitfalls,section.quiz,section.cheat{background:var(--panel);border:1px solid var(--line);
+border-radius:14px;padding:20px 16px;margin:20px 0}
+h2{font-size:1.5rem;line-height:1.25;margin:0 0 14px;color:var(--brand)}
+h3{font-size:1.1rem;margin:18px 0 6px}
+.summary ul,.summary ol{padding-left:20px;margin:8px 0}
+.summary li{margin:6px 0}
+.blk{border-radius:10px;padding:14px 14px 10px;margin:12px 0;border-left:4px solid var(--line)}
+.blk p{margin:.5em 0}.blk ul{padding-left:20px}
+.blk .tag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+.what{background:var(--what);border-left-color:var(--brand)}.what .tag{color:var(--brand)}
+.analogy{background:var(--ana);border-left-color:var(--gold)}.analogy .tag{color:#9a6b12}
+.finance{background:var(--fin);border-left-color:var(--ok)}.finance .tag{color:var(--ok)}
+.code-wrap{margin:14px 0}
+.code-cap{font-size:13px;color:var(--muted);margin-bottom:4px}
+pre{position:relative;margin:0;background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:16px 14px;overflow-x:auto;
+font:13px/1.55 "Cascadia Code",Consolas,Menlo,monospace;-webkit-overflow-scrolling:touch}
+code{font-family:inherit}
+p code,li code,td code{background:rgba(127,127,127,.15);padding:1px 6px;border-radius:5px;font-size:.9em}
+.copy-btn{position:absolute;top:8px;right:8px;background:#26313d;color:#e6edf3;border:1px solid #3a4756;border-radius:6px;
+padding:6px 12px;font-size:12px;cursor:pointer;min-height:32px;transition:transform .15s,background .2s}
+.copy-btn:hover{transform:scale(1.08)}
+.copy-btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.callout{border-radius:10px;padding:12px 14px;margin:14px 0;transition:transform .2s,box-shadow .2s;border-left:4px solid var(--brand);background:var(--tip)}
+.callout:hover{transform:translateY(-2px) scale(1.01);box-shadow:0 8px 20px rgba(0,0,0,.12)}
+.callout strong{display:block;margin-bottom:4px}
+.callout.warn{background:var(--warn);border-left-color:var(--warn-line)}
+.callout div p{margin:.3em 0}
+figure{margin:16px 0;text-align:center}
+figcaption{font-size:13px;color:var(--muted);margin-top:6px}
+.diagram .mermaid{background:var(--panel);border:1px dashed var(--line);border-radius:10px;padding:12px;overflow-x:auto}
+.gif-ph{border:2px dashed var(--line);border-radius:10px;padding:28px 12px;color:var(--muted);font-size:14px}
+.animated-asset{border-radius:10px}
+.tbl{overflow-x:auto;margin:14px 0}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:520px}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--what)}
+.pit{display:grid;gap:12px}
+.pit .callout{margin:0}
+.qa{border:1px solid var(--line);border-radius:12px;padding:14px;margin:12px 0}
+.qa .q{font-weight:600;margin:0 0 10px}
+.qa button{background:var(--brand);color:#fff;border:0;border-radius:8px;padding:10px 16px;min-height:44px;cursor:pointer;
+font-size:14px;transition:transform .15s}
+.qa button:hover{transform:scale(1.05)}
+.qa .ans{display:none;margin-top:12px;padding:12px;border-radius:8px;background:var(--fin);border-left:4px solid var(--ok);
+transform-origin:top center;perspective:600px}
+.pager{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:28px}
+.pager a{background:var(--brand);color:#fff;text-decoration:none;padding:12px 18px;border-radius:10px;min-height:44px;
+transition:transform .15s}
+.pager a:hover{transform:scale(1.05)}
+footer{color:var(--muted);font-size:13px;margin-top:24px}
+@media (min-width:768px){
+ body{font-size:17px}
+ main{padding:0 28px 80px}
+ section.summary,section.deep,section.pitfalls,section.quiz,section.cheat{padding:28px 30px}
+ .pit{grid-template-columns:1fr 1fr}
+ .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+</head>
+<body id="top">
+<div class="progress" aria-hidden="true"></div>
+<nav class="dock" aria-label="Sections"><a href="#top">Top</a><a href="#svm">SVM</a><a href="#kernel">Kernels &amp;amp; SVR</a><a href="#neuron">Neuron</a><a href="#ann">Training ANN</a><a href="#cnn">CNN</a><a href="#rnn">RNN/LSTM</a><a href="#choose">Compare</a><a href="#pitfalls">Pitfalls</a><a href="#check">Quiz</a></nav>
+<main>
+<header class="hero">
+  <div class="eyebrow">CAIP AIP-210 &middot; Day 4 Study Guide &middot; Horizon Gulf Bank (fictional)</div>
+  <h1>Day 4: Support Vector Machines &amp; Artificial Neural Networks</h1>
+  <p class="sub">Margins and kernels, then neurons, backpropagation and the MLP, CNN and RNN families.</p>
+  <div class="chips"><span>SVM margin</span><span>Kernels, C, gamma</span><span>SVR</span><span>Neurons &amp;amp; activations</span><span>Backprop</span><span>MLP / CNN / RNN / LSTM</span></div>
+</header>
+
+<section class="summary" id="summary">
+  <h2>Executive Summary (TL;DR)</h2>
+  <p>Day 4 covers two advanced families. Support vector machines draw the widest-margin boundary and use kernels (with C and gamma) for curved boundaries; neural networks stack neurons with activations and learn by forward pass, loss, backpropagation and gradient descent. You will also distinguish MLPs (tabular), CNNs (images) and RNN/LSTMs (sequences).</p>
+  <h3>By the end of this guide you can&hellip;</h3>
+  <ul><li>Explain hyperplanes, margins, support vectors and the effect of C and gamma.</li><li>Describe the kernel idea and when SVR is used.</li><li>Describe a neuron, weights, bias and common activation functions.</li><li>Explain forward propagation, loss, backpropagation, epochs, batches and learning rate.</li><li>Match MLP, CNN and RNN/LSTM to suitable data types.</li></ul>
+  <aside class="callout "><strong>How to use this guide</strong><div>Read each concept in order: <b>what &amp; why</b>, then the <b>analogy</b>, then the <b>banking example</b>, then the <b>code</b>. Dataset paths are relative to the courseware root (<code>data/...</code>). All data is synthetic; Horizon Gulf Bank is fictional.</div></aside>
+</section>
+
+<section class="deep" id="svm"><h2>1. Support Vector Machines: Hyperplanes, Margins and Support Vectors</h2>
+<div class="blk what"><span class="tag">What &amp; Why</span><p>An <b>SVM</b> classifier finds the <b>hyperplane</b> (a line in 2D, a plane in 3D) that separates two classes with the <b>widest possible margin</b>, meaning the gap between the boundary and the nearest points of each class.
+Those nearest points are the <b>support vectors</b>: only they define the boundary; other points could move without changing it.</p>
+<ul>
+<li><b>C</b> controls the trade-off between a wide margin and training errors. <i>Small C</i> = softer margin, tolerates mistakes (more regularisation, can underfit). <i>Large C</i> = fewer mistakes allowed (can overfit).</li>
+<li><b>Feature scaling is essential</b>, because margins are distance-based.</li>
+<li>SVMs train slowly as rows grow (training cost grows faster than linearly), so on millions of rows use a sample, or <code>LinearSVC</code> / <code>SGDClassifier</code>.</li>
+<li><code>SVC</code> does not output probabilities by default; use <code>decision_function</code> scores, or <code>probability=True</code> (slower, uses internal cross-validation).</li>
+</ul></div>
+<div class="blk analogy"><span class="tag">Analogy</span>Building a road between two neighbourhoods as far from both as possible. Only the houses closest to the road (support vectors) decide where it can go.</div>
+<div class="blk finance"><span class="tag">Finance example</span><p>Separating defaulting from non-defaulting small-business borrowers using a few well-scaled financial ratios, where a clean boundary with a healthy margin is preferred to a boundary that hugs the training points.</p></div>
+<figure class="gif"><img class="animated-asset" src="../assets/gif/svm_margin.gif" alt="SVM hyperplane, margin and support vectors" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'gif-ph',textContent:'Animation placeholder: '+this.alt}))"><!-- AI IMAGE PROMPT: Create a GIF of a 2D scatter of two coloured point clouds. Animate a separating line rotating and shifting until it finds the maximum-margin position; then draw the two margin lines and circle the support vectors. Finally show a point being dragged away without changing the line. --><figcaption>SVM hyperplane, margin and support vectors</figcaption></figure>
+<div class="code-wrap"><div class="code-cap">A linear SVM in a scaling pipeline (on a stratified sample)</div><pre><code class="language-python">import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVC
+from sklearn.metrics import classification_report
+
+loans = pd.read_csv(&quot;data/loan_applications.csv&quot;)
+f = [&quot;loan_amount_aed&quot;, &quot;tenure_months&quot;, &quot;monthly_salary_aed&quot;, &quot;aecb_score&quot;,
+     &quot;debt_burden_ratio&quot;, &quot;num_prior_delinquencies_24m&quot;]
+X, y = loans[f].fillna(loans[f].median()), loans[&quot;default_12m&quot;]
+
+# SVMs scale poorly with rows -&gt; use a stratified subsample
+X, _, y, _ = train_test_split(X, y, train_size=15_000, stratify=y, random_state=42)
+X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)
+
+svm = make_pipeline(StandardScaler(), SVC(kernel=&quot;linear&quot;, C=1.0, class_weight=&quot;balanced&quot;))
+svm.fit(X_tr, y_tr)
+print(classification_report(y_te, svm.predict(X_te)))
+print(&quot;support vectors per class:&quot;, svm[-1].n_support_)</code></pre></div>
+</section><section class="deep" id="kernel"><h2>2. Kernels, gamma and Support Vector Regression</h2>
+<div class="blk what"><span class="tag">What &amp; Why</span><p>When classes are not linearly separable, the <b>kernel trick</b> lets an SVM behave as if the data were mapped to a higher-dimensional space where a flat boundary works, without computing that mapping explicitly.
+Common kernels: <code>linear</code>, <code>poly</code>, <code>rbf</code> (radial basis function, the usual default) and <code>sigmoid</code>.</p>
+<ul>
+<li><b>gamma</b> (RBF/poly/sigmoid): how far one training point's influence reaches. <i>Large gamma</i> = very local, wiggly boundary (overfit). <i>Small gamma</i> = smooth boundary (underfit). In scikit-learn <code>gamma="scale"</code> is the default.</li>
+<li>Tune <b>C and gamma together</b>, typically on a log-scale grid.</li>
+</ul>
+<p><b>Support Vector Regression (SVR)</b> fits a function within a tube of width <code>epsilon</code>: errors smaller than epsilon cost nothing; only points outside the tube become support vectors. <code>C</code> and <code>kernel</code> work as in classification.</p></div>
+<div class="blk analogy"><span class="tag">Analogy</span>Kernels are like looking at tangled strings from above (2D) versus lifting them into the air (3D): from the new viewpoint you can slide a sheet of paper between them.</div>
+<div class="blk finance"><span class="tag">Finance example</span><p>Estimating <b>loss given default</b> (the fraction of an exposure lost when a borrower defaults) from collateral and loan features with SVR, where small prediction errors inside the tube are tolerated.</p></div>
+<div class="code-wrap"><div class="code-cap">RBF SVM tuned over C and gamma; SVR for a continuous target</div><pre><code class="language-python">from sklearn.model_selection import GridSearchCV, StratifiedKFold
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVC, SVR
+
+# X_tr, y_tr from the previous snippet
+grid = GridSearchCV(
+    make_pipeline(StandardScaler(), SVC(kernel=&quot;rbf&quot;, class_weight=&quot;balanced&quot;)),
+    param_grid={&quot;svc__C&quot;: [0.1, 1, 10], &quot;svc__gamma&quot;: [&quot;scale&quot;, 0.01, 0.1]},
+    scoring=&quot;average_precision&quot;,
+    cv=StratifiedKFold(3, shuffle=True, random_state=42), n_jobs=-1)
+# grid.fit(X_tr, y_tr); print(grid.best_params_)
+
+# Support Vector Regression: errors inside the epsilon tube are not penalised
+svr = make_pipeline(StandardScaler(), SVR(kernel=&quot;rbf&quot;, C=10.0, epsilon=0.1))
+# svr.fit(X_reg_train, y_reg_train)   # e.g. a numeric target such as a loss ratio</code></pre></div>
+</section><section class="deep" id="neuron"><h2>3. The Artificial Neuron: Weights, Bias and Activation Functions</h2>
+<div class="blk what"><span class="tag">What &amp; Why</span><p>An <b>artificial neuron</b> computes <code>z = w1*x1 + w2*x2 + ... + b</code> (inputs times <b>weights</b>, plus <b>bias</b>) and then applies a non-linear <b>activation function</b>: <code>a = f(z)</code>.
+Without activation functions, any stack of layers collapses to one linear model.</p><div class="tbl"><table><thead><tr><th>Activation</th><th>Output range</th><th>Typical use</th></tr></thead><tbody><tr><td>ReLU: max(0, z)</td><td>0 to infinity</td><td>Default for hidden layers; cheap, reduces vanishing gradients.</td></tr><tr><td>Sigmoid: 1/(1+e^-z)</td><td>0 to 1</td><td>Output layer for binary probability.</td></tr><tr><td>Tanh</td><td>-1 to 1</td><td>Zero-centred; used inside recurrent units.</td></tr><tr><td>Softmax</td><td>0 to 1, sums to 1</td><td>Output layer for multi-class probabilities.</td></tr></tbody></table></div></div>
+<div class="blk analogy"><span class="tag">Analogy</span>A neuron is a committee member who weighs each piece of evidence (weights), starts with a built-in leaning (bias) and only speaks up strongly if the total passes a certain level (activation).</div>
+<div class="blk finance"><span class="tag">Finance example</span><p>One neuron fed with a transaction's amount, distance from home and merchant risk can already output a "fraud probability" (a sigmoid neuron is exactly logistic regression); the power comes from stacking many of them.</p></div>
+<div class="code-wrap"><div class="code-cap">A single sigmoid neuron in NumPy</div><pre><code class="language-python">import numpy as np
+
+def sigmoid(z):
+    return 1.0 / (1.0 + np.exp(-z))
+
+x = np.array([0.8, 1.5, 0.3])        # scaled inputs: amount, distance, merchant risk
+w = np.array([0.9, 0.4, 1.2])        # weights (learned in training)
+b = -1.0                             # bias
+
+z = np.dot(w, x) + b                 # weighted sum
+print(&quot;fraud probability:&quot;, sigmoid(z))</code></pre></div>
+</section><section class="deep" id="ann"><h2>4. Training a Neural Network: Layers, Loss, Backpropagation, Epochs, Batches and the MLP</h2>
+<div class="blk what"><span class="tag">What &amp; Why</span><p>A <b>Multi-Layer Perceptron (MLP)</b> has an <b>input layer</b>, one or more <b>hidden layers</b> and an <b>output layer</b>, fully connected. Training is a loop:</p>
+<ol>
+<li><b>Forward propagation</b>: push a batch of inputs through the layers to get predictions.</li>
+<li><b>Loss function</b>: measure error (binary cross-entropy for yes/no, categorical cross-entropy for classes, MSE for numbers).</li>
+<li><b>Backpropagation</b>: apply the chain rule to compute how much each weight contributed to the loss (the gradients).</li>
+<li><b>Optimiser</b> (SGD, Adam): update weights by a step of size <b>learning rate</b> opposite the gradient.</li>
+</ol>
+<ul>
+<li><b>Epoch</b>: one full pass over the training data. <b>Batch size</b>: samples per weight update. <b>Learning rate</b>: step size.</li>
+<li>Control overfitting with <b>early stopping</b> (stop when validation loss stops improving), dropout and regularisation.</li>
+<li>Scale inputs; neural networks are scale-sensitive.</li>
+</ul></div>
+<div class="blk analogy"><span class="tag">Analogy</span>A chef adjusting a recipe: taste (forward pass), measure how far off it is (loss), work out which ingredient caused it (backprop), adjust each a little (learning rate), repeat over many dinners (epochs).</div>
+<div class="blk finance"><span class="tag">Finance example</span><p>A feed-forward network predicts default risk from many scaled application features. It can capture interactions between features, but on plain tables a gradient-boosted or forest model is often just as good and easier to explain.</p></div>
+<figure class="diagram"><div class="mermaid">
+flowchart LR
+  X[Batch of inputs] --> F[Forward pass]
+  F --> L[Loss vs true labels]
+  L --> B[Backpropagation: gradients]
+  B --> U[Optimiser updates weights]
+  U --> F
+  L -. val loss stops improving .-> S[Early stop]
+</div><figcaption>The neural-network training loop</figcaption></figure>
+<div class="code-wrap"><div class="code-cap">An MLP in Keras (TensorFlow) with early stopping</div><pre><code class="language-python">import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras import layers
+
+# X_tr_s, X_val_s: scaled feature arrays; y_tr, y_val: 0/1 labels (prepare as in Day 1)
+n_features = X_tr_s.shape[1]
+
+model = keras.Sequential([
+    layers.Input(shape=(n_features,)),
+    layers.Dense(32, activation=&quot;relu&quot;),
+    layers.Dropout(0.2),
+    layers.Dense(16, activation=&quot;relu&quot;),
+    layers.Dense(1, activation=&quot;sigmoid&quot;),          # probability of the positive class
+])
+model.compile(optimizer=keras.optimizers.Adam(learning_rate=1e-3),
+              loss=&quot;binary_crossentropy&quot;,
+              metrics=[keras.metrics.AUC(name=&quot;auc&quot;)])
+
+early = keras.callbacks.EarlyStopping(monitor=&quot;val_loss&quot;, patience=5, restore_best_weights=True)
+history = model.fit(X_tr_s, y_tr, validation_data=(X_val_s, y_val),
+                    epochs=50, batch_size=256, callbacks=[early], verbose=0)</code></pre></div>
+<div class="code-wrap"><div class="code-cap">Backpropagation by hand for ONE sigmoid neuron with squared-error loss</div><pre><code class="language-python">import numpy as np
+
+def sigmoid(z): return 1 / (1 + np.exp(-z))
+
+x, y_true = 1.5, 1.0
+w, b, lr = 0.2, 0.0, 0.5
+
+for step in range(5):
+    z = w * x + b
+    y_hat = sigmoid(z)                                  # forward pass
+    loss = 0.5 * (y_hat - y_true) ** 2
+    # chain rule: dL/dw = dL/dy_hat * dy_hat/dz * dz/dw
+    dz = (y_hat - y_true) * y_hat * (1 - y_hat)
+    dw, db = dz * x, dz
+    w, b = w - lr * dw, b - lr * db                     # gradient-descent update
+    print(step, round(loss, 4))                         # loss shrinks each step</code></pre></div>
+</section><section class="deep" id="cnn"><h2>5. Convolutional Neural Networks (CNN): Spatial Feature Learning</h2>
+<div class="blk what"><span class="tag">What &amp; Why</span><p>A <b>CNN</b> is built for grid-like data such as images. Instead of connecting every pixel to every neuron, it slides small learnable <b>filters (kernels)</b> across the image to detect local patterns (edges, then shapes, then objects).
+Key ideas: <b>convolution layers</b> (feature maps), <b>pooling</b> (down-sample, e.g. max pooling, to gain some translation tolerance), and a final <b>dense</b> classifier. Sharing filter weights across the image makes CNNs far more efficient than MLPs on pixels.</p></div>
+<div class="blk analogy"><span class="tag">Analogy</span>Scanning a document with a small magnifying glass, noting "there is a line here, a circle there", then combining those clues into "this looks like a passport photo page".</div>
+<div class="blk finance"><span class="tag">Finance example</span><p>Classifying scanned KYC document images (passport, Emirates ID, trade licence, ...) so they route to the right review queue automatically.</p></div>
+<figure class="gif"><img class="animated-asset" src="../assets/gif/cnn_filter_slide.gif" alt="A convolution filter sliding over an image" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'gif-ph',textContent:'Animation placeholder: '+this.alt}))"><!-- AI IMAGE PROMPT: Create a GIF showing a 3x3 filter sliding across a small grayscale document image, producing a feature map grid on the right; then a 2x2 max-pooling step shrinking the feature map. --><figcaption>A convolution filter sliding over an image</figcaption></figure>
+<div class="code-wrap"><div class="code-cap">A small CNN in Keras for 64x64 document images</div><pre><code class="language-python">from tensorflow import keras
+from tensorflow.keras import layers
+
+# Adjust input_shape to your array: (64, 64, 1) for grayscale or (64, 64, 3) for colour.
+num_classes = 5            # set from your label set
+
+cnn = keras.Sequential([
+    layers.Input(shape=(64, 64, 1)),
+    layers.Rescaling(1.0 / 255),                       # pixel values 0-255 -&gt; 0-1
+    layers.Conv2D(16, 3, activation=&quot;relu&quot;),
+    layers.MaxPooling2D(),
+    layers.Conv2D(32, 3, activation=&quot;relu&quot;),
+    layers.MaxPooling2D(),
+    layers.GlobalAveragePooling2D(),
+    layers.Dense(32, activation=&quot;relu&quot;),
+    layers.Dense(num_classes, activation=&quot;softmax&quot;),
+])
+cnn.compile(optimizer=&quot;adam&quot;, loss=&quot;sparse_categorical_crossentropy&quot;, metrics=[&quot;accuracy&quot;])
+cnn.summary()</code></pre></div>
+</section><section class="deep" id="rnn"><h2>6. Recurrent Networks (RNN) and LSTM for Sequences</h2>
+<div class="blk what"><span class="tag">What &amp; Why</span><p>An <b>RNN</b> processes a sequence one step at a time, carrying a <b>hidden state</b> that acts as memory of what it has seen so far, so order matters. Use it for ordered data: time series, text, event streams.</p>
+<p>Plain RNNs struggle with long sequences because of the <b>vanishing gradient</b> problem (learning signals shrink as they flow back through many steps). <b>LSTM</b> (Long Short-Term Memory) units add a memory cell controlled by
+<b>gates</b> (forget, input, output) that decide what to keep, add and expose, which helps them learn longer dependencies. Input shape for sequence layers is <code>(timesteps, features)</code>.</p></div>
+<div class="blk analogy"><span class="tag">Analogy</span>Reading a sentence word by word while keeping a mental summary; an LSTM is a reader with a notepad who can decide what to cross out and what to underline.</div>
+<div class="blk finance"><span class="tag">Finance example</span><p>Using the last 14 days of an ATM's withdrawals, holidays and payday flags to predict tomorrow's cash demand, or the last N card transactions of a customer to flag an unusual sequence.</p></div>
+<div class="code-wrap"><div class="code-cap">Windowing a series and an LSTM forecaster</div><pre><code class="language-python">import numpy as np
+from tensorflow import keras
+from tensorflow.keras import layers
+
+def make_windows(arr, window=14):
+    # arr: 2D array (time, features), column 0 is the target. Returns X (n, window, f), y (n,)
+    X, y = [], []
+    for i in range(window, len(arr)):
+        X.append(arr[i - window:i])          # the past `window` steps
+        y.append(arr[i, 0])                  # the next value to predict
+    return np.array(X), np.array(y)
+
+# scaled_series: your scaled (time, features) NumPy array, split chronologically first
+# X_seq, y_seq = make_windows(scaled_series, window=14)
+
+lstm = keras.Sequential([
+    layers.Input(shape=(14, 5)),             # (timesteps, features)
+    layers.LSTM(32),
+    layers.Dense(1),
+])
+lstm.compile(optimizer=&quot;adam&quot;, loss=&quot;mse&quot;)</code></pre></div>
+</section><section class="cheat" id="choose"><h2>7. Which Model When? (Quick Comparison)</h2><div class="tbl"><table><thead><tr><th>Model</th><th>Best for</th><th>Scale features?</th><th>Watch out for</th></tr></thead><tbody><tr><td>Linear / Logistic</td><td>Baselines, explainable credit models</td><td>Yes (esp. regularised)</td><td>Non-linear patterns</td></tr><tr><td>Decision tree / Random forest</td><td>Tabular data, mixed types, interpretable rules</td><td>No</td><td>Deep trees overfit; forest is less explainable</td></tr><tr><td>SVM</td><td>Medium-size data, clear margin, high-dimensional</td><td><b>Yes</b></td><td>Slow on millions of rows; tune C and gamma</td></tr><tr><td>MLP</td><td>Complex tabular interactions</td><td><b>Yes</b></td><td>Needs tuning; often not better than forests on tables</td></tr><tr><td>CNN</td><td>Images (KYC documents, cheques)</td><td>Rescale pixels</td><td>Needs enough labelled images</td></tr><tr><td>RNN / LSTM</td><td>Sequences (time series, text)</td><td>Yes</td><td>Training cost; long-range memory limits</td></tr></tbody></table></div></section>
+
+<section class="pitfalls" id="pitfalls">
+  <h2>Common Pitfalls &amp; Anti-Patterns</h2>
+  <div class="pit"><aside class="callout warn"><strong>&#9888; Skipping feature scaling for SVM and neural networks</strong><div><p>Both are scale-sensitive; unscaled AED amounts can dominate the model and slow or break training.</p></div></aside><aside class="callout warn"><strong>&#9888; Running a kernel SVM on millions of rows</strong><div><p>Training time grows quickly with rows. Sample, use a linear model, or choose a tree ensemble.</p></div></aside><aside class="callout warn"><strong>&#9888; Deep learning on a small tabular table</strong><div><p>A forest or logistic model is usually as accurate, cheaper and easier to explain to a regulator.</p></div></aside><aside class="callout warn"><strong>&#9888; Training for a fixed number of epochs with no validation</strong><div><p>You cannot see overfitting. Monitor validation loss and use early stopping.</p></div></aside><aside class="callout warn"><strong>&#9888; Random splits for sequence models</strong><div><p>Windows from the future leak into training. Split chronologically before windowing.</p></div></aside><aside class="callout warn"><strong>&#9888; Treating a network's output as a calibrated probability</strong><div><p>Check calibration before using scores for pricing or limits.</p></div></aside></div>
+</section>
+
+<section class="quiz" id="check">
+  <h2>Interactive Knowledge Check</h2>
+  <p>Answer in your head (or out loud with a colleague) first, then reveal.</p>
+  <div class="qa"><p class="q">1. What are support vectors?</p><button type="button">Reveal answer</button><div class="ans">The training points closest to the decision boundary (on or inside the margin). They alone define the hyperplane.</div></div><div class="qa"><p class="q">2. A kernel SVM fits the training data perfectly but fails on validation. Which direction should C and gamma move?</p><button type="button">Reveal answer</button><div class="ans"><b>Decrease C and/or decrease gamma</b> for a smoother, more regularised boundary.</div></div><div class="qa"><p class="q">3. Why can't a deep network of linear layers (no activation) learn non-linear patterns?</p><button type="button">Reveal answer</button><div class="ans">Stacked linear transformations collapse into a single linear transformation; activations supply the non-linearity.</div></div><div class="qa"><p class="q">4. Name the four steps of one training iteration of a neural network.</p><button type="button">Reveal answer</button><div class="ans">Forward propagation, loss computation, backpropagation (gradients) and a weight update by the optimiser.</div></div><div class="qa"><p class="q">5. Which architecture for (a) scanned ID images, (b) 14 days of ATM history?</p><button type="button">Reveal answer</button><div class="ans">(a) <b>CNN</b>, (b) <b>RNN/LSTM</b> (or lag features with a tree or linear model).</div></div>
+</section>
+
+<div class="pager"><a href="../DAY_3/DAY_3_Study_Guide.html">&larr; Day 3</a><a href="../DAY_5/DAY_5_Study_Guide.html">Day 5 &rarr;</a></div>
+<footer>Study guide for the CAIP AIP-210 5-day program (23&ndash;27 November 2026). Code snippets are teaching examples: pin your own library versions and test before reuse.</footer>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var hasG = !!window.gsap && !reduce;
+
+  // ---- copy buttons with visual feedback
+  document.querySelectorAll('pre').forEach(function (pre) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'copy-btn'; b.textContent = 'Copy';
+    b.setAttribute('aria-label', 'Copy code to clipboard');
+    b.addEventListener('click', function () {
+      var text = pre.querySelector('code').innerText;
+      function done(ok) {
+        b.textContent = ok ? 'Copied ✓' : 'Press Ctrl+C';
+        if (ok) b.classList.add('ok');
+        setTimeout(function () { b.textContent = 'Copy'; b.classList.remove('ok'); }, 1600);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
+      } else {
+        var ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select();
+        var ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
+        document.body.removeChild(ta); done(ok);
+      }
+    });
+    pre.appendChild(b);
+  });
+
+  // ---- Mermaid diagrams
+  if (window.mermaid) {
+    try {
+      mermaid.initialize({ startOnLoad: false, theme: 'neutral', securityLevel: 'strict' });
+      mermaid.run({ querySelector: '.mermaid' });
+    } catch (e) { console.warn('Mermaid failed', e); }
+  }
+
+  // ---- reading progress bar
+  var bar = document.querySelector('.progress');
+  addEventListener('scroll', function () {
+    var h = document.documentElement;
+    bar.style.width = (100 * h.scrollTop / Math.max(1, h.scrollHeight - h.clientHeight)) + '%';
+  }, { passive: true });
+
+  // ---- GSAP: hero, scroll reveals, staggers
+  if (hasG) {
+    if (window.ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
+    var tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    tl.from('.hero .eyebrow', { y: 16, opacity: 0, duration: .5 })
+      .from('.hero h1', { y: 40, opacity: 0, duration: .8 }, '-=.2')
+      .from('.hero .sub', { y: 20, opacity: 0, duration: .6 }, '-=.4')
+      .from('.hero .chips span', { scale: .8, opacity: 0, duration: .4, stagger: .08 }, '-=.3');
+    if (window.ScrollTrigger) {
+      document.querySelectorAll('section').forEach(function (sec) {
+        gsap.from(sec.querySelector('h2'), { scrollTrigger: { trigger: sec, start: 'top 88%' },
+          y: 28, opacity: 0, duration: .7, ease: 'power2.out' });
+        var items = sec.querySelectorAll(':scope > .blk, :scope > .code-wrap, :scope > .pit .callout, :scope > ul > li, :scope > ol > li');
+        if (items.length) gsap.from(items, { scrollTrigger: { trigger: sec, start: 'top 80%' },
+          y: 26, opacity: 0, duration: .55, stagger: .12, ease: 'power2.out' });
+      });
+    }
+  }
+
+  // ---- knowledge check: click to reveal with a GSAP flip / fade
+  document.querySelectorAll('.qa').forEach(function (qa) {
+    var btn = qa.querySelector('button'), ans = qa.querySelector('.ans');
+    btn.setAttribute('aria-expanded', 'false');
+    btn.addEventListener('click', function () {
+      var open = ans.style.display === 'block';
+      if (!open) {
+        ans.style.display = 'block'; btn.textContent = 'Hide answer'; btn.setAttribute('aria-expanded', 'true');
+        if (hasG) gsap.fromTo(ans, { opacity: 0, rotationX: -80 }, { opacity: 1, rotationX: 0, duration: .55, ease: 'back.out(1.4)' });
+      } else {
+        btn.textContent = 'Reveal answer'; btn.setAttribute('aria-expanded', 'false');
+        if (hasG) gsap.to(ans, { opacity: 0, duration: .25, onComplete: function () { ans.style.display = 'none'; } });
+        else ans.style.display = 'none';
+      }
+    });
+  });
+});
+</script>
+</body>
+</html>

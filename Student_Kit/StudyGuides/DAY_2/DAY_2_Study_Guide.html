@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 2 Study Guide: Model Training, Regression and Forecasting | CAIP AIP-210</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+:root{--bg:#f6f7f9;--panel:#fff;--ink:#1b2430;--muted:#5b6675;--line:#e3e7ee;--brand:#0b5e6b;--gold:#c8963e;
+--code-bg:#0f1720;--code-ink:#e6edf3;--what:#eef6f7;--ana:#fbf5ea;--fin:#eef8f1;--warn:#fdf0ee;--warn-line:#d9534f;
+--tip:#eef2fb;--ok:#1f8f5f}
+@media (prefers-color-scheme:dark){:root{--bg:#0d1117;--panel:#141a22;--ink:#e6edf3;--muted:#9aa6b2;--line:#263040;
+--brand:#4fb3c2;--what:#12262a;--ana:#2a2214;--fin:#122319;--warn:#2d1717;--tip:#151d2d;--code-bg:#0a0f15}}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+.progress{position:fixed;top:0;left:0;height:4px;width:0;background:var(--gold);z-index:50}
+nav.dock{display:flex;gap:8px;overflow-x:auto;padding:10px 16px;background:var(--brand);position:sticky;top:0;z-index:40;
+-webkit-overflow-scrolling:touch}
+nav.dock a{color:#fff;text-decoration:none;font-size:13px;white-space:nowrap;padding:6px 12px;border:1px solid rgba(255,255,255,.35);
+border-radius:999px;transition:transform .2s,background .2s}
+nav.dock a:hover,nav.dock a:focus-visible{transform:scale(1.06);background:rgba(255,255,255,.18)}
+main{max-width:980px;margin:0 auto;padding:0 16px 64px}
+.hero{padding:44px 0 24px}
+.hero .eyebrow{color:var(--gold);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:13px}
+.hero h1{font-size:clamp(1.9rem,6vw,3rem);line-height:1.15;margin:.3em 0;color:var(--brand)}
+.hero p.sub{color:var(--muted);font-size:1.05rem;margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.chips span{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:13px}
+section.summary,section.deep,section.pitfalls,section.quiz,section.cheat{background:var(--panel);border:1px solid var(--line);
+border-radius:14px;padding:20px 16px;margin:20px 0}
+h2{font-size:1.5rem;line-height:1.25;margin:0 0 14px;color:var(--brand)}
+h3{font-size:1.1rem;margin:18px 0 6px}
+.summary ul,.summary ol{padding-left:20px;margin:8px 0}
+.summary li{margin:6px 0}
+.blk{border-radius:10px;padding:14px 14px 10px;margin:12px 0;border-left:4px solid var(--line)}
+.blk p{margin:.5em 0}.blk ul{padding-left:20px}
+.blk .tag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+.what{background:var(--what);border-left-color:var(--brand)}.what .tag{color:var(--brand)}
+.analogy{background:var(--ana);border-left-color:var(--gold)}.analogy .tag{color:#9a6b12}
+.finance{background:var(--fin);border-left-color:var(--ok)}.finance .tag{color:var(--ok)}
+.code-wrap{margin:14px 0}
+.code-cap{font-size:13px;color:var(--muted);margin-bottom:4px}
+pre{position:relative;margin:0;background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:16px 14px;overflow-x:auto;
+font:13px/1.55 "Cascadia Code",Consolas,Menlo,monospace;-webkit-overflow-scrolling:touch}
+code{font-family:inherit}
+p code,li code,td code{background:rgba(127,127,127,.15);padding:1px 6px;border-radius:5px;font-size:.9em}
+.copy-btn{position:absolute;top:8px;right:8px;background:#26313d;color:#e6edf3;border:1px solid #3a4756;border-radius:6px;
+padding:6px 12px;font-size:12px;cursor:pointer;min-height:32px;transition:transform .15s,background .2s}
+.copy-btn:hover{transform:scale(1.08)}
+.copy-btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.callout{border-radius:10px;padding:12px 14px;margin:14px 0;transition:transform .2s,box-shadow .2s;border-left:4px solid var(--brand);background:var(--tip)}
+.callout:hover{transform:translateY(-2px) scale(1.01);box-shadow:0 8px 20px rgba(0,0,0,.12)}
+.callout strong{display:block;margin-bottom:4px}
+.callout.warn{background:var(--warn);border-left-color:var(--warn-line)}
+.callout div p{margin:.3em 0}
+figure{margin:16px 0;text-align:center}
+figcaption{font-size:13px;color:var(--muted);margin-top:6px}
+.diagram .mermaid{background:var(--panel);border:1px dashed var(--line);border-radius:10px;padding:12px;overflow-x:auto}
+.gif-ph{border:2px dashed var(--line);border-radius:10px;padding:28px 12px;color:var(--muted);font-size:14px}
+.animated-asset{border-radius:10px}
+.tbl{overflow-x:auto;margin:14px 0}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:520px}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--what)}
+.pit{display:grid;gap:12px}
+.pit .callout{margin:0}
+.qa{border:1px solid var(--line);border-radius:12px;padding:14px;margin:12px 0}
+.qa .q{font-weight:600;margin:0 0 10px}
+.qa button{background:var(--brand);color:#fff;border:0;border-radius:8px;padding:10px 16px;min-height:44px;cursor:pointer;
+font-size:14px;transition:transform .15s}
+.qa button:hover{transform:scale(1.05)}
+.qa .ans{display:none;margin-top:12px;padding:12px;border-radius:8px;background:var(--fin);border-left:4px solid var(--ok);
+transform-origin:top center;perspective:600px}
+.pager{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:28px}
+.pager a{background:var(--brand);color:#fff;text-decoration:none;padding:12px 18px;border-radius:10px;min-height:44px;
+transition:transform .15s}
+.pager a:hover{transform:scale(1.05)}
+footer{color:var(--muted);font-size:13px;margin-top:24px}
+@media (min-width:768px){
+ body{font-size:17px}
+ main{padding:0 28px 80px}
+ section.summary,section.deep,section.pitfalls,section.quiz,section.cheat{padding:28px 30px}
+ .pit{grid-template-columns:1fr 1fr}
+ .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+</head>
+<body id="top">
+<div class="progress" aria-hidden="true"></div>
+<nav class="dock" aria-label="Sections"><a href="#top">Top</a><a href="#splits">Splits</a><a href="#fit">Over/Underfit</a><a href="#cv">CV &amp;amp; Tuning</a><a href="#linreg">Linear</a><a href="#ridge">Ridge/Lasso</a><a href="#ts">Forecasting</a><a href="#pitfalls">Pitfalls</a><a href="#check">Quiz</a></nav>
+<main>
+<header class="hero">
+  <div class="eyebrow">CAIP AIP-210 &middot; Day 2 Study Guide &middot; Horizon Gulf Bank (fictional)</div>
+  <h1>Day 2: Model Training, Regression &amp; Forecasting</h1>
+  <p class="sub">Split, train, tune and evaluate honestly, then forecast time-dependent bank data without peeking at the future.</p>
+  <div class="chips"><span>Train/val/test</span><span>Overfitting</span><span>Cross-validation</span><span>Linear &amp;amp; Ridge/Lasso</span><span>Gradient descent</span><span>Time series</span></div>
+</header>
+
+<section class="summary" id="summary">
+  <h2>Executive Summary (TL;DR)</h2>
+  <p>Day 2 is about trustworthy model building: separate training, validation and test data, diagnose over/underfitting, tune hyperparameters with cross-validation against a baseline, build and interpret linear and regularised regression with MAE/RMSE/R&sup2;, and forecast time series with lags and chronological splits that avoid future-data leakage.</p>
+  <h3>By the end of this guide you can&hellip;</h3>
+  <ul><li>Explain the roles of training, validation and test sets and why the test set is used once.</li><li>Recognise underfitting and overfitting from train vs validation performance.</li><li>Distinguish parameters from hyperparameters and tune with cross-validation.</li><li>Interpret coefficients, intercepts and residuals, and compute MAE, MSE, RMSE and R&sup2;.</li><li>Explain Ridge vs Lasso and the intuition of gradient descent.</li><li>Describe trend, seasonality, lags and moving averages, and evaluate forecasts without leakage.</li></ul>
+  <aside class="callout "><strong>How to use this guide</strong><div>Read each concept in order: <b>what &amp; why</b>, then the <b>analogy</b>, then the <b>banking example</b>, then the <b>code</b>. Dataset paths are relative to the courseware root (<code>data/...</code>). All data is synthetic; Horizon Gulf Bank is fictional.</div></aside>
+</section>
+
+<section class="deep" id="splits"><h2>1. Train / Validation / Test Splits and Generalisation</h2>
+<div class="blk what"><span class="tag">What &amp; Why</span><p>A model must be judged on data it has <b>never seen</b>, because the goal is <b>generalisation</b>: good performance on tomorrow's data, not memorised history.</p>
+<ul>
+<li><b>Training set</b>: the model learns its parameters here.</li>
+<li><b>Validation set</b>: used to compare models and tune hyperparameters.</li>
+<li><b>Test set</b>: touched <i>once</i> at the end for an honest final estimate. If you tune against it repeatedly it stops being a fair test.</li>
+</ul>
+<p>Common split: 60/20/20 or 70/15/15. For classification use <code>stratify=y</code> so each split keeps the class ratio. For time-ordered data split <b>chronologically</b>, never randomly.</p></div>
+<div class="blk analogy"><span class="tag">Analogy</span>Training is studying with practice papers, validation is the mock exam you use to adjust your study plan, and the test is the real exam you sit once.</div>
+<div class="blk finance"><span class="tag">Finance example</span><p>A mortgage valuation model is built from 2018-2025 valuations. The bank only cares how it values <i>new</i> properties next quarter, so a held-out test set stands in for those future cases.</p></div>
+<div class="code-wrap"><div class="code-cap">A 60/20/20 split for the property-valuation data</div><pre><code class="language-python">import pandas as pd
+from sklearn.model_selection import train_test_split
+
+df = pd.read_csv(&quot;data/property_valuations.csv&quot;)
+num = [&quot;bedrooms&quot;, &quot;size_sqft&quot;, &quot;building_age_years&quot;, &quot;floor&quot;, &quot;parking_spaces&quot;,
+       &quot;distance_to_metro_km&quot;, &quot;service_charge_aed_sqft&quot;, &quot;private_pool&quot;, &quot;furnished&quot;, &quot;off_plan&quot;]
+X, y = df[num].fillna(df[num].median()), df[&quot;valuation_aed&quot;]
+
+# 1) carve off the final test set (20%)
+X_tmp, X_test, y_tmp, y_test = train_test_split(X, y, test_size=0.20, random_state=42)
+# 2) split the remainder into train / validation (0.25 of 80% = 20% overall)
+X_train, X_val, y_train, y_val = train_test_split(X_tmp, y_tmp, test_size=0.25, random_state=42)
+
+print(len(X_train), len(X_val), len(X_test))</code></pre></div>
+</section><section class="deep" id="fit"><h2>2. Underfitting, Overfitting and the Bias-Variance Trade-off</h2>
+<div class="blk what"><span class="tag">What &amp; Why</span><ul>
+<li><b>Underfitting</b> (high bias): the model is too simple and performs poorly on both training and validation data.</li>
+<li><b>Overfitting</b> (high variance): the model memorises noise; training error is tiny but validation error is much larger.</li>
+<li><b>Good fit</b>: training and validation errors are both low and close together.</li>
+</ul>
+<p>Diagnose with the <b>gap</b> between training and validation scores, and with learning or validation curves. Remedies for overfitting: more data, simpler model, regularisation, early stopping, fewer features. For underfitting: richer features or a more flexible model.</p></div>
+<div class="blk analogy"><span class="tag">Analogy</span>Underfit: a student who only learned "everything is average". Overfit: a student who memorised last year's exact questions and freezes on new ones.</div>
+<div class="blk finance"><span class="tag">Finance example</span><p>An over-deep decision tree values every training flat almost perfectly yet misprices new ones. Plotting error against tree depth shows the validation error bottoming out and then rising.</p></div>
+<figure class="gif"><img class="animated-asset" src="../assets/gif/overfit_curve.gif" alt="Training vs validation error as model complexity grows" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'gif-ph',textContent:'Animation placeholder: '+this.alt}))"><!-- AI IMAGE PROMPT: Create a looping GIF of a 2D line chart: x-axis model complexity, two curves (training error falling steadily, validation error U-shaped). Animate a marker sweeping left to right and highlight the sweet spot where validation error is lowest, with 'Underfit' on the left and 'Overfit' on the right. --><figcaption>Training vs validation error as model complexity grows</figcaption></figure>
+<div class="code-wrap"><div class="code-cap">Training vs validation RMSE as tree depth grows</div><pre><code class="language-python">import numpy as np
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.metrics import mean_squared_error
+
+def rmse(y_true, y_pred):
+    return float(np.sqrt(mean_squared_error(y_true, y_pred)))
+
+for depth in [1, 3, 5, 8, 12, 20]:
+    m = DecisionTreeRegressor(max_depth=depth, random_state=42).fit(X_train, y_train)
+    print(f&quot;depth={depth:&gt;2}  train RMSE={rmse(y_train, m.predict(X_train)):&gt;10,.0f}&quot;
+          f&quot;  val RMSE={rmse(y_val, m.predict(X_val)):&gt;10,.0f}&quot;)
+# Pick the depth where validation RMSE is lowest, not training RMSE.</code></pre></div>
+</section><section class="deep" id="cv"><h2>3. Cross-Validation, Parameters vs Hyperparameters, Tuning and Baselines</h2>
+<div class="blk what"><span class="tag">What &amp; Why</span><p><b>Parameters</b> are learned from data (regression coefficients, neural-network weights). <b>Hyperparameters</b> are set by you before training
+(tree depth, Ridge <code>alpha</code>, k in kNN, learning rate) and are tuned.</p>
+<p><b>k-fold cross-validation</b> splits the training data into k folds, trains on k-1 and validates on the remaining fold, rotating k times and averaging the scores.
+It gives a more stable estimate than a single split. <b>GridSearchCV</b> automates "try each hyperparameter combination with cross-validation".
+For time series use <code>TimeSeriesSplit</code> so the validation fold is always <i>after</i> the training fold.</p>
+<p>Always compare against a <b>baseline</b>: a trivial predictor (for example the training mean, or "same as last week"). A model that cannot beat the baseline adds no value.</p></div>
+<div class="blk analogy"><span class="tag">Analogy</span>Cross-validation is taking five different mock exams instead of one, so a lucky or unlucky paper does not decide your grade. A baseline is the score you get by guessing the class average.</div>
+<div class="blk finance"><span class="tag">Finance example</span><p>The AVM team tunes the maximum depth of a tree model with 5-fold cross-validation, and reports its error next to "always predict the average valuation" so management can see the improvement is real.</p></div>
+<div class="code-wrap"><div class="code-cap">Baseline, cross-validation and a small grid search</div><pre><code class="language-python">from sklearn.dummy import DummyRegressor
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import cross_val_score, GridSearchCV, KFold
+
+cv = KFold(n_splits=5, shuffle=True, random_state=42)
+
+base = cross_val_score(DummyRegressor(strategy=&quot;mean&quot;), X_train, y_train,
+                       cv=cv, scoring=&quot;neg_root_mean_squared_error&quot;)
+print(&quot;Baseline RMSE:&quot;, -base.mean())
+
+grid = GridSearchCV(
+    RandomForestRegressor(random_state=42, n_jobs=-1),
+    param_grid={&quot;n_estimators&quot;: [100, 200], &quot;max_depth&quot;: [6, 12, None]},   # hyperparameters
+    cv=cv, scoring=&quot;neg_root_mean_squared_error&quot;)
+grid.fit(X_train, y_train)
+
+print(&quot;Best params:&quot;, grid.best_params_)
+print(&quot;CV RMSE    :&quot;, -grid.best_score_)
+# Only now evaluate once on the untouched test set: grid.score / predict on X_test</code></pre></div>
+</section><section class="deep" id="linreg"><h2>4. Linear Regression, Coefficients, Residuals and Error Metrics</h2>
+<div class="blk what"><span class="tag">What &amp; Why</span><p><b>Simple linear regression</b> fits <code>y = b0 + b1*x</code>; <b>multiple linear regression</b> uses several features:
+<code>y = b0 + b1*x1 + b2*x2 + ...</code>. The <b>intercept</b> (b0) is the prediction when all features are zero; each <b>coefficient</b> is the expected change in <code>y</code>
+for a one-unit rise in that feature, holding the others constant. A <b>residual</b> is <code>actual - predicted</code>.</p>
+<p>Fitting minimises the sum of squared residuals (ordinary least squares). Evaluation metrics:</p></div>
+<div class="blk analogy"><span class="tag">Analogy</span>Drawing the best straight "trend line" through a cloud of dots; the residuals are the vertical distances from each dot to the line.</div>
+<div class="blk finance"><span class="tag">Finance example</span><p>Each extra square foot adds roughly a fixed number of AED to a valuation, holding other factors fixed. That coefficient is directly explainable to a credit committee, which is why linear models remain popular in banking.</p></div>
+<div class="tbl"><table><thead><tr><th>Metric</th><th>Formula</th><th>Notes</th></tr></thead><tbody><tr><td>MAE</td><td>mean(|y - y_hat|)</td><td>Average error in AED; robust to outliers; easy to explain.</td></tr><tr><td>MSE</td><td>mean((y - y_hat)^2)</td><td>Penalises large errors heavily; units are AED squared.</td></tr><tr><td>RMSE</td><td>sqrt(MSE)</td><td>Back in AED; most commonly reported.</td></tr><tr><td>R&sup2;</td><td>1 - SS_res / SS_tot</td><td>Share of variance explained; can be negative on test data if the model is worse than predicting the mean.</td></tr></tbody></table></div>
+<div class="code-wrap"><div class="code-cap">Fit, inspect coefficients, evaluate</div><pre><code class="language-python">import numpy as np, pandas as pd
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+
+lr = LinearRegression().fit(X_train, y_train)
+
+print(&quot;intercept:&quot;, round(lr.intercept_, 1))
+print(pd.Series(lr.coef_, index=X_train.columns).round(1).sort_values())
+
+pred = lr.predict(X_val)
+resid = y_val - pred                                  # actual - predicted
+print(&quot;MAE :&quot;, mean_absolute_error(y_val, pred))
+print(&quot;RMSE:&quot;, np.sqrt(mean_squared_error(y_val, pred)))
+print(&quot;R2  :&quot;, r2_score(y_val, pred))</code></pre></div>
+</section><section class="deep" id="ridge"><h2>5. Regularised Regression (Ridge, Lasso) and Gradient Descent</h2>
+<div class="blk what"><span class="tag">What &amp; Why</span><p>Regularisation adds a penalty on large coefficients to curb overfitting, especially with many or correlated features.</p>
+<ul>
+<li><b>Ridge (L2)</b>: penalises the sum of squared coefficients; shrinks them toward zero but rarely to exactly zero; good with correlated features.</li>
+<li><b>Lasso (L1)</b>: penalises the sum of absolute coefficients; can shrink some exactly to zero, acting as automatic feature selection.</li>
+</ul>
+<p>In scikit-learn the strength is <code>alpha</code> (bigger = stronger shrinkage). <b>Scale features first</b>, otherwise the penalty treats features unfairly.</p>
+<p><b>Gradient descent</b> finds the best coefficients iteratively: compute the slope (gradient) of the loss, take a step downhill of size <i>learning rate</i>, repeat. Too large a rate overshoots; too small crawls.</p></div>
+<div class="blk analogy"><span class="tag">Analogy</span>Ridge/Lasso is a budget: the model may "spend" coefficient size only if it earns its keep. Gradient descent is walking down a foggy hill by always stepping in the steepest downhill direction you can feel.</div>
+<div class="blk finance"><span class="tag">Finance example</span><p>A valuation model with 40 correlated property attributes can wobble badly on new data. Ridge keeps coefficients stable; Lasso highlights which attributes the model genuinely relies on.</p></div>
+<div class="code-wrap"><div class="code-cap">Ridge and Lasso inside a scaling pipeline</div><pre><code class="language-python">from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import Ridge, Lasso
+
+for name, reg in [(&quot;Ridge&quot;, Ridge(alpha=1.0)), (&quot;Lasso&quot;, Lasso(alpha=100.0, max_iter=10000))]:
+    pipe = make_pipeline(StandardScaler(), reg).fit(X_train, y_train)
+    print(name, &quot;val R2 =&quot;, round(pipe.score(X_val, y_val), 4))
+
+# Which features did Lasso zero out? (Tune alpha with GridSearchCV in practice.)
+lasso = make_pipeline(StandardScaler(), Lasso(alpha=100.0, max_iter=10000)).fit(X_train, y_train)
+print(dict(zip(X_train.columns, lasso[-1].coef_.round(0))))</code></pre></div>
+<div class="code-wrap"><div class="code-cap">Gradient descent from scratch (NumPy) for y = w*x + b with MSE loss</div><pre><code class="language-python">import numpy as np
+
+rng = np.random.default_rng(0)
+x = rng.uniform(0, 10, 200)
+y = 3.0 * x + 5.0 + rng.normal(0, 1, 200)       # true w=3, b=5
+
+w, b, lr = 0.0, 0.0, 0.01
+for epoch in range(2000):
+    y_hat = w * x + b
+    err = y_hat - y
+    dw = (2 / len(x)) * np.sum(err * x)          # d(MSE)/dw
+    db = (2 / len(x)) * np.sum(err)              # d(MSE)/db
+    w -= lr * dw                                 # step downhill
+    b -= lr * db
+print(round(w, 2), round(b, 2))                  # close to 3 and 5</code></pre></div>
+</section><section class="deep" id="ts"><h2>6. Time Series: Components, Lags, Forecasting and Leakage</h2>
+<div class="blk what"><span class="tag">What &amp; Why</span><p>A <b>time series</b> is data ordered in time, where the past influences the future, so rows are <i>not</i> independent. Typical components:
+<b>trend</b> (long-term direction), <b>seasonality</b> (fixed-period repeats: weekly, monthly, yearly), <b>cyclic</b> behaviour (longer, irregular swings) and <b>noise</b>.</p>
+<ul>
+<li><b>Lag features</b>: yesterday's and last week's values as inputs (<code>shift</code>).</li>
+<li><b>Moving average</b>: a rolling mean that smooths noise.</li>
+<li><b>Univariate</b> forecasting uses only the series' own history; <b>multivariate</b> adds other drivers (holidays, paydays, weather).</li>
+<li><b>Evaluation</b>: split by time, compare with a <b>naive baseline</b> (for example "same day last week"), and report MAE/RMSE/MAPE.</li>
+</ul>
+<p><b>Future-data leakage</b>: a rolling mean that includes today's value, or random shuffling before splitting, lets the model peek at the future. Always <code>shift(1)</code> before rolling.</p></div>
+<div class="blk analogy"><span class="tag">Analogy</span>Predicting tomorrow's traffic from the last few weeks of the same road (lags), and knowing that Fridays and school holidays behave differently (multivariate drivers).</div>
+<div class="blk finance"><span class="tag">Finance example</span><p>An ATM's cash demand spikes around paydays, Eid and public holidays and follows a weekly rhythm. Forecasting it lets the bank load the right cash amount: too little means an empty ATM, too much means idle cash and cost.</p></div>
+<figure class="diagram"><div class="mermaid">
+flowchart LR
+  A[Raw daily series] --> B[Create lags & rolling means - shifted]
+  B --> C[Chronological split: train past / test future]
+  C --> D[Fit model]
+  D --> E[Forecast]
+  E --> F{Beats naive baseline?}
+  F -- No --> B
+  F -- Yes --> G[Deploy & monitor]
+</div><figcaption>Leak-free forecasting workflow</figcaption></figure>
+<div class="code-wrap"><div class="code-cap">Lag features, a shifted rolling mean and a chronological split (ATM100)</div><pre><code class="language-python">import numpy as np, pandas as pd
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_absolute_error
+
+atm = pd.read_csv(&quot;data/atm_cash_daily.csv&quot;, parse_dates=[&quot;date&quot;])
+s = atm[atm[&quot;atm_id&quot;] == &quot;ATM100&quot;].sort_values(&quot;date&quot;).set_index(&quot;date&quot;).copy()
+
+# Lags and a rolling mean; shift(1) so today&#x27;s value never feeds today&#x27;s prediction
+s[&quot;lag_1&quot;] = s[&quot;withdrawal_aed&quot;].shift(1)
+s[&quot;lag_7&quot;] = s[&quot;withdrawal_aed&quot;].shift(7)
+s[&quot;roll_7&quot;] = s[&quot;withdrawal_aed&quot;].shift(1).rolling(7).mean()
+s = s.dropna()
+
+drivers = [&quot;is_ramadan&quot;, &quot;is_public_holiday&quot;, &quot;is_pre_eid_window&quot;, &quot;is_payday_window&quot;, &quot;is_weekend&quot;]  # multivariate
+feats = [&quot;lag_1&quot;, &quot;lag_7&quot;, &quot;roll_7&quot;] + drivers
+
+cut = int(len(s) * 0.8)                          # chronological split, no shuffling
+train, test = s.iloc[:cut], s.iloc[cut:]
+
+naive_mae = mean_absolute_error(test[&quot;withdrawal_aed&quot;], test[&quot;lag_7&quot;])      # seasonal-naive baseline
+model = RandomForestRegressor(n_estimators=200, random_state=42, n_jobs=-1).fit(train[feats], train[&quot;withdrawal_aed&quot;])
+model_mae = mean_absolute_error(test[&quot;withdrawal_aed&quot;], model.predict(test[feats]))
+print(f&quot;naive MAE={naive_mae:,.0f}   model MAE={model_mae:,.0f}&quot;)</code></pre></div>
+<div class="code-wrap"><div class="code-cap">Optional: a classical univariate model with statsmodels (weekly seasonality)</div><pre><code class="language-python">from statsmodels.tsa.statespace.sarimax import SARIMAX
+
+endog = train[&quot;withdrawal_aed&quot;].asfreq(&quot;D&quot;)        # give the index an explicit daily frequency
+fit = SARIMAX(endog, order=(1, 1, 1),
+              seasonal_order=(1, 0, 1, 7)).fit(disp=False)        # seasonal period = 7 days
+forecast = fit.forecast(steps=len(test))
+# To go multivariate pass exog=train[drivers] and exog=test[drivers] when forecasting.</code></pre></div>
+</section>
+
+<section class="pitfalls" id="pitfalls">
+  <h2>Common Pitfalls &amp; Anti-Patterns</h2>
+  <div class="pit"><aside class="callout warn"><strong>&#9888; Tuning on the test set</strong><div><p>Each peek at the test score makes it optimistic. Tune on validation or cross-validation; open the test set once.</p></div></aside><aside class="callout warn"><strong>&#9888; Random splits on time series</strong><div><p>Shuffling lets the model train on the future. Split chronologically and use <code>TimeSeriesSplit</code>.</p></div></aside><aside class="callout warn"><strong>&#9888; Rolling statistics without shift</strong><div><p>A 7-day mean that includes today leaks the answer. Use <code>shift(1)</code> first.</p></div></aside><aside class="callout warn"><strong>&#9888; No baseline</strong><div><p>An RMSE of AED 80,000 means nothing until compared with a naive predictor.</p></div></aside><aside class="callout warn"><strong>&#9888; Unscaled features with Ridge/Lasso</strong><div><p>The penalty depends on coefficient size, which depends on feature units. Standardise first.</p></div></aside><aside class="callout warn"><strong>&#9888; Judging by R&sup2; alone</strong><div><p>R&sup2; hides unit-level error. Report MAE/RMSE in AED and look at residuals by segment.</p></div></aside></div>
+</section>
+
+<section class="quiz" id="check">
+  <h2>Interactive Knowledge Check</h2>
+  <p>Answer in your head (or out loud with a colleague) first, then reveal.</p>
+  <div class="qa"><p class="q">1. Training RMSE is AED 5,000 but validation RMSE is AED 60,000. What is happening and what can you try?</p><button type="button">Reveal answer</button><div class="ans"><b>Overfitting</b>. Try a simpler model, regularisation, more data, fewer features or early stopping.</div></div><div class="qa"><p class="q">2. What is the difference between a parameter and a hyperparameter?</p><button type="button">Reveal answer</button><div class="ans">Parameters are learned from data (coefficients). Hyperparameters are set before training and tuned (alpha, max_depth, k).</div></div><div class="qa"><p class="q">3. Which regularisation can drive coefficients exactly to zero?</p><button type="button">Reveal answer</button><div class="ans"><b>Lasso (L1)</b>, so it also performs feature selection. Ridge (L2) only shrinks them.</div></div><div class="qa"><p class="q">4. Why must a rolling average of ATM withdrawals be shifted by one day?</p><button type="button">Reveal answer</button><div class="ans">Otherwise today's actual value is inside the feature used to predict today: <b>future-data leakage</b>.</div></div><div class="qa"><p class="q">5. Your forecast model's MAE is no better than "same as last week". What now?</p><button type="button">Reveal answer</button><div class="ans">It adds no value over the <b>seasonal-naive baseline</b>. Improve features/drivers or use the simpler baseline.</div></div>
+</section>
+
+<div class="pager"><a href="../DAY_1/DAY_1_Study_Guide.html">&larr; Day 1</a><a href="../DAY_3/DAY_3_Study_Guide.html">Day 3 &rarr;</a></div>
+<footer>Study guide for the CAIP AIP-210 5-day program (23&ndash;27 November 2026). Code snippets are teaching examples: pin your own library versions and test before reuse.</footer>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var hasG = !!window.gsap && !reduce;
+
+  // ---- copy buttons with visual feedback
+  document.querySelectorAll('pre').forEach(function (pre) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'copy-btn'; b.textContent = 'Copy';
+    b.setAttribute('aria-label', 'Copy code to clipboard');
+    b.addEventListener('click', function () {
+      var text = pre.querySelector('code').innerText;
+      function done(ok) {
+        b.textContent = ok ? 'Copied ✓' : 'Press Ctrl+C';
+        if (ok) b.classList.add('ok');
+        setTimeout(function () { b.textContent = 'Copy'; b.classList.remove('ok'); }, 1600);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
+      } else {
+        var ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select();
+        var ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
+        document.body.removeChild(ta); done(ok);
+      }
+    });
+    pre.appendChild(b);
+  });
+
+  // ---- Mermaid diagrams
+  if (window.mermaid) {
+    try {
+      mermaid.initialize({ startOnLoad: false, theme: 'neutral', securityLevel: 'strict' });
+      mermaid.run({ querySelector: '.mermaid' });
+    } catch (e) { console.warn('Mermaid failed', e); }
+  }
+
+  // ---- reading progress bar
+  var bar = document.querySelector('.progress');
+  addEventListener('scroll', function () {
+    var h = document.documentElement;
+    bar.style.width = (100 * h.scrollTop / Math.max(1, h.scrollHeight - h.clientHeight)) + '%';
+  }, { passive: true });
+
+  // ---- GSAP: hero, scroll reveals, staggers
+  if (hasG) {
+    if (window.ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
+    var tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    tl.from('.hero .eyebrow', { y: 16, opacity: 0, duration: .5 })
+      .from('.hero h1', { y: 40, opacity: 0, duration: .8 }, '-=.2')
+      .from('.hero .sub', { y: 20, opacity: 0, duration: .6 }, '-=.4')
+      .from('.hero .chips span', { scale: .8, opacity: 0, duration: .4, stagger: .08 }, '-=.3');
+    if (window.ScrollTrigger) {
+      document.querySelectorAll('section').forEach(function (sec) {
+        gsap.from(sec.querySelector('h2'), { scrollTrigger: { trigger: sec, start: 'top 88%' },
+          y: 28, opacity: 0, duration: .7, ease: 'power2.out' });
+        var items = sec.querySelectorAll(':scope > .blk, :scope > .code-wrap, :scope > .pit .callout, :scope > ul > li, :scope > ol > li');
+        if (items.length) gsap.from(items, { scrollTrigger: { trigger: sec, start: 'top 80%' },
+          y: 26, opacity: 0, duration: .55, stagger: .12, ease: 'power2.out' });
+      });
+    }
+  }
+
+  // ---- knowledge check: click to reveal with a GSAP flip / fade
+  document.querySelectorAll('.qa').forEach(function (qa) {
+    var btn = qa.querySelector('button'), ans = qa.querySelector('.ans');
+    btn.setAttribute('aria-expanded', 'false');
+    btn.addEventListener('click', function () {
+      var open = ans.style.display === 'block';
+      if (!open) {
+        ans.style.display = 'block'; btn.textContent = 'Hide answer'; btn.setAttribute('aria-expanded', 'true');
+        if (hasG) gsap.fromTo(ans, { opacity: 0, rotationX: -80 }, { opacity: 1, rotationX: 0, duration: .55, ease: 'back.out(1.4)' });
+      } else {
+        btn.textContent = 'Reveal answer'; btn.setAttribute('aria-expanded', 'false');
+        if (hasG) gsap.to(ans, { opacity: 0, duration: .25, onComplete: function () { ans.style.display = 'none'; } });
+        else ans.style.display = 'none';
+      }
+    });
+  });
+});
+</script>
+</body>
+</html>

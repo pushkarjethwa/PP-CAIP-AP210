@@ -1,0 +1,16 @@
+# CAIP AIP-210 — Project MIZAN courseware (Python 3.10–3.12)
+numpy>=1.26
+pandas>=2.1
+pyarrow>=14
+scikit-learn>=1.4
+scipy>=1.11
+statsmodels>=0.14
+matplotlib>=3.8
+pillow>=10
+tensorflow>=2.15        # Day 4 (CPU is fine). macOS Apple silicon: tensorflow-macos
+fastapi>=0.110          # Day 5
+httpx>=0.27             # FastAPI TestClient
+uvicorn>=0.29           # Day 5 (run the API live)
+mlflow>=2.12            # Day 5 (full package — NOT mlflow-skinny; registry needs SQLAlchemy)
+jupyterlab>=4
+joblib>=1.3

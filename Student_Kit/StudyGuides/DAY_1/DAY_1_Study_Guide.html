@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 1 Study Guide: AI/ML Foundations and Data Preparation | CAIP AIP-210</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+:root{--bg:#f6f7f9;--panel:#fff;--ink:#1b2430;--muted:#5b6675;--line:#e3e7ee;--brand:#0b5e6b;--gold:#c8963e;
+--code-bg:#0f1720;--code-ink:#e6edf3;--what:#eef6f7;--ana:#fbf5ea;--fin:#eef8f1;--warn:#fdf0ee;--warn-line:#d9534f;
+--tip:#eef2fb;--ok:#1f8f5f}
+@media (prefers-color-scheme:dark){:root{--bg:#0d1117;--panel:#141a22;--ink:#e6edf3;--muted:#9aa6b2;--line:#263040;
+--brand:#4fb3c2;--what:#12262a;--ana:#2a2214;--fin:#122319;--warn:#2d1717;--tip:#151d2d;--code-bg:#0a0f15}}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+.progress{position:fixed;top:0;left:0;height:4px;width:0;background:var(--gold);z-index:50}
+nav.dock{display:flex;gap:8px;overflow-x:auto;padding:10px 16px;background:var(--brand);position:sticky;top:0;z-index:40;
+-webkit-overflow-scrolling:touch}
+nav.dock a{color:#fff;text-decoration:none;font-size:13px;white-space:nowrap;padding:6px 12px;border:1px solid rgba(255,255,255,.35);
+border-radius:999px;transition:transform .2s,background .2s}
+nav.dock a:hover,nav.dock a:focus-visible{transform:scale(1.06);background:rgba(255,255,255,.18)}
+main{max-width:980px;margin:0 auto;padding:0 16px 64px}
+.hero{padding:44px 0 24px}
+.hero .eyebrow{color:var(--gold);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:13px}
+.hero h1{font-size:clamp(1.9rem,6vw,3rem);line-height:1.15;margin:.3em 0;color:var(--brand)}
+.hero p.sub{color:var(--muted);font-size:1.05rem;margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.chips span{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:13px}
+section.summary,section.deep,section.pitfalls,section.quiz,section.cheat{background:var(--panel);border:1px solid var(--line);
+border-radius:14px;padding:20px 16px;margin:20px 0}
+h2{font-size:1.5rem;line-height:1.25;margin:0 0 14px;color:var(--brand)}
+h3{font-size:1.1rem;margin:18px 0 6px}
+.summary ul,.summary ol{padding-left:20px;margin:8px 0}
+.summary li{margin:6px 0}
+.blk{border-radius:10px;padding:14px 14px 10px;margin:12px 0;border-left:4px solid var(--line)}
+.blk p{margin:.5em 0}.blk ul{padding-left:20px}
+.blk .tag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+.what{background:var(--what);border-left-color:var(--brand)}.what .tag{color:var(--brand)}
+.analogy{background:var(--ana);border-left-color:var(--gold)}.analogy .tag{color:#9a6b12}
+.finance{background:var(--fin);border-left-color:var(--ok)}.finance .tag{color:var(--ok)}
+.code-wrap{margin:14px 0}
+.code-cap{font-size:13px;color:var(--muted);margin-bottom:4px}
+pre{position:relative;margin:0;background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:16px 14px;overflow-x:auto;
+font:13px/1.55 "Cascadia Code",Consolas,Menlo,monospace;-webkit-overflow-scrolling:touch}
+code{font-family:inherit}
+p code,li code,td code{background:rgba(127,127,127,.15);padding:1px 6px;border-radius:5px;font-size:.9em}
+.copy-btn{position:absolute;top:8px;right:8px;background:#26313d;color:#e6edf3;border:1px solid #3a4756;border-radius:6px;
+padding:6px 12px;font-size:12px;cursor:pointer;min-height:32px;transition:transform .15s,background .2s}
+.copy-btn:hover{transform:scale(1.08)}
+.copy-btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.callout{border-radius:10px;padding:12px 14px;margin:14px 0;transition:transform .2s,box-shadow .2s;border-left:4px solid var(--brand);background:var(--tip)}
+.callout:hover{transform:translateY(-2px) scale(1.01);box-shadow:0 8px 20px rgba(0,0,0,.12)}
+.callout strong{display:block;margin-bottom:4px}
+.callout.warn{background:var(--warn);border-left-color:var(--warn-line)}
+.callout div p{margin:.3em 0}
+figure{margin:16px 0;text-align:center}
+figcaption{font-size:13px;color:var(--muted);margin-top:6px}
+.diagram .mermaid{background:var(--panel);border:1px dashed var(--line);border-radius:10px;padding:12px;overflow-x:auto}
+.gif-ph{border:2px dashed var(--line);border-radius:10px;padding:28px 12px;color:var(--muted);font-size:14px}
+.animated-asset{border-radius:10px}
+.tbl{overflow-x:auto;margin:14px 0}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:520px}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--what)}
+.pit{display:grid;gap:12px}
+.pit .callout{margin:0}
+.qa{border:1px solid var(--line);border-radius:12px;padding:14px;margin:12px 0}
+.qa .q{font-weight:600;margin:0 0 10px}
+.qa button{background:var(--brand);color:#fff;border:0;border-radius:8px;padding:10px 16px;min-height:44px;cursor:pointer;
+font-size:14px;transition:transform .15s}
+.qa button:hover{transform:scale(1.05)}
+.qa .ans{display:none;margin-top:12px;padding:12px;border-radius:8px;background:var(--fin);border-left:4px solid var(--ok);
+transform-origin:top center;perspective:600px}
+.pager{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:28px}
+.pager a{background:var(--brand);color:#fff;text-decoration:none;padding:12px 18px;border-radius:10px;min-height:44px;
+transition:transform .15s}
+.pager a:hover{transform:scale(1.05)}
+footer{color:var(--muted);font-size:13px;margin-top:24px}
+@media (min-width:768px){
+ body{font-size:17px}
+ main{padding:0 28px 80px}
+ section.summary,section.deep,section.pitfalls,section.quiz,section.cheat{padding:28px 30px}
+ .pit{grid-template-columns:1fr 1fr}
+ .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+</head>
+<body id="top">
+<div class="progress" aria-hidden="true"></div>
+<nav class="dock" aria-label="Sections"><a href="#top">Top</a><a href="#framing">Framing</a><a href="#refresher">Python &amp;amp; Stats</a><a href="#quality">Data quality</a><a href="#transform">Transforms</a><a href="#features">Features</a><a href="#unstructured">Unstructured</a><a href="#leakage">Leakage</a><a href="#pitfalls">Pitfalls</a><a href="#check">Quiz</a></nav>
+<main>
+<header class="hero">
+  <div class="eyebrow">CAIP AIP-210 &middot; Day 1 Study Guide &middot; Horizon Gulf Bank (fictional)</div>
+  <h1>Day 1: AI &amp; ML Foundations and Data Preparation</h1>
+  <p class="sub">From a business question to a clean, leak-free feature table, using Horizon Gulf Bank data.</p>
+  <div class="chips"><span>Problem framing</span><span>Pandas &amp;amp; stats</span><span>Data quality</span><span>Encoding &amp;amp; scaling</span><span>Feature engineering</span><span>Leakage</span></div>
+</header>
+
+<section class="summary" id="summary">
+  <h2>Executive Summary (TL;DR)</h2>
+  <p>Day 1 teaches you to turn a banking question into an ML problem (observations, features, target, learning type) and to prepare the data so a model can trust it: profile and repair quality defects, scale and encode columns inside a Pipeline, engineer and select features, and above all avoid data leakage.</p>
+  <h3>By the end of this guide you can&hellip;</h3>
+  <ul><li>Explain AI vs ML vs deep learning, and choose supervised, unsupervised or reinforcement learning for a problem.</li><li>Identify observations, features and the target in a banking table.</li><li>Read basic NumPy/Pandas code and interpret mean, median, standard deviation and skew.</li><li>Detect and treat missing, duplicate, inconsistent and invalid data.</li><li>Scale and encode data with a ColumnTransformer + Pipeline.</li><li>Engineer and select features, and explain the leakage rules that keep a model valid.</li></ul>
+  <aside class="callout "><strong>How to use this guide</strong><div>Read each concept in order: <b>what &amp; why</b>, then the <b>analogy</b>, then the <b>banking example</b>, then the <b>code</b>. Dataset paths are relative to the courseware root (<code>data/...</code>). All data is synthetic; Horizon Gulf Bank is fictional.</div></aside>
+</section>
+
+<section class="deep" id="framing"><h2>1. AI, ML, Deep Learning and Framing a Business Problem</h2>
+<div class="blk what"><span class="tag">What &amp; Why</span><p><b>Artificial intelligence (AI)</b> is the broad goal of making software perform tasks that normally need human judgement.
+<b>Machine learning (ML)</b> is the subset of AI where a model <i>learns patterns from data</i> instead of following hand-written rules.
+<b>Deep learning (DL)</b> is the subset of ML that uses multi-layer neural networks.</p>
+<p>Every ML project starts by translating a business question into three things:</p>
+<ul>
+<li><b>Observation</b> (a row): one instance, e.g. one customer or one loan application.</li>
+<li><b>Features</b> (<code>X</code>): the input columns the model may use to decide.</li>
+<li><b>Target</b> (<code>y</code>): the outcome we want to predict. It exists only in <i>supervised</i> learning.</li>
+</ul>
+<p>The learning paradigm follows from whether you have a target: <b>supervised</b> (labelled target: regression for a number,
+classification for a category), <b>unsupervised</b> (no target: clustering, structure discovery) and <b>reinforcement learning</b>
+(an agent learns by trial and reward). Getting the framing right matters more than the algorithm: a perfect model of the wrong question is worthless.</p></div>
+<div class="blk analogy"><span class="tag">Analogy</span>A junior analyst who only memorises a rulebook (traditional software) versus one who studies ten thousand past files and learns
+what a risky file looks like (ML). Deep learning is that analyst building very layered intuition, useful when raw inputs are images or text.</div>
+<div class="blk finance"><span class="tag">Finance example</span><p>Horizon Gulf Bank asks: <i>"Which customers will leave in the next six months?"</i> Framed as ML: each customer is an
+observation; age, tenure, balances and complaints are features; <code>churned_6m</code> (0/1) is the target. Because the target is a
+category, this is <b>supervised binary classification</b>. "Group our customers into natural segments" has no target, so it is <b>unsupervised clustering</b>.
+"What is this flat worth in AED?" is <b>regression</b>.</p></div>
+<figure class="diagram"><div class="mermaid">
+flowchart TD
+  Q[Business question] --> T{Do we have a labelled target?}
+  T -- Yes --> N{Target type?}
+  N -- Number --> R[Regression e.g. property value]
+  N -- Category --> C[Classification e.g. fraud / churn]
+  T -- No --> U[Unsupervised e.g. customer segments]
+  Q --> A{Learns by reward from actions?}
+  A -- Yes --> RL[Reinforcement learning]
+</div><figcaption>Choosing a learning paradigm from the business question</figcaption></figure>
+<div class="code-wrap"><div class="code-cap">Framing churn: observations, features and target (pandas)</div><pre><code class="language-python">import pandas as pd
+
+df = pd.read_csv(&quot;data/customers_raw.csv&quot;)      # path relative to courseware root
+
+target = &quot;churned_6m&quot;                            # what we want to predict (supervised)
+features = [&quot;age&quot;, &quot;tenure_months&quot;, &quot;num_products&quot;, &quot;avg_balance_aed&quot;,
+            &quot;digital_logins_30d&quot;, &quot;complaints_12m&quot;]
+
+X = df[features]      # features: the model&#x27;s inputs
+y = df[target]        # target: the label to learn
+
+print(X.shape, y.value_counts(normalize=True))   # one row = one customer (observation)</code></pre></div>
+</section><section class="deep" id="refresher"><h2>2. Python, NumPy, Pandas and Statistics for Reading ML Code</h2>
+<div class="blk what"><span class="tag">What &amp; Why</span><p>You do not need to write advanced Python to follow ML; you need to <i>read</i> it. The essentials:</p>
+<ul>
+<li><b>NumPy array</b>: a fast, fixed-type, n-dimensional grid. Operations apply to all elements at once (vectorisation), which is far faster than Python loops.</li>
+<li><b>Pandas DataFrame</b>: a labelled table (rows, named columns, mixed types) built on NumPy.</li>
+<li><b>Descriptive statistics</b>: <b>mean</b> (average, pulled by outliers), <b>median</b> (middle value, robust to outliers),
+<b>variance</b> (average squared distance from the mean) and <b>standard deviation</b> (its square root, same units as the data).</li>
+<li><b>Distribution</b>: the shape of the values. Salaries are typically <i>right-skewed</i> (a few very high earners), so mean &gt; median.</li>
+<li><b>Vectors and matrices</b>: a row of features is a vector; a table is a matrix; a linear model's score is a <b>dot product</b> of features and weights plus a bias.</li>
+</ul></div>
+<div class="blk analogy"><span class="tag">Analogy</span>Think of a spreadsheet (DataFrame) where every column is also a ruler (NumPy array) you can apply a formula to in one go,
+instead of retyping the formula cell by cell.</div>
+<div class="blk finance"><span class="tag">Finance example</span><p>Salary data from the CRM arrives as text like <code>"AED 10,120"</code>. Before any statistic can be computed you must convert it to a number.
+When you then compare mean and median salary, a large gap warns you that a few high earners are distorting the average, so the median is the safer
+"typical customer" figure in a report.</p></div>
+<div class="code-wrap"><div class="code-cap">Cleaning a text salary column and comparing mean vs median</div><pre><code class="language-python">import pandas as pd, numpy as np
+
+df = pd.read_csv(&quot;data/customers_raw.csv&quot;)
+
+# &quot;AED 10,120&quot; -&gt; 10120.0 ; anything unparsable becomes NaN instead of crashing
+df[&quot;salary&quot;] = pd.to_numeric(
+    df[&quot;monthly_salary_aed&quot;].astype(&quot;string&quot;).str.replace(r&quot;[^0-9.]&quot;, &quot;&quot;, regex=True),
+    errors=&quot;coerce&quot;)
+
+s = df[&quot;salary&quot;]
+print(&quot;mean  :&quot;, round(s.mean(), 1))
+print(&quot;median:&quot;, round(s.median(), 1))      # robust to outliers
+print(&quot;std   :&quot;, round(s.std(), 1))         # pandas uses sample std (ddof=1)
+print(&quot;skew  :&quot;, round(s.skew(), 2))        # &gt; 0 means a long right tail</code></pre></div>
+<div class="code-wrap"><div class="code-cap">A linear score is a dot product: weights . features + bias</div><pre><code class="language-python">import numpy as np
+
+x = np.array([34, 91, 3])            # age, tenure_months, num_products (one customer)
+w = np.array([0.01, -0.02, -0.30])   # illustrative weights (a real model learns these)
+b = 0.5                              # bias / intercept
+
+score = np.dot(w, x) + b             # same as w @ x + b
+print(score)</code></pre></div>
+</section><section class="deep" id="quality"><h2>3. Data Collection and Data Quality: Missing, Duplicate, Inconsistent, Invalid</h2>
+<div class="blk what"><span class="tag">What &amp; Why</span><p>Models learn from whatever you give them, including the mistakes. The four classic defects:</p>
+<ul>
+<li><b>Missing</b>: empty values. First ask <i>why</i>: a blank "last transaction date" may mean "never transacted", which is information, not an error.</li>
+<li><b>Duplicate</b>: the same entity twice (double-counting, and a leakage risk when copies land in both train and test).</li>
+<li><b>Inconsistent</b>: the same fact written differently (<code>Dubai</code> vs <code>DXB</code>; dates as <code>04/04/2018</code> and <code>2016-01-04</code>).</li>
+<li><b>Invalid</b>: values that break business rules (negative age, mobile number in the wrong format, a date in the future).</li>
+</ul>
+<p>Imputation options: median/mean for numbers, most-frequent or a new "Missing" category for text, or a flag column (<code>was_missing</code>). Always profile first, fix second, and record every change.</p></div>
+<div class="blk analogy"><span class="tag">Analogy</span>A librarian cataloguing books: before shelving, remove photocopies (duplicates), fix mis-spelt authors (inconsistent), flag torn pages (invalid) and
+decide what to do about books with no title (missing).</div>
+<div class="blk finance"><span class="tag">Finance example</span><p>The customer extract has two date formats in one column and several spellings of the same emirate. If left alone, a model would treat
+<code>DXB</code> and <code>Dubai</code> as two different places, splitting one real segment in two and weakening every pattern it could learn from it.</p></div>
+<div class="code-wrap"><div class="code-cap">A repeatable data-quality profile</div><pre><code class="language-python">import pandas as pd
+
+df = pd.read_csv(&quot;data/customers_raw.csv&quot;)
+
+# 1) Missing: share per column, worst first
+missing = df.isna().mean().sort_values(ascending=False)
+print(missing.head(8))
+
+# 2) Duplicates: by business key, not just whole-row equality
+print(&quot;duplicate customer_ids:&quot;, df.duplicated(subset=&quot;customer_id&quot;).sum())
+df = df.drop_duplicates(subset=&quot;customer_id&quot;, keep=&quot;first&quot;)
+
+# 3) Inconsistent categories: look BEFORE you map
+print(df[&quot;emirate&quot;].nunique(), &quot;spellings for 7 emirates!&quot;)       # Dubai, DUBAI, &#x27;Dubai &#x27;, DXB ...
+codes = {&quot;DXB&quot;: &quot;DUBAI&quot;, &quot;AUH&quot;: &quot;ABU DHABI&quot;, &quot;ABUDHABI&quot;: &quot;ABU DHABI&quot;, &quot;ABU-DHABI&quot;: &quot;ABU DHABI&quot;,
+         &quot;AJM&quot;: &quot;AJMAN&quot;, &quot;FUJ&quot;: &quot;FUJAIRAH&quot;, &quot;RAK&quot;: &quot;RAS AL KHAIMAH&quot;, &quot;RAS AL-KHAIMAH&quot;: &quot;RAS AL KHAIMAH&quot;,
+         &quot;SHJ&quot;: &quot;SHARJAH&quot;, &quot;UAQ&quot;: &quot;UMM AL QUWAIN&quot;}
+df[&quot;emirate&quot;] = df[&quot;emirate&quot;].str.strip().str.upper().replace(codes)   # trim + case first, then map codes
+print(df[&quot;emirate&quot;].value_counts(dropna=False))                  # 7 clean emirates when run
+
+# 4) Mixed date formats (format=&quot;mixed&quot; needs pandas &gt;= 2.0)
+#    Note: ambiguous day/month strings are parsed by pandas rules; confirm the source format.
+df[&quot;customer_since&quot;] = pd.to_datetime(df[&quot;customer_since&quot;], format=&quot;mixed&quot;, errors=&quot;coerce&quot;)
+
+# 5) Invalid values: enforce business rules and surface violations
+bad_age = df[(df[&quot;age&quot;] &lt; 18) | (df[&quot;age&quot;] &gt; 100)]
+print(&quot;rows with implausible age:&quot;, len(bad_age))</code></pre></div>
+</section><section class="deep" id="transform"><h2>4. Transforming Numeric and Categorical Data</h2>
+<div class="blk what"><span class="tag">What &amp; Why</span><p>Most algorithms need numbers on comparable scales and cannot read text categories directly.</p>
+<ul>
+<li><b>Standardisation</b> (z-score): <code>(x - mean) / std</code>, giving mean 0 and std 1. Scikit-learn: <code>StandardScaler</code>.</li>
+<li><b>Normalisation / min-max</b>: squeezes values into a range, usually 0 to 1. Scikit-learn: <code>MinMaxScaler</code>.</li>
+<li><b>One-hot encoding</b>: one 0/1 column per category (no false ordering). <code>OneHotEncoder</code>.</li>
+<li><b>Ordinal encoding</b>: integers for categories that have a real order (risk grade A &lt; B &lt; C). <code>OrdinalEncoder</code> with an explicit <code>categories</code> order.</li>
+<li><b>Log transform</b>: tames right-skewed amounts (<code>np.log1p</code>).</li>
+</ul>
+<p>Distance-based and gradient-based models (kNN, SVM, neural networks, regularised regression) are scale-sensitive; tree models are not. Wrap every step in a <b>Pipeline</b> with a <b>ColumnTransformer</b> so the exact same recipe runs in training and production.</p></div>
+<div class="blk analogy"><span class="tag">Analogy</span>Comparing a runner's 100 m time in seconds with their marathon time in minutes is unfair until both are put on a common scale.
+Encoding is translating a menu from Arabic to numbers so a calculator can read it.</div>
+<div class="blk finance"><span class="tag">Finance example</span><p>In loan data, <code>loan_amount_aed</code> runs into the hundreds of thousands while <code>num_dependents</code> is 0 to 6. Without scaling, a
+distance-based model would be dominated almost entirely by the loan amount. Employment type (Private, Government, ...) has no natural order, so it is one-hot encoded.</p></div>
+<div class="code-wrap"><div class="code-cap">ColumnTransformer + Pipeline: one recipe for training and production</div><pre><code class="language-python">import pandas as pd
+from sklearn.compose import ColumnTransformer
+from sklearn.impute import SimpleImputer
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+
+loans = pd.read_csv(&quot;data/loan_applications.csv&quot;)
+
+num_cols = [&quot;loan_amount_aed&quot;, &quot;tenure_months&quot;, &quot;monthly_salary_aed&quot;, &quot;aecb_score&quot;,
+            &quot;debt_burden_ratio&quot;, &quot;num_bureau_inquiries_6m&quot;]
+cat_cols = [&quot;employment_type&quot;, &quot;residence_type&quot;, &quot;emirate&quot;]
+
+numeric = Pipeline([(&quot;impute&quot;, SimpleImputer(strategy=&quot;median&quot;)),
+                    (&quot;scale&quot;, StandardScaler())])
+categorical = Pipeline([(&quot;impute&quot;, SimpleImputer(strategy=&quot;most_frequent&quot;)),
+                        (&quot;onehot&quot;, OneHotEncoder(handle_unknown=&quot;ignore&quot;))])
+
+pre = ColumnTransformer([(&quot;num&quot;, numeric, num_cols),
+                         (&quot;cat&quot;, categorical, cat_cols)])
+
+# fit on TRAINING data only (see the leakage section), then transform anything else
+# X_train_t = pre.fit_transform(X_train);  X_test_t = pre.transform(X_test)</code></pre></div>
+</section><section class="deep" id="features"><h2>5. Feature Engineering and Feature Selection</h2>
+<div class="blk what"><span class="tag">What &amp; Why</span><p><b>Feature engineering</b> creates new, more informative inputs from raw columns: ratios (debt-to-income), counts, time gaps (days since last
+transaction), aggregations (average spend over 30 days), flags, or log transforms. Domain knowledge is the highest-leverage skill here.</p>
+<p><b>Feature selection</b> removes inputs that add noise, cost or risk: constant or near-constant columns (<code>VarianceThreshold</code>), highly
+correlated duplicates, columns with too many missing values, and statistically weak features (<code>SelectKBest</code> with <code>f_classif</code> for classification).
+Fewer, better features give simpler, faster, more explainable models, which regulators and auditors prefer.</p></div>
+<div class="blk analogy"><span class="tag">Analogy</span>A chef does not throw every ingredient in the pot. Engineering is preparing ingredients well (dicing, marinating); selection is leaving out what does not belong in the dish.</div>
+<div class="blk finance"><span class="tag">Finance example</span><p>Raw <code>card_spend_monthly_aed</code> and <code>monthly_salary_aed</code> are informative, but their <b>ratio</b> (spend as a share of salary) can predict
+financial stress better than either alone. Likewise "days since last transaction" is a strong early-warning feature for dormant accounts.</p></div>
+<div class="code-wrap"><div class="code-cap">Engineer ratios, then select the strongest features</div><pre><code class="language-python">import numpy as np, pandas as pd
+from sklearn.feature_selection import SelectKBest, f_classif
+
+df = pd.read_csv(&quot;data/customers_raw.csv&quot;)
+df[&quot;salary&quot;] = pd.to_numeric(
+    df[&quot;monthly_salary_aed&quot;].astype(&quot;string&quot;).str.replace(r&quot;[^0-9.]&quot;, &quot;&quot;, regex=True),
+    errors=&quot;coerce&quot;)
+
+# Engineered features (guard against divide-by-zero)
+df[&quot;spend_to_salary&quot;] = df[&quot;card_spend_monthly_aed&quot;] / df[&quot;salary&quot;].replace(0, np.nan)
+df[&quot;log_balance&quot;] = np.log1p(df[&quot;avg_balance_aed&quot;].clip(lower=0))
+
+cols = [&quot;age&quot;, &quot;tenure_months&quot;, &quot;num_products&quot;, &quot;digital_logins_30d&quot;,
+        &quot;complaints_12m&quot;, &quot;days_since_last_txn&quot;, &quot;spend_to_salary&quot;, &quot;log_balance&quot;]
+X = df[cols].fillna(df[cols].median())
+y = df[&quot;churned_6m&quot;]
+
+sel = SelectKBest(score_func=f_classif, k=5).fit(X, y)
+print(&quot;kept:&quot;, list(X.columns[sel.get_support()]))
+# In a real project do this INSIDE a Pipeline, fitted on training data only.</code></pre></div>
+</section><section class="deep" id="unstructured"><h2>6. Structured vs Unstructured Data</h2>
+<div class="blk what"><span class="tag">What &amp; Why</span><p><b>Structured data</b> fits rows and columns with a fixed schema (transactions, balances, customer tables). <b>Unstructured data</b> has no fixed
+schema: free text (complaint emails, call transcripts), images (scanned IDs, cheques), audio and video. <i>Semi-structured</i> formats such as JSON and XML sit in between.</p>
+<p>Unstructured data must be converted into numbers first: text becomes token counts, TF-IDF weights or embeddings; images become pixel arrays (height x width x channels).
+Deep learning (Day 4) is the main tool for images and long text; tabular problems are usually solved well by classical models.</p></div>
+<div class="blk analogy"><span class="tag">Analogy</span>A table is a neatly filled form. A scanned passport is a photo of a form: a human reads it instantly, but software needs an extra step before it sees any fields.</div>
+<div class="blk finance"><span class="tag">Finance example</span><p>The course includes 64x64 images of KYC documents. Each is a small grid of pixel intensities that a convolutional network can learn from on Day 4,
+whereas the loan table can be handed to a random forest directly.</p></div>
+<div class="code-wrap"><div class="code-cap">Inspecting an unstructured (array) dataset</div><pre><code class="language-python">import numpy as np
+
+data = np.load(&quot;data/kyc_documents_64.npz&quot;)
+print(data.files)                      # [&#x27;X&#x27;, &#x27;y&#x27;, &#x27;classes&#x27;]: discover the stored array names first
+images, labels = data[&quot;X&quot;], data[&quot;y&quot;]
+print(images.shape, images.dtype)      # (15000, 64, 64) uint8: 15,000 grayscale 64x64 images
+print(data[&quot;classes&quot;])                 # cheque, id_card, bank_statement, salary_certificate, invoice</code></pre></div>
+</section><section class="deep" id="leakage"><h2>7. Data Leakage: The Silent Model Killer</h2>
+<div class="blk what"><span class="tag">What &amp; Why</span><p><b>Data leakage</b> happens when information that would <i>not be available at prediction time</i> sneaks into training. The model then looks brilliant in testing
+and fails in production. Two main forms:</p>
+<ul>
+<li><b>Target leakage</b>: a feature that is a consequence of the target (for example a column filled in only <i>after</i> the customer has churned or defaulted).</li>
+<li><b>Train-test contamination</b>: using test-set information during preparation, such as fitting a scaler or imputer on the whole dataset before splitting.</li>
+</ul>
+<p>Prevention: ask of every column "<i>would I know this at the moment I make the prediction?</i>", split first, fit preprocessing on training data only, and use Pipelines.
+In time-ordered data, split by time, never randomly.</p></div>
+<div class="blk analogy"><span class="tag">Analogy</span>Handing a student the exam answer key while they "study": the score is perfect, but it tells you nothing about what they actually learned.</div>
+<div class="blk finance"><span class="tag">Finance example</span><p>In the customer table, <code>account_closed_date</code> and <code>retention_offer_made</code> are recorded <i>around or after</i> the churn event, so they would be
+leakage if used to predict <code>churned_6m</code>. In the loan table, collection-related columns such as <code>max_days_past_due</code>, <code>collection_calls</code> and
+<code>loss_amount_aed</code> describe what happened <i>after</i> the loan was granted, so they must not predict <code>default_12m</code>. (The course Data Dictionary flags all of these as POST-OUTCOME leakage.)</p></div>
+<figure class="gif"><img class="animated-asset" src="../assets/gif/leakage_pipeline.gif" alt="Leaky vs leak-free preprocessing" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'gif-ph',textContent:'Animation placeholder: '+this.alt}))"><!-- AI IMAGE PROMPT: Create a two-panel GIF. Left (red): a dataset is scaled as a whole, then split, with an arrow showing test rows leaking statistics into training. Right (green): the dataset is split first, the scaler is fitted on the training slice only, then applied to the test slice. --><figcaption>Leaky vs leak-free preprocessing</figcaption></figure>
+<div class="code-wrap"><div class="code-cap">Leak-free pattern: split first, fit on train only, keep it all in one Pipeline</div><pre><code class="language-python">import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+
+df = pd.read_csv(&quot;data/loan_applications.csv&quot;)
+
+leaky = [&quot;max_days_past_due&quot;, &quot;collection_calls&quot;, &quot;loss_amount_aed&quot;]   # known only AFTER the loan
+features = [&quot;loan_amount_aed&quot;, &quot;tenure_months&quot;, &quot;monthly_salary_aed&quot;,
+            &quot;aecb_score&quot;, &quot;debt_burden_ratio&quot;, &quot;num_prior_delinquencies_24m&quot;]
+
+X, y = df[features].fillna(df[features].median()), df[&quot;default_12m&quot;]
+assert not set(leaky) &amp; set(X.columns)          # guardrail in code
+
+X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)
+
+model = Pipeline([(&quot;scale&quot;, StandardScaler()),       # fitted on X_tr ONLY inside fit()
+                  (&quot;clf&quot;, LogisticRegression(max_iter=1000))])
+model.fit(X_tr, y_tr)
+print(&quot;test accuracy:&quot;, model.score(X_te, y_te))
+# Note: the median above is computed before the split for brevity; in production
+# put a SimpleImputer in the Pipeline so even that is fitted on training data only.</code></pre></div>
+</section>
+
+<section class="pitfalls" id="pitfalls">
+  <h2>Common Pitfalls &amp; Anti-Patterns</h2>
+  <div class="pit"><aside class="callout warn"><strong>&#9888; Dropping rows with any missing value</strong><div><p>On wide bank tables this can silently delete most of your customers and bias the sample. Investigate <i>why</i> values are missing; impute, flag or keep a "Missing" category.</p></div></aside><aside class="callout warn"><strong>&#9888; Fitting the scaler on all data before splitting</strong><div><p>Test-set statistics leak into training. Split first; fit on train only; use a Pipeline.</p></div></aside><aside class="callout warn"><strong>&#9888; Label-encoding nominal categories</strong><div><p>Mapping Dubai=0, Abu Dhabi=1, Sharjah=2 tells a linear or distance model that Sharjah is "twice" Abu Dhabi. Use one-hot encoding for unordered categories.</p></div></aside><aside class="callout warn"><strong>&#9888; Keeping post-event columns</strong><div><p>Collection calls, closure dates and loss amounts are outcomes, not inputs. Applying them gives fantasy accuracy that collapses in production and can mislead credit decisions.</p></div></aside><aside class="callout warn"><strong>&#9888; Using personal identifiers as features</strong><div><p>IDs, emails and mobile numbers do not generalise and are privacy-sensitive. Drop them from model inputs and follow your bank's data-protection rules.</p></div></aside></div>
+</section>
+
+<section class="quiz" id="check">
+  <h2>Interactive Knowledge Check</h2>
+  <p>Answer in your head (or out loud with a colleague) first, then reveal.</p>
+  <div class="qa"><p class="q">1. A bank wants to estimate the AED value of a flat from its size and location. What kind of ML problem is this?</p><button type="button">Reveal answer</button><div class="ans"><b>Supervised regression</b>: there is a labelled numeric target (the valuation).</div></div><div class="qa"><p class="q">2. Why is the median salary often a better "typical customer" figure than the mean?</p><button type="button">Reveal answer</button><div class="ans">Salaries are right-skewed. A few very high earners pull the mean up, while the median is robust to outliers.</div></div><div class="qa"><p class="q">3. You compute a StandardScaler on the full dataset, then split into train/test. What is wrong?</p><button type="button">Reveal answer</button><div class="ans"><b>Train-test contamination (leakage)</b>: the scaler's mean and std used test rows. Split first, fit on train only, and use a Pipeline.</div></div><div class="qa"><p class="q">4. A churn model uses <code>retention_offer_made</code> and scores 99% accuracy. Should you celebrate?</p><button type="button">Reveal answer</button><div class="ans">No. The offer is made <i>because</i> a customer is at risk, which is information not available at prediction time: <b>target leakage</b>. Remove it and re-evaluate.</div></div><div class="qa"><p class="q">5. When is one-hot encoding preferred over ordinal encoding?</p><button type="button">Reveal answer</button><div class="ans">When the categories have no natural order (emirate, employment type). Use ordinal encoding only for a true ranking such as risk grade.</div></div>
+</section>
+
+<div class="pager"><span></span><a href="../DAY_2/DAY_2_Study_Guide.html">Day 2 &rarr;</a></div>
+<footer>Study guide for the CAIP AIP-210 5-day program (23&ndash;27 November 2026). Code snippets are teaching examples: pin your own library versions and test before reuse.</footer>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var hasG = !!window.gsap && !reduce;
+
+  // ---- copy buttons with visual feedback
+  document.querySelectorAll('pre').forEach(function (pre) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'copy-btn'; b.textContent = 'Copy';
+    b.setAttribute('aria-label', 'Copy code to clipboard');
+    b.addEventListener('click', function () {
+      var text = pre.querySelector('code').innerText;
+      function done(ok) {
+        b.textContent = ok ? 'Copied ✓' : 'Press Ctrl+C';
+        if (ok) b.classList.add('ok');
+        setTimeout(function () { b.textContent = 'Copy'; b.classList.remove('ok'); }, 1600);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
+      } else {
+        var ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select();
+        var ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
+        document.body.removeChild(ta); done(ok);
+      }
+    });
+    pre.appendChild(b);
+  });
+
+  // ---- Mermaid diagrams
+  if (window.mermaid) {
+    try {
+      mermaid.initialize({ startOnLoad: false, theme: 'neutral', securityLevel: 'strict' });
+      mermaid.run({ querySelector: '.mermaid' });
+    } catch (e) { console.warn('Mermaid failed', e); }
+  }
+
+  // ---- reading progress bar
+  var bar = document.querySelector('.progress');
+  addEventListener('scroll', function () {
+    var h = document.documentElement;
+    bar.style.width = (100 * h.scrollTop / Math.max(1, h.scrollHeight - h.clientHeight)) + '%';
+  }, { passive: true });
+
+  // ---- GSAP: hero, scroll reveals, staggers
+  if (hasG) {
+    if (window.ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
+    var tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    tl.from('.hero .eyebrow', { y: 16, opacity: 0, duration: .5 })
+      .from('.hero h1', { y: 40, opacity: 0, duration: .8 }, '-=.2')
+      .from('.hero .sub', { y: 20, opacity: 0, duration: .6 }, '-=.4')
+      .from('.hero .chips span', { scale: .8, opacity: 0, duration: .4, stagger: .08 }, '-=.3');
+    if (window.ScrollTrigger) {
+      document.querySelectorAll('section').forEach(function (sec) {
+        gsap.from(sec.querySelector('h2'), { scrollTrigger: { trigger: sec, start: 'top 88%' },
+          y: 28, opacity: 0, duration: .7, ease: 'power2.out' });
+        var items = sec.querySelectorAll(':scope > .blk, :scope > .code-wrap, :scope > .pit .callout, :scope > ul > li, :scope > ol > li');
+        if (items.length) gsap.from(items, { scrollTrigger: { trigger: sec, start: 'top 80%' },
+          y: 26, opacity: 0, duration: .55, stagger: .12, ease: 'power2.out' });
+      });
+    }
+  }
+
+  // ---- knowledge check: click to reveal with a GSAP flip / fade
+  document.querySelectorAll('.qa').forEach(function (qa) {
+    var btn = qa.querySelector('button'), ans = qa.querySelector('.ans');
+    btn.setAttribute('aria-expanded', 'false');
+    btn.addEventListener('click', function () {
+      var open = ans.style.display === 'block';
+      if (!open) {
+        ans.style.display = 'block'; btn.textContent = 'Hide answer'; btn.setAttribute('aria-expanded', 'true');
+        if (hasG) gsap.fromTo(ans, { opacity: 0, rotationX: -80 }, { opacity: 1, rotationX: 0, duration: .55, ease: 'back.out(1.4)' });
+      } else {
+        btn.textContent = 'Reveal answer'; btn.setAttribute('aria-expanded', 'false');
+        if (hasG) gsap.to(ans, { opacity: 0, duration: .25, onComplete: function () { ans.style.display = 'none'; } });
+        else ans.style.display = 'none';
+      }
+    });
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pre-assessment — CAIP AIP-210 · Project MIZAN</title><style>:root{--bg:#f6f7f9;--panel:#fff;--ink:#1b2430;--muted:#5b6675;--line:#e3e7ee;--brand:#0b5e6b;--brand2:#c8963e;
+--code-bg:#0f1720;--code-ink:#e6edf3;--l1:#2f6fdb;--l2:#c8963e;--l3:#1f8f5f;--why:#eef6f7;--exp:#eef8f1;--think:#fbf5ea;--say:#eef2fb;--exam:#f4effa}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1117;--panel:#141a22;--ink:#e6edf3;--muted:#9aa6b2;--line:#263040;
+--brand:#4fb3c2;--why:#12262a;--exp:#122319;--think:#2a2214;--say:#151d2d;--exam:#211a2c;--code-bg:#0a0f15}}
+:root[data-theme="dark"]{--bg:#0d1117;--panel:#141a22;--ink:#e6edf3;--muted:#9aa6b2;--line:#263040;--brand:#4fb3c2;--why:#12262a;
+--exp:#122319;--think:#2a2214;--say:#151d2d;--exam:#211a2c;--code-bg:#0a0f15}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+header.top{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:10px 20px;
+background:var(--brand);color:#fff;font-size:14px;letter-spacing:.2px}
+.brand .logo{color:var(--brand2);margin-right:6px}.brand .sep{opacity:.5;margin:0 10px}
+.theme{background:transparent;border:1px solid rgba(255,255,255,.5);color:#fff;border-radius:6px;padding:2px 10px;cursor:pointer;font-size:16px}
+.layout{display:grid;grid-template-columns:260px minmax(0,1fr);max-width:1320px;margin:0 auto}
+nav.toc{position:sticky;top:46px;align-self:start;max-height:calc(100vh - 46px);overflow:auto;padding:24px 12px 24px 20px;font-size:13.5px}
+nav.toc a{display:block;color:var(--muted);text-decoration:none;padding:4px 8px;border-left:2px solid transparent;border-radius:0 4px 4px 0}
+nav.toc a:hover,nav.toc a.active{color:var(--brand);border-left-color:var(--brand);background:var(--panel)}
+.toc-title{font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:1px;color:var(--muted);margin:0 8px 8px}
+main{padding:24px 28px 80px;min-width:0}
+section{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px 26px;margin:0 0 18px}
+section.hero{background:linear-gradient(135deg,var(--brand),#083f48);color:#fff;border:0}
+section.hero.demo{background:linear-gradient(135deg,#3b2f6b,#1f1a3d)}
+.hero h1{margin:.2em 0 .3em;font-size:30px;line-height:1.2}.hero .lead{opacity:.92;font-size:17px;margin:0 0 16px}
+.kicker{text-transform:uppercase;letter-spacing:1.5px;font-size:12px;color:var(--brand2);font-weight:700}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.meta div{background:rgba(255,255,255,.1);border-radius:8px;padding:8px 12px}.meta .k{display:block;font-size:11px;text-transform:uppercase;opacity:.75;letter-spacing:1px}
+.meta .v{font-weight:600;font-size:14px}
+.diff i{display:inline-block;width:9px;height:9px;margin-right:2px;border-radius:2px;background:rgba(255,255,255,.25)}.diff i.on{background:var(--brand2)}
+h2{font-size:22px;margin:0 0 12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}h3{font-size:16px;margin:18px 0 8px;color:var(--brand)}
+.num{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--brand);color:#fff;font-size:15px;flex:none}
+.mins{margin-left:auto;font-size:12px;font-weight:600;color:var(--muted);background:var(--bg);padding:2px 10px;border-radius:20px}
+.why,.expect,.think,.say,.callout,.scenario{border-radius:8px;padding:12px 16px;margin:12px 0}
+.why{background:var(--why);border-left:4px solid var(--brand)}.expect{background:var(--exp);border-left:4px solid var(--l3)}
+.think{background:var(--think);border-left:4px solid var(--brand2)}.say{background:var(--say);border-left:4px solid #5b6bd6}
+.callout{background:var(--bg);border:1px dashed var(--line)}.callout.exam{background:var(--exam);border:0;border-left:4px solid #8a5cc7}
+.scenario{background:var(--bg)}
+.why>b,.expect>b,.think>b,.say>b,.callout>b{display:block;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.why p:last-child,.expect p:last-child,.think p:last-child,.say p:last-child{margin-bottom:0}
+ol.tasks li{margin:4px 0}
+.levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.lvl{border-radius:10px;padding:12px 16px;border:1px solid var(--line);border-top:5px solid}.lvl.l1{border-top-color:var(--l1)}.lvl.l2{border-top-color:var(--l2)}.lvl.l3{border-top-color:var(--l3)}
+.lvl p{margin:.4em 0 0;font-size:14px}.note{color:var(--muted);font-size:14px}
+details{border:1px solid var(--line);border-radius:8px;margin:10px 0;background:var(--bg)}
+details summary{cursor:pointer;padding:8px 14px;font-weight:600}details[open] summary{border-bottom:1px solid var(--line)}
+details>*:not(summary){margin:10px 14px}
+.code{position:relative;margin:10px 0}
+pre{background:var(--code-bg);color:var(--code-ink);padding:14px 16px;border-radius:8px;overflow:auto;font:13.5px/1.5 Consolas,"Cascadia Code",Menlo,monospace;margin:0}
+code{font-family:Consolas,"Cascadia Code",Menlo,monospace;font-size:.92em}
+:not(pre)>code{background:var(--bg);border:1px solid var(--line);padding:1px 5px;border-radius:4px}
+.copy{position:absolute;top:8px;right:8px;background:#ffffff1a;color:#e6edf3;border:1px solid #ffffff33;border-radius:5px;font-size:12px;padding:2px 10px;cursor:pointer}
+.copy:hover{background:#ffffff33}.copy.ok{background:var(--l3);border-color:var(--l3)}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:8px 0}th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+th{background:var(--bg)}table.files td:first-child{white-space:nowrap}
+.tok-k{color:#ff7b72}.tok-s{color:#a5d6ff}.tok-c{color:#8b949e;font-style:italic}.tok-n{color:#79c0ff}.tok-f{color:#d2a8ff}
+@media (max-width:900px){.layout{grid-template-columns:1fr}nav.toc{display:none}main{padding:16px}section{padding:16px}.hero h1{font-size:24px}}
+@media print{nav.toc,header.top,.copy{display:none}.layout{display:block}details{display:block}details>*{display:block!important}section{break-inside:avoid-page}}
+</style></head>
+<body class="lab-page">
+<header class="top"><div class="brand"><span class="logo">◆</span> Horizon Gulf Bank · Project MIZAN<span class="sep">|</span>CAIP AIP-210 · Certified AI Practitioner</div>
+<button class="theme" onclick="toggleTheme()" aria-label="Toggle theme">◐</button></header>
+<div class="layout"><nav class="toc"><div class="toc-title">On this page</div><a href="#intro">Start</a>
+<a href="#quiz">Questions</a>
+<a href="#results">Results</a></nav>
+<main><section class="hero"><div class="kicker">CAIP AIP-210 · Exam readiness</div><h1>Pre-assessment</h1>
+<p class="lead">40 questions · 60 minutes · weighted like the official AIP-210 blueprint</p></section>
+<div class="assess">
+<section id="intro" hidden><div class="panel"><h2>Before you start</h2><p>Take this <b>before Day 1</b>. It measures where you start, so do not prepare for it and do not worry about the score. Your trainer uses the results to see which topics need the most attention. Questions cover all five days of the course.</p>
+<ul><li>40 questions (D1 10 · D2 8 · D3 10 · D4 12); 1 ask you to <b>choose TWO</b>.</li>
+<li>The timer starts when you press <b>Start</b> and keeps running if you close the page. Your answers are saved in this browser.</li>
+<li>Flag questions to revisit them; use the numbered grid to jump around.</li><li>No pass mark. Results show your starting point by exam domain and by course day.</li></ul>
+<p><label for="name"><b>Your name</b> (for the result summary you send to your trainer)</label><br>
+<input id="name" type="text" autocomplete="name" style="font:inherit;padding:8px;border-radius:6px;border:1px solid var(--line);width:min(100%,360px);margin-top:6px"></p>
+<button class="btn primary" id="start" type="button">Start the pre-assessment</button></div></section>
+
+<section id="quiz" hidden>
+<div class="bar"><span id="progress"></span><span>Time left <span class="timer" id="timer">--:--</span></span></div>
+<div class="qcard"><div class="qmeta"><span id="qnum"></span><span id="qkind"></span></div>
+<p class="qtext" id="qtext"></p><div id="opts" role="group" aria-labelledby="qtext"></div>
+<div class="nav"><button class="btn" id="prev" type="button">← Previous</button><button class="btn" id="next" type="button">Next →</button>
+<button class="btn" id="flag" type="button">Flag for review</button><span style="flex:1"></span><button class="btn primary" id="finish" type="button">Finish &amp; submit</button></div>
+<div class="panel" id="confirm" hidden><p id="confirmtext"></p><button class="btn primary" id="submit" type="button">Submit</button> <button class="btn" id="cancel" type="button">Keep working</button></div></div>
+<div class="palette" id="palette"></div>
+<p class="legend">Shaded = answered · gold underline = flagged · outlined = current question</p>
+</section>
+
+<section id="results" hidden>
+<div class="panel"><h2>Your result</h2><div class="score" id="score"></div><p id="raw"></p><p><span id="band" class="band"></span></p><p id="weak"></p></div>
+<div class="panel"><h3>By exam domain</h3><table class="files"><thead><tr><th>Domain</th><th>Exam weight</th><th>Correct</th><th></th><th>Score</th></tr></thead><tbody id="bydomain"></tbody></table>
+<h3>By course day (where the topic is taught)</h3><table class="files"><thead><tr><th>Day</th><th>Correct</th><th></th><th>Score</th></tr></thead><tbody id="byday"></tbody></table></div>
+<div class="panel"><h3>Result summary for your trainer</h3><textarea class="summary" id="summary" readonly aria-label="Result summary"></textarea>
+<p><button class="btn primary" id="copy" type="button">Copy result summary</button> <button class="btn warn" id="retake" type="button">Start again</button></p>
+<div id="retakeconfirm" hidden><p>This clears your answers and result in this browser. Start again?</p><button class="btn warn" id="retakeyes" type="button">Clear and start again</button> <button class="btn" id="retakeno" type="button">Cancel</button></div></div>
+<div class="panel"><h3>Review answers and explanations</h3><label><input type="checkbox" id="wrongonly"> Show only questions I got wrong or skipped</label><div id="review"></div></div>
+</section></div>
+<style>
+.assess{max-width:880px}
+.bar{position:sticky;top:46px;z-index:5;display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-content:space-between;
+ background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:0 0 16px}
+.bar .timer{font:600 1.1rem/1 ui-monospace,Consolas,monospace;font-variant-numeric:tabular-nums}
+.bar .timer.low{color:#c2483a}
+.qcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+.qmeta{color:var(--muted);font-size:13px;margin-bottom:6px;display:flex;gap:12px;flex-wrap:wrap}
+.qtext{font-size:1.08rem;font-weight:600;margin:0 0 14px}
+.opt{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:8px 0;cursor:pointer}
+.opt:hover{border-color:var(--brand)}
+.opt input{margin-top:4px}
+.opt.sel{border-color:var(--brand);background:var(--why)}
+.nav{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.btn{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:8px 14px}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.warn{border-color:#c2483a;color:#c2483a}
+.btn:focus-visible{outline:2px solid var(--brand2);outline-offset:2px}
+.palette{display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:6px;margin:16px 0}
+.palette button{font-weight:600;font-size:12px;line-height:1;padding:8px 0;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.palette button.ans{background:var(--why);border-color:var(--brand)}
+.palette button.flag{box-shadow:inset 0 -3px 0 var(--brand2)}
+.palette button.cur{outline:2px solid var(--brand)}
+.legend{font-size:12px;color:var(--muted)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:16px 0}
+.score{font-weight:700;font-size:2.6rem;line-height:1;color:var(--brand)}
+.band{display:inline-block;padding:3px 12px;border-radius:999px;font-weight:600;font-size:14px;border:1px solid currentColor}
+.band.ready{color:#1f7a54}.band.border{color:#b8862f}.band.notyet{color:#c2483a}.band.base{color:var(--brand)}
+.dbar{height:10px;background:var(--line);border-radius:5px;overflow:hidden;min-width:120px}
+.dbar i{display:block;height:100%;background:var(--brand)}
+.rev{border-top:1px solid var(--line);padding:12px 0}
+.rev .ok{color:#1f7a54;font-weight:600}.rev .no{color:#c2483a;font-weight:600}
+.rev li.correct{font-weight:600}
+textarea.summary{width:100%;min-height:150px;font:13px/1.45 ui-monospace,Consolas,monospace}
+[hidden]{display:none!important}
+</style>
+<script>window.ASSESS = {"id": "pre", "kind": "pre", "title": "Pre-assessment", "minutes": 60, "questions": [{"domain": 1, "day": 5, "q": "A credit-limit model uses the applicant's neighbourhood, which is strongly correlated with nationality. What is the main ethical concern?", "opts": ["Data leakage", "Overfitting", "Class imbalance", "Proxy discrimination: a protected attribute enters the model indirectly"], "ans": 3, "why": "Removing a sensitive attribute is not enough if another feature acts as a proxy for it. Fairness testing should check outcomes across groups."}, {"domain": 1, "day": 1, "q": "Which factor most reduces the probability that an ML project will succeed?", "opts": ["No historical data exists for the outcome to be predicted", "An existing data pipeline", "A clear decision that the prediction will drive", "A senior business sponsor"], "ans": 0, "why": "Without data (or labels) for the target, a supervised model cannot be trained. Data readiness is a core success factor when ranking use cases."}, {"domain": 1, "day": 2, "q": "To forecast how much cash each ATM needs per day, what is one observation (row)?", "opts": ["One card transaction", "One branch employee", "One ATM on one day", "One customer"], "ans": 2, "why": "The prediction is made per ATM per day, so that is the unit of observation."}, {"domain": 2, "day": 1, "q": "The same customer appears three times under different IDs. What is the main risk for modelling?", "opts": ["It reduces bias", "None", "It over-weights that customer and can leak information between the training and test sets", "It improves recall"], "ans": 2, "why": "Entity-level duplicates distort the training distribution and can put near-identical rows on both sides of a split."}, {"domain": 2, "day": 1, "q": "A square-root transformation is typically used for…", "opts": ["Dates", "Nominal categories", "Count data such as complaints per customer, to reduce right skew", "Free text"], "ans": 2, "why": "Square root is a milder variance-stabilising transform than log and works with zeros, which makes it suitable for counts."}, {"domain": 1, "day": 1, "q": "Which statement correctly describes the relationship between AI, machine learning and deep learning?", "opts": ["Machine learning and deep learning are unrelated", "Deep learning includes all of AI", "AI is a subset of machine learning", "Deep learning is a subset of machine learning, which is a subset of AI"], "ans": 3, "why": "AI is the broadest field; ML is AI that learns from data; deep learning is ML with multi-layer neural networks."}, {"domain": 3, "day": 3, "q": "What must you choose before running k-means?", "opts": ["The learning rate", "The class weights", "The target variable", "The number of clusters k"], "ans": 3, "why": "k-means partitions data into a predefined number of clusters; elbow and silhouette help choose k."}, {"domain": 1, "day": 1, "q": "Which learning system converts phone-banking calls into text?", "opts": ["Speech recognition", "Robotics", "Image recognition", "Recommendation system"], "ans": 0, "why": "Automatic speech recognition (ASR) turns audio into text, which NLP models can then process."}, {"domain": 1, "day": 1, "q": "A rule-based expert system encodes the bank's underwriting policy as if-then rules written by experts. It is…", "opts": ["Deep learning", "Machine learning, but not AI", "AI, but not machine learning", "Unsupervised learning"], "ans": 2, "why": "Expert systems are a classic form of AI, but their behaviour is programmed, not learned from data."}, {"domain": 4, "day": 5, "q": "A newly deployed model version is clearly underperforming. What is the fastest safe action?", "opts": ["Roll back to the previous approved version", "Lower the threshold until alerts look normal", "Retrain overnight on the same data", "Switch off monitoring"], "ans": 0, "why": "Keep the last approved version deployable so rollback is quick; investigate afterwards."}, {"domain": 4, "day": 5, "q": "To confirm that concept drift has occurred, you need…", "opts": ["A larger server", "Only the input feature distributions", "Recent actual outcomes (labels) to measure model performance", "A new random seed"], "ans": 2, "why": "Concept drift is a change in the X→y relationship, so it is confirmed by performance on newly labelled data."}, {"domain": 4, "day": 5, "q": "What is a model registry used for?", "opts": ["Generating synthetic data", "Serving web pages", "Labelling training data", "Storing versioned models with metadata, stages or aliases, and approval history"], "ans": 3, "why": "A registry is the system of record for which model version is approved and live."}, {"domain": 1, "day": 1, "q": "Some loan applications are declined by a regulatory rule: the debt-burden ratio must not exceed 50%. For these applications, what is the best approach?", "opts": ["Cluster applicants and decline the riskiest cluster", "Apply the rule directly; machine learning adds no value where a fixed rule fully decides the outcome", "Train a classifier on past decisions to learn the rule", "Use reinforcement learning to discover the limit"], "ans": 1, "why": "When a deterministic, documented rule fully determines the outcome, a rule is cheaper, exact and auditable. ML is for patterns that are hard to write as rules."}, {"domain": 2, "day": 1, "q": "A loan-amount feature is heavily right-skewed (AED 5,000 to 5,000,000). How should it be prepared for k-NN?", "opts": ["One-hot encode it", "Log-transform it, then standardise", "Ordinal-encode it", "Leave it raw"], "ans": 1, "why": "Log compresses the long tail; standardising puts it on the same scale as other features, which a distance-based model needs."}, {"domain": 4, "day": 5, "q": "Data poisoning is an attack in which…", "opts": ["The server runs out of memory", "An attacker steals the model file", "Users submit too many requests", "An attacker manipulates training data so the model learns harmful behaviour"], "ans": 3, "why": "Poisoning targets the training pipeline, which is why data provenance and validation matter."}, {"domain": 4, "day": 5, "q": "Compared with ordinary software CI/CD, what does CI/CD for ML add?", "opts": ["Manual approval of every code line", "Automated data validation and model-quality gates before release", "Version control", "Code compilation"], "ans": 1, "why": "ML pipelines must also test data and model performance, not just code."}, {"domain": 2, "day": 1, "q": "In TF-IDF, which words receive LOWER weight?", "opts": ["Numbers", "Words in long documents only", "Words that appear in many documents", "Words that are rare across the corpus"], "ans": 2, "why": "Inverse document frequency down-weights terms that occur in most documents, because they carry little distinguishing information."}, {"domain": 1, "day": 1, "q": "Which business problem is a recommendation problem?", "opts": ["Forecast ATM cash demand", "Estimate the value of a villa", "Suggest which card-linked offers a customer is most likely to use", "Detect a fraudulent transaction"], "ans": 2, "why": "Recommender systems rank items (offers, products) for each user from past behaviour and similar users."}, {"domain": 4, "day": 5, "q": "Data drift means…", "opts": ["The distribution of the input features in production differs from training", "The code was changed", "Training took longer than usual", "The model file was corrupted"], "ans": 0, "why": "Data drift concerns inputs. Concept drift concerns the relationship between inputs and the target."}, {"domain": 3, "day": 4, "q": "Why do neural networks use non-linear activation functions?", "opts": ["To make training slower", "Without them, stacked layers collapse into a single linear model", "To normalise the input data", "To reduce the number of weights"], "ans": 1, "why": "A composition of linear layers is still linear; non-linear activations let networks represent complex patterns."}, {"domain": 3, "day": 3, "q": "Precision equals…", "opts": ["TP / (TP + FP)", "TP / (TP + FN)", "(TP + TN) / all", "TN / (TN + FP)"], "ans": 0, "why": "Precision is the share of positive predictions that are correct. TP / (TP + FN) is recall."}, {"domain": 4, "day": 5, "q": "Choose TWO controls that help secure a model's scoring endpoint.", "opts": ["Require authentication for every caller", "Return full stack traces with input values in error messages", "Rate-limit requests per client", "Allow anonymous bulk scoring"], "ans": [0, 2], "why": "Authentication restricts who can call the model; rate limits slow abuse such as model extraction. Detailed errors and anonymous access increase risk."}, {"domain": 3, "day": 2, "q": "Which of these is a hyperparameter?", "opts": ["A regression coefficient", "A neural-network weight", "The intercept", "k in k-nearest neighbours"], "ans": 3, "why": "Hyperparameters are set before training; the others are learned parameters."}, {"domain": 2, "day": 1, "q": "A record shows age = 212. Which data-quality dimension is violated?", "opts": ["Timeliness", "Validity", "Completeness", "Uniqueness"], "ans": 1, "why": "Validity checks values against allowed ranges and business rules."}, {"domain": 2, "day": 1, "q": "Complaint texts contain customers' card numbers and IBANs. What should happen before features are built?", "opts": ["One-hot encode them", "Mask or remove the personal data", "Keep them as features", "Encrypt them after training"], "ans": 1, "why": "Data minimisation: the model does not need PII, and it must not leak into vocabularies, feature stores or logs."}, {"domain": 4, "day": 5, "q": "A customer is declined by a credit model. What best supports a fair, explainable process?", "opts": ["The model's global AUC", "The training set size", "Reason codes showing the main factors behind that decision", "The source code"], "ans": 2, "why": "Local explanations (reason codes) explain an individual decision; global metrics do not."}, {"domain": 4, "day": 5, "q": "Which use case requires real-time (online) inference?", "opts": ["Quarterly collateral revaluation", "Monthly IFRS 9 provisioning", "Fraud check during card authorisation", "Weekly marketing list"], "ans": 2, "why": "Card authorisation needs a score within milliseconds while the customer waits; the others can be batch jobs."}, {"domain": 3, "day": 2, "q": "How many times is a model trained in 5-fold cross-validation (not counting a final refit)?", "opts": ["1", "5", "25", "10"], "ans": 1, "why": "Each fold serves once as validation while the other four are used for training."}, {"domain": 3, "day": 2, "q": "What is the main purpose of the validation set?", "opts": ["To give the final unbiased performance estimate", "To replace the test set", "To fit the model's parameters", "To compare models and choose hyperparameters"], "ans": 3, "why": "Training fits parameters; validation selects models and hyperparameters; the test set gives one final estimate."}, {"domain": 1, "day": 3, "q": "The CRO asks how good the new fraud model is. Which answer communicates best?", "opts": ["The model has 300 trees", "Training accuracy is 99.6%", "At our chosen threshold, per 10,000 transactions it catches 38 of 43 frauds and flags 50 genuine customers", "ROC-AUC is 0.94"], "ans": 2, "why": "Stakeholders need performance in business terms at the operating point: what is caught, what it costs, and who is affected."}, {"domain": 3, "day": 3, "q": "Which model's predictions are unaffected by standardising the features?", "opts": ["Logistic regression with L2 regularisation", "k-nearest neighbours", "RBF support vector machine", "Decision tree"], "ans": 3, "why": "Tree splits depend only on the order of values within a feature, so monotonic rescaling does not change them."}, {"domain": 3, "day": 4, "q": "Which architecture is designed for ordered sequences such as a customer's last 30 days of transactions?", "opts": ["Convolutional neural network for images", "k-means", "Decision stump", "Recurrent neural network (e.g. LSTM)"], "ans": 3, "why": "RNNs and LSTMs carry a hidden state through time steps, which suits sequential data."}, {"domain": 2, "day": 1, "q": "What is the main weakness of min-max normalisation?", "opts": ["It cannot be inverted", "It only works on categorical data", "It always produces negative values", "A single extreme outlier squashes all other values into a narrow range"], "ans": 3, "why": "Min-max uses the observed minimum and maximum, so one outlier compresses everyone else."}, {"domain": 4, "day": 5, "q": "Where is human oversight most important?", "opts": ["Only during training", "High-impact or low-confidence decisions, which should be routed to a person for review", "Every low-risk decision", "Nowhere, if accuracy is high"], "ans": 1, "why": "Human-in-the-loop review focuses effort where errors are costly or the model is uncertain."}, {"domain": 4, "day": 5, "q": "Why is a trained model serialised (e.g. with joblib, or as a .keras file)?", "opts": ["To make it more accurate", "To encrypt the training data", "To speed up training", "To save it as an artefact that another process can load for inference"], "ans": 3, "why": "Serialisation persists the fitted model so the serving system can load exactly what was validated."}, {"domain": 3, "day": 4, "q": "What does the kernel trick let an SVM do?", "opts": ["Remove the need for feature scaling", "Output calibrated probabilities by default", "Learn non-linear decision boundaries by implicitly working in a higher-dimensional feature space", "Train without any data"], "ans": 2, "why": "Kernels compute similarities as if the data were mapped to a richer space, without computing that mapping explicitly."}, {"domain": 2, "day": 1, "q": "Which transformation maps a proportion between 0 and 1 onto the whole real line?", "opts": ["Logit: log(p / (1 − p))", "Min-max scaling", "One-hot encoding", "Square root"], "ans": 0, "why": "The logit (log-odds) transform turns (0, 1) into (−∞, +∞), and it is the link function of logistic regression."}, {"domain": 3, "day": 2, "q": "Compared with MAE, RMSE…", "opts": ["Has different units from the target", "Ignores large errors", "Penalises large errors more heavily", "Is always smaller than MAE"], "ans": 2, "why": "Squaring errors before averaging gives large errors more weight. RMSE ≥ MAE and is in the target's units."}, {"domain": 4, "day": 5, "q": "A monitor checks column types, allowed ranges and unexpected new categories. This is…", "opts": ["Concept-drift monitoring", "Hyperparameter tuning", "Schema and data-quality monitoring", "Load testing"], "ans": 2, "why": "Schema/data-quality checks catch broken or changed inputs before they silently corrupt predictions."}, {"domain": 1, "day": 1, "q": "Which is an example of reinforcement learning?", "opts": ["Forecasting next week's cash demand", "Predicting loan default from past loans", "An agent that adjusts collection-call timing using the amount recovered as a reward", "Grouping ATMs by usage pattern"], "ans": 2, "why": "Reinforcement learning learns a policy of actions from rewards received through interaction. The others are supervised or unsupervised tasks."}], "domains": {"1": ["Understanding the AI problem", 26], "2": ["Engineering features for ML", 20], "3": ["Training and tuning ML systems and models", 24], "4": ["Operationalizing ML models", 30]}, "days": {"1": "AI/ML foundations & data preparation", "2": "Training, regression & forecasting", "3": "Classification, clustering & trees", "4": "SVMs & neural networks", "5": "Operationalising, securing & maintaining ML"}, "pass": null};</script><script>
+(function(){
+const A = window.ASSESS, Q = A.questions, KEY = "mizan-assess-" + A.id;
+let S = load() || {name:"", started:null, answers:{}, flagged:[], cur:0, submitted:false, elapsed:0};
+const $ = id => document.getElementById(id);
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+function load(){ try{ return JSON.parse(localStorage.getItem(KEY)); }catch(e){ return null; } }
+function isMR(q){ return Array.isArray(q.ans); }
+function correct(i){ const q=Q[i], a=(S.answers[i]||[]).slice().sort().join(","), c=(isMR(q)?q.ans:[q.ans]).slice().sort().join(","); return a===c; }
+function remaining(){ return A.minutes*60 - Math.floor((Date.now()-S.started)/1000); }
+let tick=null;
+function show(view){ ["intro","quiz","results"].forEach(v=>$(v).hidden = v!==view); window.scrollTo(0,0); }
+
+function start(){
+  S.name = $("name").value.trim(); if(!S.started) S.started = Date.now(); save(); show("quiz"); renderQ(); runTimer();
+}
+function runTimer(){
+  clearInterval(tick);
+  tick = setInterval(()=>{ const r=remaining(); const t=$("timer");
+    if(r<=0){ clearInterval(tick); submit(true); return; }
+    t.textContent = String(Math.floor(r/60)).padStart(2,"0")+":"+String(r%60).padStart(2,"0");
+    t.classList.toggle("low", r<300); }, 500);
+}
+function renderQ(){
+  const i=S.cur, q=Q[i], chosen=S.answers[i]||[], mr=isMR(q);
+  $("qnum").textContent = `Question ${i+1} of ${Q.length}`;
+  $("qkind").textContent = mr ? "Choose TWO" : "Choose ONE";
+  $("qtext").textContent = q.q;
+  $("opts").innerHTML = q.opts.map((o,k)=>`<label class="opt ${chosen.includes(k)?"sel":""}"><input type="${mr?"checkbox":"radio"}" name="o" value="${k}" ${chosen.includes(k)?"checked":""}><span>${String.fromCharCode(65+k)}. ${esc(o)}</span></label>`).join("");
+  $("opts").querySelectorAll("input").forEach(inp=>inp.addEventListener("change",()=>{
+    const vals=[...$("opts").querySelectorAll("input:checked")].map(x=>+x.value);
+    if(mr && vals.length>2){ inp.checked=false; return; }
+    S.answers[i]=vals; save(); renderQ(); }));
+  $("flag").textContent = S.flagged.includes(i) ? "Unflag" : "Flag for review";
+  $("prev").disabled = i===0; $("next").disabled = i===Q.length-1;
+  $("palette").innerHTML = Q.map((_,k)=>`<button type="button" data-k="${k}" class="${(S.answers[k]||[]).length?"ans":""} ${S.flagged.includes(k)?"flag":""} ${k===i?"cur":""}" aria-label="Go to question ${k+1}">${k+1}</button>`).join("");
+  const done = Object.values(S.answers).filter(a=>a.length).length;
+  $("progress").textContent = `${done} of ${Q.length} answered · ${S.flagged.length} flagged`;
+}
+function esc(s){ const d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
+function submit(timeUp){
+  clearInterval(tick); S.submitted=true; S.elapsed=Math.min(A.minutes*60, Math.floor((Date.now()-S.started)/1000)); save(); renderResults(timeUp);
+}
+function pct(a,b){ return b? Math.round(100*a/b) : 0; }
+function renderResults(timeUp){
+  show("results");
+  const n=Q.length, right=Q.filter((_,i)=>correct(i)).length, p=pct(right,n);
+  let band, cls;
+  if(A.kind==="pre"){ band = p>=70?"Strong starting point":p>=45?"Typical starting point":"Foundations to build"; cls="base"; }
+  else { band = p>=70?"Exam-ready":p>=60?"Borderline: revise weak domains first":"Not yet ready"; cls = p>=70?"ready":p>=60?"border":"notyet"; }
+  $("score").textContent = p + "%";
+  $("raw").textContent = `${right} of ${n} correct · time used ${Math.floor(S.elapsed/60)} min${timeUp?" (time ran out)":""}` + (A.pass?` · pass mark ${A.pass}%`:"");
+  $("band").textContent = band; $("band").className = "band " + cls;
+  const byD = {}, byDay = {};
+  Q.forEach((q,i)=>{ (byD[q.domain]=byD[q.domain]||[0,0]); byD[q.domain][1]++; if(correct(i)) byD[q.domain][0]++;
+                     (byDay[q.day]=byDay[q.day]||[0,0]); byDay[q.day][1]++; if(correct(i)) byDay[q.day][0]++; });
+  $("bydomain").innerHTML = Object.keys(A.domains).map(d=>{ const [r,t]=byD[d]||[0,0], v=pct(r,t);
+    return `<tr><td>${d}. ${A.domains[d][0]}</td><td>${A.domains[d][1]}%</td><td>${r}/${t}</td><td><div class="dbar"><i style="width:${v}%"></i></div></td><td><b>${v}%</b></td></tr>`;}).join("");
+  $("byday").innerHTML = Object.keys(A.days).map(d=>{ const [r,t]=byDay[d]||[0,0]; if(!t) return ""; const v=pct(r,t);
+    return `<tr><td>Day ${d} · ${A.days[d]}</td><td>${r}/${t}</td><td><div class="dbar"><i style="width:${v}%"></i></div></td><td><b>${v}%</b></td></tr>`;}).join("");
+  const weak = Object.keys(A.domains).filter(d=>{ const [r,t]=byD[d]||[0,1]; return pct(r,t)<60; }).map(d=>A.domains[d][0]);
+  $("weak").textContent = weak.length ? "Focus next on: " + weak.join("; ") + "." : "No domain below 60%. Keep practising timed questions.";
+  renderReview(false);
+  $("summary").value = [`MIZAN ${A.title}`, `Learner: ${S.name||"(not given)"}`, `Date: ${new Date(S.started).toISOString().slice(0,10)}`,
+    `Score: ${p}% (${right}/${n}) · ${band}`, ...Object.keys(A.domains).map(d=>{const [r,t]=byD[d]||[0,0]; return `Domain ${d} ${A.domains[d][0]}: ${pct(r,t)}% (${r}/${t})`;}),
+    ...Object.keys(A.days).filter(d=>byDay[d]).map(d=>`Day ${d}: ${pct(byDay[d][0],byDay[d][1])}%`)].join("\n");
+}
+function renderReview(onlyWrong){
+  $("review").innerHTML = Q.map((q,i)=>{ if(onlyWrong && correct(i)) return "";
+    const c = isMR(q)?q.ans:[q.ans], mine=S.answers[i]||[];
+    const opts = q.opts.map((o,k)=>`<li class="${c.includes(k)?"correct":""}">${String.fromCharCode(65+k)}. ${esc(o)}${c.includes(k)?" ✔":""}${mine.includes(k)&&!c.includes(k)?" ✘ (your answer)":""}${mine.includes(k)&&c.includes(k)?" (your answer)":""}</li>`).join("");
+    return `<div class="rev"><div class="qmeta"><span>Q${i+1}</span><span>Domain ${q.domain}</span><span>Day ${q.day}</span><span class="${correct(i)?"ok":"no"}">${correct(i)?"Correct":(mine.length?"Incorrect":"Not answered")}</span></div>
+      <p class="qtext">${esc(q.q)}</p><ul style="list-style:none;padding-left:0">${opts}</ul><p class="note"><b>Why:</b> ${esc(q.why)}</p></div>`; }).join("");
+}
+
+$("start").addEventListener("click", start);
+$("prev").addEventListener("click", ()=>{ S.cur=Math.max(0,S.cur-1); save(); renderQ(); });
+$("next").addEventListener("click", ()=>{ S.cur=Math.min(Q.length-1,S.cur+1); save(); renderQ(); });
+$("flag").addEventListener("click", ()=>{ const i=S.cur; S.flagged = S.flagged.includes(i)? S.flagged.filter(x=>x!==i) : [...S.flagged,i]; save(); renderQ(); });
+$("palette").addEventListener("click", e=>{ const b=e.target.closest("button"); if(!b) return; S.cur=+b.dataset.k; save(); renderQ(); });
+$("finish").addEventListener("click", ()=>{ const left = Q.length - Object.values(S.answers).filter(a=>a.length).length;
+  $("confirmtext").textContent = left ? `${left} question(s) are unanswered and ${S.flagged.length} flagged. Submit anyway?` : `All questions answered${S.flagged.length?` (${S.flagged.length} flagged)`:""}. Submit now?`;
+  $("confirm").hidden = false; });
+$("cancel").addEventListener("click", ()=>{ $("confirm").hidden = true; });
+$("submit").addEventListener("click", ()=>{ $("confirm").hidden = true; submit(false); });
+$("wrongonly").addEventListener("change", e=>renderReview(e.target.checked));
+$("copy").addEventListener("click", ()=>{ const t=$("summary"); const done=()=>{$("copy").textContent="Copied";setTimeout(()=>$("copy").textContent="Copy result summary",1500);};
+  if(navigator.clipboard) navigator.clipboard.writeText(t.value).then(done, ()=>{ t.select(); });
+  else { t.select(); document.execCommand("copy"); done(); } });
+$("retake").addEventListener("click", ()=>{ $("retakeconfirm").hidden=false; });
+$("retakeno").addEventListener("click", ()=>{ $("retakeconfirm").hidden=true; });
+$("retakeyes").addEventListener("click", ()=>{ try{localStorage.removeItem(KEY);}catch(e){} S={name:"",started:null,answers:{},flagged:[],cur:0,submitted:false,elapsed:0}; $("retakeconfirm").hidden=true; show("intro"); });
+
+if(S.submitted) renderResults(false);
+else if(S.started){ if(remaining()<=0) submit(true); else { $("name").value=S.name; show("quiz"); renderQ(); runTimer(); } }
+else show("intro");
+})();
+</script></main></div><script>function copyCode(btn){const t=btn.parentElement.querySelector('code').innerText;
+const done=()=>{btn.textContent='Copied ✓';btn.classList.add('ok');setTimeout(()=>{btn.textContent='Copy';btn.classList.remove('ok')},1400)};
+if(navigator.clipboard){navigator.clipboard.writeText(t).then(done).catch(()=>fallback(t,done))}else fallback(t,done)}
+function fallback(t,done){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(e){}a.remove();done()}
+function toggleTheme(){const r=document.documentElement;const cur=r.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+const nxt=cur==='dark'?'light':'dark';r.setAttribute('data-theme',nxt);try{localStorage.setItem('mizan-theme',nxt)}catch(e){}}
+(function(){try{const t=localStorage.getItem('mizan-theme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}
+// light-weight python highlighter
+const KW=/\b(import|from|as|def|return|for|in|if|elif|else|while|with|try|except|finally|class|lambda|and|or|not|is|None|True|False|print|assert|yield|raise|pass|break|continue|global)\b/g;
+// placeholders use private-use characters so the keyword/number passes can never match inside them
+const enc=n=>String(n).split('').map(d=>String.fromCharCode(0xE000+ +d)).join('');
+const dec=t=>+t.split('').map(c=>c.charCodeAt(0)-0xE000).join('');
+document.querySelectorAll('pre code.lang-python').forEach(el=>{let s=el.innerHTML;const store=[];
+const keep=cls=>m=>{store.push('<span class="'+cls+'">'+m+'</span>');return ''+enc(store.length-1)+''};
+s=s.replace(/(&quot;.*?&quot;|&#x27;.*?&#x27;|"[^"\n]*"|'[^'\n]*')/g,keep('tok-s'));
+s=s.replace(/(#[^\n]*)/g,keep('tok-c'));
+s=s.replace(KW,'<span class="tok-k">$1</span>').replace(/\b(\d+\.?\d*)\b/g,'<span class="tok-n">$1</span>');
+s=s.replace(/([-]+)/g,(m,t)=>store[dec(t)]);el.innerHTML=s});
+const links=[...document.querySelectorAll('nav.toc a')];const secs=links.map(a=>document.querySelector(a.getAttribute('href')));
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.classList.remove('active'));
+const i=secs.indexOf(e.target);if(i>=0)links[i].classList.add('active')}})},{rootMargin:'-20% 0px -70% 0px'});secs.forEach(s=>s&&io.observe(s))})();
+</script></body></html>
