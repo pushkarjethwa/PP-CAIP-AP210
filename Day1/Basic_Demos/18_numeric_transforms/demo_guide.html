@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Scaling, log, Box-Cox, and binning | Day 1 demo</title>
+  <link rel="stylesheet" href="../trainer.css">
+</head>
+<body>
+
+<main id="top">
+  <a href="../Day1_Trainer_Transcript.html#slide-18">← Trainer transcript</a>
+  <header>
+    <p class="eyebrow">Day 1 · Slide 18</p>
+    <h1>Scaling, log, Box-Cox, and binning</h1>
+    <div class="files"><a href="starter.py">Starter code</a><a href="solution.py">Complete solution</a></div>
+    <p>From this demo’s folder, run the solution once, or use the numbered sections to show one idea at a time. The code under Setup runs first.</p>
+    <pre><code>python solution.py
+python solution.py --plot</code></pre>
+  </header>
+  <details>
+    <summary>Setup code</summary>
+    <pre><code>import sys
+
+import numpy as np
+import pandas as pd
+from scipy.stats import boxcox, skew
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
+
+train = np.array([1, 2, 4, 8, 32, 128], dtype=float).reshape(-1, 1)</code></pre>
+  </details>
+  
+<section class="guide-step" id="step-1">
+  <h2>1. Standardisation</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Subtract the training mean and divide by the training standard deviation. The fitted training values then have mean 0 and standard deviation 1.</p>
+      <h3>Look for</h3>
+      <p>The standardised values have mean about 0 and population standard deviation 1.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>scaler = StandardScaler().fit(train)
+standard = scaler.transform(train).ravel()
+print(&quot;Standardised:&quot;, standard.round(2))
+print(f&quot;Mean {standard.mean():.2f} | Population SD {standard.std():.2f}&quot;)</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-2">
+  <h2>2. Min-max and outlier sensitivity</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>The training minimum maps to 0 and the maximum maps to 1. One large training value squeezes most other values together.</p>
+      <h3>Look for</h3>
+      <p>With the outlier, 32 maps to about 0.24. When 32 is the training maximum, it maps to 1.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>minmax = MinMaxScaler().fit_transform(train).ravel()
+without_outlier = MinMaxScaler().fit_transform(train[:-1]).ravel()
+print(&quot;Min-max with 128:&quot;, minmax.round(2))
+print(&quot;Min-max without 128:&quot;, without_outlier.round(2))</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-3">
+  <h2>3. Log and Box-Cox</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Taking a log can compress a right tail. Box-Cox chooses a power from positive training values. For new inputs we would reuse that fitted power.</p>
+      <h3>Look for</h3>
+      <p>The raw, standardised, and min-max skews match. The log and fitted Box-Cox reduce the skew in this sample.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>logged = np.log(train.ravel())
+powered, power = boxcox(train.ravel())
+for name, values in [(&quot;Raw&quot;, train.ravel()), (&quot;Standard&quot;, standard),
+                     (&quot;Min-max&quot;, minmax), (&quot;Log&quot;, logged), (&quot;Box-Cox&quot;, powered)]:
+    print(name, &quot;skew:&quot;, round(skew(values), 2))
+print(&quot;Fitted Box-Cox power:&quot;, round(power, 2))</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-4">
+  <h2>4. Binning</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Choose the cut points ahead of time when fixed bands make the output easier to use.</p>
+      <h3>Look for</h3>
+      <p>4 is small, 8 and 32 are medium, and 128 is large.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>bands = pd.cut(train.ravel(), bins=[0, 5, 35, np.inf],
+               labels=[&quot;small&quot;, &quot;medium&quot;, &quot;large&quot;], right=False)
+print(&quot;Bands:&quot;, list(zip(train.ravel().tolist(), bands.tolist())))</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-5">
+  <h2>5. Fit on training, reuse on new values</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Only the training data determines the scale. A new value can exceed the training maximum and map outside 0 to 1.</p>
+      <h3>Look for</h3>
+      <p>256 maps above 1. The standard scaler still uses the original training mean.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>print(&quot;New min-max value:&quot;, MinMaxScaler().fit(train).transform([[256]]).round(2))
+print(&quot;New standard value:&quot;, scaler.transform([[256]]).round(2))
+print(&quot;Unchanged training mean:&quot;, scaler.mean_)</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-6">
+  <h2>6. See the shape</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Compare the right tail before and after scaling or logging.</p>
+      <h3>Look for</h3>
+      <p>With --plot, the first three histograms show the same pattern on different axes. Log changes that pattern.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>if &quot;--plot&quot; in sys.argv:
+    import matplotlib.pyplot as plt
+
+    fig, axes = plt.subplots(1, 4, figsize=(10, 3))
+    for ax, (name, values) in zip(axes, [(&quot;Raw&quot;, train.ravel()),
+             (&quot;Standard&quot;, standard), (&quot;Min-max&quot;, minmax), (&quot;Log&quot;, logged)]):
+        ax.hist(values, bins=5)
+        ax.set(title=name, xlabel=&quot;Value&quot;, ylabel=&quot;Count&quot;)
+    fig.tight_layout()
+    plt.show()</code></pre>
+    </div>
+  </div>
+</section>
+  <p class="return"><a href="#top">Back to top</a></p>
+</main>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Base rate, conditional probability, lift, Bayes, and causation | Day 1 demo</title>
+  <link rel="stylesheet" href="../trainer.css">
+</head>
+<body>
+
+<main id="top">
+  <a href="../Day1_Trainer_Transcript.html#slide-13">← Trainer transcript</a>
+  <header>
+    <p class="eyebrow">Day 1 · Slide 13</p>
+    <h1>Base rate, conditional probability, lift, Bayes, and causation</h1>
+    <div class="files"><a href="starter.py">Starter code</a><a href="solution.py">Complete solution</a></div>
+    <p>From this demo’s folder, run the solution once, or use the numbered sections to show one idea at a time. The code under Setup runs first.</p>
+    <pre><code>python solution.py</code></pre>
+  </header>
+  <details>
+    <summary>Setup code</summary>
+    <pre><code>import pandas as pd
+
+table = pd.DataFrame({
+    &quot;X&quot;: [True, True, True, True, False, False, False, False],
+    &quot;Y&quot;: [True, True, True, False, True, False, False, False],
+})</code></pre>
+  </details>
+  
+<section class="guide-step" id="step-1">
+  <h2>1. Base rate</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>The base rate uses all eight rows. The mean of a Boolean column is its True fraction.</p>
+      <h3>Look for</h3>
+      <p>P(Y) is 4 out of 8, or 0.50.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>base = table[&quot;Y&quot;].mean()
+print(&quot;P(Y):&quot;, base)</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-2">
+  <h2>2. Conditional probability and lift</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Keep the rows where X is true. The fraction of Y in these rows answers P(Y given X). Lift divides that fraction by the base rate.</p>
+      <h3>Look for</h3>
+      <p>P(Y given X) is 0.75 and lift is 1.5.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>y_given_x = table.loc[table[&quot;X&quot;], &quot;Y&quot;].mean()
+print(&quot;P(Y given X):&quot;, y_given_x, &quot;Lift:&quot;, y_given_x / base)</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-3">
+  <h2>3. Bayes&#x27; rule</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Reverse the condition using P(Y given X), P(X), and P(Y). Then check it by counting directly.</p>
+      <h3>Look for</h3>
+      <p>Both approaches return 0.75 for P(X given Y).</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>bayes = y_given_x * table[&quot;X&quot;].mean() / base
+direct = table.loc[table[&quot;Y&quot;], &quot;X&quot;].mean()
+print(&quot;P(X given Y), Bayes:&quot;, bayes, &quot;Direct count:&quot;, direct)</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-4">
+  <h2>4. Correlation and cause</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>I generated both columns from z. Their correlation is perfect because they share that input. Look at the expressions to see what controls b.</p>
+      <h3>Look for</h3>
+      <p>The correlation is 1.0. Reassigning a leaves b as [3, 6, 9, 12].</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>z = pd.Series([1, 2, 3, 4])
+a, b = 2 * z, 3 * z
+print(&quot;Correlation:&quot;, round(a.corr(b), 2))
+a = a + 10
+print(&quot;b after changing a:&quot;, b.tolist())</code></pre>
+    </div>
+  </div>
+</section>
+  <p class="return"><a href="#top">Back to top</a></p>
+</main>
+</body>
+</html>

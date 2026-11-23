@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Centre, spread, skew, and four distributions | Day 1 demo</title>
+  <link rel="stylesheet" href="../trainer.css">
+</head>
+<body>
+
+<main id="top">
+  <a href="../Day1_Trainer_Transcript.html#slide-12">← Trainer transcript</a>
+  <header>
+    <p class="eyebrow">Day 1 · Slide 12</p>
+    <h1>Centre, spread, skew, and four distributions</h1>
+    <div class="files"><a href="starter.py">Starter code</a><a href="solution.py">Complete solution</a></div>
+    <p>From this demo’s folder, run the solution once, or use the numbered sections to show one idea at a time. The code under Setup runs first.</p>
+    <pre><code>python solution.py
+python solution.py --plot</code></pre>
+  </header>
+  <details>
+    <summary>Setup code</summary>
+    <pre><code>import sys
+
+import numpy as np
+import pandas as pd
+
+values = pd.Series([1, 2, 2, 3, 12])
+rng = np.random.default_rng(42)</code></pre>
+  </details>
+  
+<section class="guide-step" id="step-1">
+  <h2>1. Mean and median</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>The mean uses every magnitude. The median sits at the middle of the sorted values.</p>
+      <h3>Look for</h3>
+      <p>The mean is 4.0 and the median is 2.0.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>print(&quot;Mean:&quot;, values.mean(), &quot;Median:&quot;, values.median())</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-2">
+  <h2>2. Variance and standard deviation</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Both describe spread. Standard deviation is the square root of variance and is in the same units as the values.</p>
+      <h3>Look for</h3>
+      <p>Using sample formulas, variance is 20.5 and standard deviation is about 4.53.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>print(&quot;Sample variance:&quot;, round(values.var(), 2))
+print(&quot;Sample standard deviation:&quot;, round(values.std(), 2))</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-3">
+  <h2>3. Skew and a log</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>The large value makes a right tail. A log compresses the higher values more than the lower ones.</p>
+      <h3>Look for</h3>
+      <p>The skew is positive and decreases after the log.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>print(&quot;Skew before log:&quot;, round(values.skew(), 2))
+print(&quot;Skew after log:&quot;, round(np.log(values).skew(), 2))</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-4">
+  <h2>4. Normal, log-normal, binomial, and Poisson</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>The normal is symmetric. The log-normal is positive and often right-skewed. A binomial counts successes in a fixed number of tries, and a Poisson counts events in an interval.</p>
+      <h3>Look for</h3>
+      <p>With --plot, the first two panels show continuous values and the last two show integer counts. Binomial values stay between 0 and 10.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>samples = {
+    &quot;Normal&quot;: rng.normal(0, 1, 500),
+    &quot;Log-normal&quot;: rng.lognormal(0, 1, 500),
+    &quot;Binomial&quot;: rng.binomial(10, 0.3, 500),
+    &quot;Poisson&quot;: rng.poisson(3, 500),
+}
+for name, sample in samples.items():
+    print(name, &quot;mean =&quot;, round(sample.mean(), 2),
+          &quot;range =&quot;, np.round([sample.min(), sample.max()], 2))
+
+if &quot;--plot&quot; in sys.argv:
+    import matplotlib.pyplot as plt
+
+    fig, axes = plt.subplots(2, 2, figsize=(7, 5))
+    for ax, (name, sample) in zip(axes.flat, samples.items()):
+        bins = np.arange(sample.max() + 2) - 0.5 if sample.dtype.kind == &quot;i&quot; else 24
+        ax.hist(sample, bins=bins)
+        ax.set(title=name, xlabel=&quot;Value&quot;, ylabel=&quot;Frequency&quot;)
+    fig.tight_layout()
+    plt.show()</code></pre>
+    </div>
+  </div>
+</section>
+  <p class="return"><a href="#top">Back to top</a></p>
+</main>
+</body>
+</html>

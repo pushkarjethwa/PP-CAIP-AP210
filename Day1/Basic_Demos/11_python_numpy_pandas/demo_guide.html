@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Python, NumPy, pandas, and the scikit-learn API | Day 1 demo</title>
+  <link rel="stylesheet" href="../trainer.css">
+</head>
+<body>
+
+<main id="top">
+  <a href="../Day1_Trainer_Transcript.html#slide-11">← Trainer transcript</a>
+  <header>
+    <p class="eyebrow">Day 1 · Slide 11</p>
+    <h1>Python, NumPy, pandas, and the scikit-learn API</h1>
+    <div class="files"><a href="starter.py">Starter code</a><a href="solution.py">Complete solution</a></div>
+    <p>From this demo’s folder, run the solution once, or use the numbered sections to show one idea at a time. The code under Setup runs first.</p>
+    <pre><code>python solution.py</code></pre>
+  </header>
+  <details>
+    <summary>Setup code</summary>
+    <pre><code>from time import perf_counter
+
+import numpy as np
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+
+values = np.array([10, 20, 30])
+big = np.arange(300_000)
+table = pd.DataFrame({&quot;id&quot;: [1, 2, 3, 4], &quot;group&quot;: [&quot;a&quot;, &quot;a&quot;, &quot;b&quot;, &quot;b&quot;],
+                      &quot;value&quot;: [2, 4, 6, 8]})
+labels = pd.DataFrame({&quot;group&quot;: [&quot;a&quot;, &quot;b&quot;], &quot;name&quot;: [&quot;alpha&quot;, &quot;beta&quot;]})
+train_x = [[1], [2], [3]]
+train_y = [2, 4, 6]</code></pre>
+  </details>
+  
+<section class="guide-step" id="step-1">
+  <h2>1. Array, shape, dtype, and boolean mask</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Shape tells us the size of each axis. A comparison gives one True or False per value. The mask keeps only True entries.</p>
+      <h3>Look for</h3>
+      <p>The array has shape (3,), contains integers, and the mask selects 20 and 30.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>print(&quot;Shape:&quot;, values.shape, &quot;dtype:&quot;, values.dtype)
+mask = values &gt;= 20
+print(&quot;Mask:&quot;, mask.tolist(), &quot;Selected:&quot;, values[mask].tolist())</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-2">
+  <h2>2. Vectorized maths vs a Python loop</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>The operation is doubling. The loop calls Python for each value. The array expression passes the job to NumPy.</p>
+      <h3>Look for</h3>
+      <p>The outputs match. The measured timings vary by machine and run.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>start = perf_counter()
+doubled_loop = []
+for value in big:
+    doubled_loop.append(value * 2)
+loop_seconds = perf_counter() - start
+start = perf_counter()
+doubled_array = big * 2
+array_seconds = perf_counter() - start
+print(&quot;Same values:&quot;, np.array_equal(doubled_loop, doubled_array))
+print(f&quot;Loop: {loop_seconds:.5f}s | Array: {array_seconds:.5f}s&quot;)</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-3">
+  <h2>3. DataFrame, Series, dtypes, and apply</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>A DataFrame is the table. Selecting one column gives a Series. apply calls the function for each value here.</p>
+      <h3>Look for</h3>
+      <p>The apply result matches the vectorized multiplication.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>column = table[&quot;value&quot;]
+print(type(table).__name__, type(column).__name__)
+print(table.dtypes)
+print(&quot;Same result:&quot;, column.apply(lambda x: x * 2).equals(column * 2))</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-4">
+  <h2>4. Chaining and named aggregation</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>assign adds a column to the returned table. groupby creates groups and agg names the summaries.</p>
+      <h3>Look for</h3>
+      <p>The summary counts rows and shows their means by group and by high value.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>summary = (table.assign(high=table[&quot;value&quot;] &gt; 4)
+           .groupby([&quot;group&quot;, &quot;high&quot;])
+           .agg(count=(&quot;id&quot;, &quot;size&quot;), mean=(&quot;value&quot;, &quot;mean&quot;)))
+print(summary)</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-5">
+  <h2>5. Merge tables</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>The group column links the two tables. A left merge preserves the original rows.</p>
+      <h3>Look for</h3>
+      <p>Rows in group a get alpha and rows in group b get beta.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>print(table.merge(labels, on=&quot;group&quot;, how=&quot;left&quot;))</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-6">
+  <h2>6. Pure transformation</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>A pure function takes an input and returns a result without changing the original table.</p>
+      <h3>Look for</h3>
+      <p>The new result has doubled. The original columns are unchanged.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>def add_doubled(frame):
+    return frame.assign(doubled=frame[&quot;value&quot;] * 2)
+
+print(add_doubled(table))
+print(&quot;Original columns:&quot;, table.columns.tolist())</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-7">
+  <h2>7. fit, transform, predict, and Pipeline</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>fit learns parameters. transform applies a learned conversion. predict returns model outputs. A Pipeline runs the steps in order.</p>
+      <h3>Look for</h3>
+      <p>The scaler learns mean 2. The fitted pipeline predicts 8 for input 4.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>scaler = StandardScaler().fit(train_x)
+print(&quot;Learned mean:&quot;, scaler.mean_, &quot;Scaled 4:&quot;, scaler.transform([[4]]))
+pipe = Pipeline([(&quot;scale&quot;, StandardScaler()), (&quot;model&quot;, LinearRegression())])
+pipe.fit(train_x, train_y)
+print(&quot;Prediction for 4:&quot;, pipe.predict([[4]]).round(2))</code></pre>
+    </div>
+  </div>
+</section>
+  <p class="return"><a href="#top">Back to top</a></p>
+</main>
+</body>
+</html>

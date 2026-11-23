@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The six dimensions of data quality | Day 1 demo</title>
+  <link rel="stylesheet" href="../trainer.css">
+</head>
+<body>
+
+<main id="top">
+  <a href="../Day1_Trainer_Transcript.html#slide-16">← Trainer transcript</a>
+  <header>
+    <p class="eyebrow">Day 1 · Slide 16</p>
+    <h1>The six dimensions of data quality</h1>
+    <div class="files"><a href="starter.py">Starter code</a><a href="solution.py">Complete solution</a></div>
+    <p>From this demo’s folder, run the solution once, or use the numbered sections to show one idea at a time. The code under Setup runs first.</p>
+    <pre><code>python solution.py</code></pre>
+  </header>
+  <details>
+    <summary>Setup code</summary>
+    <pre><code>import pandas as pd
+
+table = pd.DataFrame({
+    &quot;id&quot;: [1, 2, 2, 3, 4],
+    &quot;value&quot;: [12, 200, 20, None, 40],
+    &quot;reference&quot;: [10, 200, 20, 30, 40],
+    &quot;group&quot;: [&quot;red&quot;, &quot; BLUE &quot;, &quot;blue&quot;, &quot;red&quot;, &quot;green&quot;],
+    &quot;updated&quot;: pd.to_datetime([&quot;2025-01-09&quot;, &quot;2024-12-20&quot;, &quot;2025-01-08&quot;,
+                               &quot;2025-01-07&quot;, &quot;2025-01-06&quot;]),
+})
+snapshot = pd.Timestamp(&quot;2025-01-10&quot;)</code></pre>
+  </details>
+  
+<section class="guide-step" id="step-1">
+  <h2>1. Completeness</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Is the required value present?</p>
+      <h3>Look for</h3>
+      <p>ID 3 has a missing value.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>print(&quot;Missing value IDs:&quot;, table.loc[table[&quot;value&quot;].isna(), &quot;id&quot;].tolist())</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-2">
+  <h2>2. Validity</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Does a present value obey the allowed range or format?</p>
+      <h3>Look for</h3>
+      <p>200 is outside 0 to 100. The second date string fails the date format check.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>present = table[&quot;value&quot;].notna()
+invalid = present &amp; ~table[&quot;value&quot;].between(0, 100)
+print(&quot;Invalid values:&quot;, table.loc[invalid, &quot;value&quot;].tolist())
+parsed = pd.to_datetime([&quot;2025-01-10&quot;, &quot;01/10/2025&quot;], format=&quot;%Y-%m-%d&quot;, errors=&quot;coerce&quot;)
+print(&quot;Invalid date format:&quot;, parsed.isna().tolist())</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-3">
+  <h2>3. Consistency</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Are equivalent values represented the same way?</p>
+      <h3>Look for</h3>
+      <p>The two blue spellings collapse to one canonical value.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>canonical = table[&quot;group&quot;].str.strip().str.lower()
+print(&quot;Before:&quot;, table[&quot;group&quot;].unique().tolist())
+print(&quot;After:&quot;, canonical.unique().tolist())</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-4">
+  <h2>4. Uniqueness</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Does the identifier occur once per entity?</p>
+      <h3>Look for</h3>
+      <p>Both rows for ID 2 are flagged.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>print(&quot;Repeated IDs:&quot;, table.loc[table.duplicated(&quot;id&quot;, keep=False), &quot;id&quot;].tolist())</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-5">
+  <h2>5. Timeliness</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Is the value recent enough at the chosen date?</p>
+      <h3>Look for</h3>
+      <p>The December 20 record is older than seven days.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>age_days = (snapshot - table[&quot;updated&quot;]).dt.days
+print(&quot;Stale updates:&quot;, table.loc[age_days &gt; 7, &quot;updated&quot;].dt.date.tolist())</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-6">
+  <h2>6. Accuracy</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Does the value agree with a trusted source? A number can be in range and still be wrong.</p>
+      <h3>Look for</h3>
+      <p>ID 1 is in range but has 12 where the reference says 10.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>disagrees = present &amp; ~invalid &amp; table[&quot;value&quot;].ne(table[&quot;reference&quot;])
+print(table.loc[disagrees, [&quot;id&quot;, &quot;value&quot;, &quot;reference&quot;]])</code></pre>
+    </div>
+  </div>
+</section>
+  <p class="return"><a href="#top">Back to top</a></p>
+</main>
+</body>
+</html>

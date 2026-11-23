@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>A small end-to-end run for slide 23 | Day 1 demo</title>
+  <link rel="stylesheet" href="../trainer.css">
+</head>
+<body>
+
+<main id="top">
+  <a href="../Day1_Trainer_Transcript.html#slide-23">← Trainer transcript</a>
+  <header>
+    <p class="eyebrow">Day 1 · Slide 23</p>
+    <h1>A small end-to-end run for slide 23</h1>
+    <div class="files"><a href="starter.py">Starter code</a><a href="solution.py">Complete solution</a></div>
+    <p>From this demo’s folder, run the solution once, or use the numbered sections to show one idea at a time. The code under Setup runs first.</p>
+    <pre><code>python solution.py</code></pre>
+  </header>
+  <details>
+    <summary>Setup code</summary>
+    <pre><code>import numpy as np
+import pandas as pd
+from sklearn.compose import ColumnTransformer
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import roc_auc_score
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import FunctionTransformer, OneHotEncoder, StandardScaler
+
+data = pd.DataFrame({
+    &quot;time&quot;: range(1, 13),
+    &quot;number&quot;: [1, 20, 2, 30, 3, 40, 4, 50, 5, 60, 6, 70],
+    &quot;group&quot;: [&quot;a&quot;, &quot;b&quot;, &quot;a&quot;, &quot;a&quot;, &quot;b&quot;, &quot;b&quot;, &quot;a&quot;, &quot;b&quot;, &quot;new&quot;, &quot;a&quot;, &quot;a&quot;, &quot;b&quot;],
+    &quot;label&quot;: [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+})
+data[&quot;after_outcome&quot;] = data[&quot;label&quot;]</code></pre>
+  </details>
+  
+<section class="guide-step" id="step-1">
+  <h2>1. Define the chronological split</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>All rows in the first group precede the second. Only number and group are available when we predict.</p>
+      <h3>Look for</h3>
+      <p>Training covers time 1 to 8 and testing covers 9 to 12.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>train, test = data[data[&quot;time&quot;] &lt;= 8], data[data[&quot;time&quot;] &gt; 8]
+features = [&quot;number&quot;, &quot;group&quot;]
+print(&quot;Training times:&quot;, train[&quot;time&quot;].tolist())
+print(&quot;Testing times:&quot;, test[&quot;time&quot;].tolist())
+print(&quot;Selected features:&quot;, features)</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-2">
+  <h2>2. Log, scale, and encode</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>The numeric pipeline compresses large numbers and scales using the training values. The categorical encoder handles a new group in the later rows.</p>
+      <h3>Look for</h3>
+      <p>The later rows transform into a matrix of shape (4, 3). The unseen group has zeros in its two indicator columns.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>numbers = Pipeline([(&quot;log&quot;, FunctionTransformer(np.log1p)), (&quot;scale&quot;, StandardScaler())])
+preprocess = ColumnTransformer([
+    (&quot;number&quot;, numbers, [&quot;number&quot;]),
+    (&quot;group&quot;, OneHotEncoder(handle_unknown=&quot;ignore&quot;, sparse_output=False), [&quot;group&quot;]),
+])
+pipeline = Pipeline([(&quot;preprocess&quot;, preprocess), (&quot;model&quot;, LogisticRegression())])
+pipeline.fit(train[features], train[&quot;label&quot;])
+transformed = pipeline.named_steps[&quot;preprocess&quot;].transform(test[features])
+print(&quot;Later matrix shape:&quot;, transformed.shape)
+print(&quot;Unseen group&#x27;s indicators:&quot;, transformed[0, 1:].tolist())</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-3">
+  <h2>3. Text and image as numbers</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>An array of word counts represents text. An image is already a grid of intensity values.</p>
+      <h3>Look for</h3>
+      <p>The word-count matrix has 2 rows and 3 columns. The image is a 2-by-2 intensity grid.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>matrix = CountVectorizer().fit_transform([&quot;red blue&quot;, &quot;red green&quot;])
+pixels = np.array([[0, 255], [255, 0]])
+print(&quot;Word-count shape:&quot;, matrix.shape)
+print(&quot;Image pixels:\n&quot;, pixels)</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-4">
+  <h2>4. Evaluate and revisit the leakage traps</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Print the score and check it against what the model could know. Even a perfect score on four simple rows gives very little evidence. The after-outcome column would just reveal the answer.</p>
+      <h3>Look for</h3>
+      <p>The holdout score is printed along with the prohibited column&#x27;s exact match to the labels. The training-only fit and ordered split are visible above.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>probabilities = pipeline.predict_proba(test[features])[:, 1]
+print(&quot;Test AUC on four rows:&quot;, round(roc_auc_score(test[&quot;label&quot;], probabilities), 2))
+print(&quot;After-outcome column copies label:&quot;, data[&quot;after_outcome&quot;].equals(data[&quot;label&quot;]))</code></pre>
+    </div>
+  </div>
+</section>
+  <p class="return"><a href="#top">Back to top</a></p>
+</main>
+</body>
+</html>

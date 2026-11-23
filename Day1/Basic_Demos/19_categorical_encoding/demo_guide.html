@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>One-hot, ordinal, rare categories, and target encoding | Day 1 demo</title>
+  <link rel="stylesheet" href="../trainer.css">
+</head>
+<body>
+
+<main id="top">
+  <a href="../Day1_Trainer_Transcript.html#slide-19">← Trainer transcript</a>
+  <header>
+    <p class="eyebrow">Day 1 · Slide 19</p>
+    <h1>One-hot, ordinal, rare categories, and target encoding</h1>
+    <div class="files"><a href="starter.py">Starter code</a><a href="solution.py">Complete solution</a></div>
+    <p>From this demo’s folder, run the solution once, or use the numbered sections to show one idea at a time. The code under Setup runs first.</p>
+    <pre><code>python solution.py</code></pre>
+  </header>
+  <details>
+    <summary>Setup code</summary>
+    <pre><code>import numpy as np
+import pandas as pd
+from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, TargetEncoder
+
+colors = [[&quot;red&quot;], [&quot;red&quot;], [&quot;blue&quot;], [&quot;blue&quot;], [&quot;green&quot;], [&quot;yellow&quot;]]
+sizes = [[&quot;small&quot;], [&quot;medium&quot;], [&quot;large&quot;]]
+ids = np.array([[&quot;a&quot;], [&quot;b&quot;], [&quot;c&quot;], [&quot;d&quot;], [&quot;e&quot;], [&quot;f&quot;], [&quot;g&quot;], [&quot;h&quot;]])
+target = np.array([0., 1., 0., 1., 1., 0., 1., 0.])</code></pre>
+  </details>
+  
+<section class="guide-step" id="step-1">
+  <h2>1. One-hot encoding</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Each category gets its own indicator column. Red, blue, and green have no rank.</p>
+      <h3>Look for</h3>
+      <p>There is one 1 per known row, and the column names tell us which category it marks.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>onehot = OneHotEncoder(handle_unknown=&quot;ignore&quot;, sparse_output=False).fit(colors)
+print(onehot.get_feature_names_out().tolist())
+print(onehot.transform([[&quot;red&quot;], [&quot;blue&quot;]]).astype(int))</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-2">
+  <h2>2. Unknown category</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Use the encoder we already fitted. With handle_unknown set to ignore, a new category becomes all zeros.</p>
+      <h3>Look for</h3>
+      <p>Purple encodes as four zeros because it was absent from training.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>print(&quot;Unseen purple:&quot;, onehot.transform([[&quot;purple&quot;]]).astype(int))</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-3">
+  <h2>3. Ordinal encoding</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Small, medium, and large have an order, so we supply it explicitly.</p>
+      <h3>Look for</h3>
+      <p>Small maps to 0, medium to 1, and large to 2.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>ordinal = OrdinalEncoder(categories=[[&quot;small&quot;, &quot;medium&quot;, &quot;large&quot;]]).fit(sizes)
+print(&quot;Ordered size codes:&quot;, ordinal.transform(sizes).ravel().astype(int).tolist())</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-4">
+  <h2>4. Group rare categories</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Green and yellow each appear once. We can train the encoder to put those values in one infrequent column.</p>
+      <h3>Look for</h3>
+      <p>Green, yellow, and unseen purple all activate the infrequent category.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>rare = OneHotEncoder(min_frequency=2, handle_unknown=&quot;infrequent_if_exist&quot;,
+                     sparse_output=False).fit(colors)
+print(rare.get_feature_names_out().tolist())
+print(rare.transform([[&quot;green&quot;], [&quot;yellow&quot;], [&quot;purple&quot;]]).astype(int))</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-5">
+  <h2>5. Target encoding with cross-fitting</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>A simple target encoding uses a category&#x27;s average target. If each ID occurs once, doing that on the same rows copies their answers. Cross-fitting uses other training rows to encode each training fold.</p>
+      <h3>Look for</h3>
+      <p>The naive ID encoding repeats the target. Cross-fitted singleton IDs get the other fold&#x27;s mean, and an unseen ID at inference gets the full training mean.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>examples = pd.DataFrame({&quot;id&quot;: ids.ravel(), &quot;target&quot;: target})
+naive = examples.groupby(&quot;id&quot;)[&quot;target&quot;].transform(&quot;mean&quot;)
+encoder = TargetEncoder(target_type=&quot;continuous&quot;, smooth=0.0, cv=2,
+                        random_state=0)
+cross_fitted = encoder.fit_transform(ids, target).ravel()
+print(&quot;Naive:&quot;, naive.tolist())
+print(&quot;Cross-fitted:&quot;, cross_fitted.tolist())
+print(&quot;Unseen ID:&quot;, encoder.transform([[&quot;new&quot;]]).ravel().tolist())</code></pre>
+    </div>
+  </div>
+</section>
+  <p class="return"><a href="#top">Back to top</a></p>
+</main>
+</body>
+</html>

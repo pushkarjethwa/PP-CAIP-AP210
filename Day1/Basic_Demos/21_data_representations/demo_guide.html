@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Represent tables, text, images, audio, and video | Day 1 demo</title>
+  <link rel="stylesheet" href="../trainer.css">
+</head>
+<body>
+
+<main id="top">
+  <a href="../Day1_Trainer_Transcript.html#slide-21">← Trainer transcript</a>
+  <header>
+    <p class="eyebrow">Day 1 · Slide 21</p>
+    <h1>Represent tables, text, images, audio, and video</h1>
+    <div class="files"><a href="starter.py">Starter code</a><a href="solution.py">Complete solution</a></div>
+    <p>From this demo’s folder, run the solution once, or use the numbered sections to show one idea at a time. The code under Setup runs first.</p>
+    <pre><code>python solution.py
+python solution.py --plot</code></pre>
+  </header>
+  <details>
+    <summary>Setup code</summary>
+    <pre><code>import sys
+
+import numpy as np
+import pandas as pd
+from scipy.signal import spectrogram
+from sklearn.feature_extraction.text import CountVectorizer
+
+texts = [&quot;red red blue&quot;, &quot;blue green&quot;]
+image = np.array([[0, 0, 255], [0, 255, 255]], dtype=np.uint8)
+sample_rate = 1024</code></pre>
+  </details>
+  
+<section class="guide-step" id="step-1">
+  <h2>1. Structured tables</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Each table row is a record. Named columns have a consistent meaning and type.</p>
+      <h3>Look for</h3>
+      <p>There are two records, with a text column and an integer column.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>table = pd.DataFrame({&quot;letter&quot;: [&quot;a&quot;, &quot;b&quot;], &quot;value&quot;: [3, 5]})
+print(table)
+print(table.dtypes)</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-2">
+  <h2>2. Text tokens, counts, and embeddings</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Split into tokens and count each word. An embedding gives a token a short numeric vector. These tiny vectors are supplied to show their shape. Learned embeddings get their values from training.</p>
+      <h3>Look for</h3>
+      <p>Red appears twice in the first text. The embedding lookup represents its three tokens by a 3-by-2 array.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>tokens = texts[0].split()
+counts = CountVectorizer()
+matrix = counts.fit_transform(texts)
+print(&quot;Tokens:&quot;, tokens)
+print(&quot;Vocabulary:&quot;, counts.get_feature_names_out().tolist())
+print(&quot;Word counts:\n&quot;, matrix.toarray())
+embedding = {&quot;red&quot;: [1.0, 0.0], &quot;blue&quot;: [0.8, 0.2], &quot;green&quot;: [0.1, 0.9]}
+print(&quot;Lookup vectors:\n&quot;, np.array([embedding[token] for token in tokens]))</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-3">
+  <h2>3. Image pixels and flattening</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>A grayscale image is a grid of pixel intensities. Flattening gives a row of numbers. Keeping the grid preserves the row and column layout as separate axes.</p>
+      <h3>Look for</h3>
+      <p>The image has shape (2, 3). The flattened version has six intensity values.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>print(&quot;Image shape:&quot;, image.shape)
+print(&quot;Flattened pixels:&quot;, image.ravel().tolist())</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-4">
+  <h2>4. Audio samples and spectrogram</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Audio is a series of samples. A spectrogram tells us which frequencies are present in each short time window.</p>
+      <h3>Look for</h3>
+      <p>The synthetic wave has 128 samples. Its dominant spectrogram frequency is 128 Hz.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>seconds = np.arange(128) / sample_rate
+wave = np.sin(2 * np.pi * 128 * seconds)
+frequencies, times, power = spectrogram(wave, fs=sample_rate, nperseg=32, noverlap=16)
+print(&quot;Audio samples:&quot;, wave.shape, &quot;Spectrogram shape:&quot;, power.shape)
+print(&quot;Dominant frequency:&quot;, frequencies[power.mean(axis=1).argmax()], &quot;Hz&quot;)</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-5">
+  <h2>5. Video frames and a visual check</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>A video adds time to the pixel grid. Here it has just two frames.</p>
+      <h3>Look for</h3>
+      <p>Video shape is (2, 2, 3). With --plot, see the six grayscale pixels and the frequency band in the audio.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>video = np.stack([image, np.fliplr(image)])
+print(&quot;Video shape (frames, rows, columns):&quot;, video.shape)
+
+if &quot;--plot&quot; in sys.argv:
+    import matplotlib.pyplot as plt
+
+    fig, axes = plt.subplots(1, 2, figsize=(7, 3))
+    axes[0].imshow(image, cmap=&quot;gray&quot;, interpolation=&quot;nearest&quot;, vmin=0, vmax=255)
+    axes[0].set(title=&quot;Image pixels&quot;, xlabel=&quot;Column&quot;, ylabel=&quot;Row&quot;)
+    axes[1].pcolormesh(times, frequencies, power, shading=&quot;auto&quot;)
+    axes[1].set(title=&quot;Audio spectrogram&quot;, xlabel=&quot;Time (s)&quot;, ylabel=&quot;Frequency (Hz)&quot;)
+    fig.tight_layout()
+    plt.show()</code></pre>
+    </div>
+  </div>
+</section>
+  <p class="return"><a href="#top">Back to top</a></p>
+</main>
+</body>
+</html>

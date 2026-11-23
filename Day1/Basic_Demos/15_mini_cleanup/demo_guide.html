@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>A seven-step preview of Lab L1.1 | Day 1 demo</title>
+  <link rel="stylesheet" href="../trainer.css">
+</head>
+<body>
+
+<main id="top">
+  <a href="../Day1_Trainer_Transcript.html#slide-15">← Trainer transcript</a>
+  <header>
+    <p class="eyebrow">Day 1 · Slide 15</p>
+    <h1>A seven-step preview of Lab L1.1</h1>
+    <div class="files"><a href="starter.py">Starter code</a><a href="solution.py">Complete solution</a></div>
+    <p>From this demo’s folder, run the solution once, or use the numbered sections to show one idea at a time. The code under Setup runs first.</p>
+    <pre><code>python solution.py</code></pre>
+  </header>
+  <details>
+    <summary>Setup code</summary>
+    <pre><code>from io import BytesIO, StringIO
+
+import pandas as pd
+
+csv_text = &quot;&quot;&quot;id,group,score,updated,email,future_flag
+1, a ,9.50,2025-01-01,a@example.invalid,1
+1,A,10.50,2025/01/03,a@example.invalid,1
+2,b,200,02 Jan 2025,b@example.invalid,0
+3,B,,2025-01-02,c@example.invalid,0
+4,c,12,2025/01/02,d@example.invalid,1
+&quot;&quot;&quot;</code></pre>
+  </details>
+  
+<section class="guide-step" id="step-1">
+  <h2>1. Load and profile</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Check row count, missing values, and duplicates before touching the data.</p>
+      <h3>Look for</h3>
+      <p>There are 5 rows, 1 missing score, and 1 repeated ID.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>raw = pd.read_csv(StringIO(csv_text), dtype={&quot;score&quot;: &quot;string&quot;})
+before = {&quot;rows&quot;: len(raw), &quot;missing_score&quot;: int(raw[&quot;score&quot;].isna().sum()),
+          &quot;duplicate_ids&quot;: int(raw[&quot;id&quot;].duplicated().sum())}
+print(&quot;Before:&quot;, before)</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-2">
+  <h2>2. Remove sensitive and future columns</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Email identifies a person. The future flag is unavailable at the time the features are needed. Drop both for their respective reasons.</p>
+      <h3>Look for</h3>
+      <p>The working columns are id, group, score, and updated.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>clean = raw.drop(columns=[&quot;email&quot;, &quot;future_flag&quot;])
+print(&quot;Working columns:&quot;, clean.columns.tolist())</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-3">
+  <h2>3. Standardise categories</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Trim spaces and use one case so the same group has the same value.</p>
+      <h3>Look for</h3>
+      <p>The spellings a and A become a, and b and B become b.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>clean[&quot;group&quot;] = clean[&quot;group&quot;].str.strip().str.lower()
+print(&quot;Groups:&quot;, sorted(clean[&quot;group&quot;].unique()))</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-4">
+  <h2>4. Parse numbers and dates</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>A text representation needs to become a number or a date before we can compare it consistently.</p>
+      <h3>Look for</h3>
+      <p>score becomes numeric and updated becomes a datetime.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>clean[&quot;score&quot;] = pd.to_numeric(clean[&quot;score&quot;], errors=&quot;coerce&quot;)
+clean[&quot;updated&quot;] = pd.to_datetime(clean[&quot;updated&quot;], format=&quot;mixed&quot;, errors=&quot;coerce&quot;)
+print(clean.dtypes)</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-5">
+  <h2>5. Validate range and remove repeated IDs</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Mark out-of-range scores as missing. Keep the most recently updated row for each ID.</p>
+      <h3>Look for</h3>
+      <p>The value 200 becomes missing and ID 1 keeps the score of 10.5.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>clean[&quot;score&quot;] = clean[&quot;score&quot;].where(clean[&quot;score&quot;].between(0, 100))
+clean = clean.sort_values(&quot;updated&quot;).drop_duplicates(&quot;id&quot;, keep=&quot;last&quot;).copy()
+print(clean[[&quot;id&quot;, &quot;score&quot;, &quot;updated&quot;]].sort_values(&quot;id&quot;))</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-6">
+  <h2>6. Flag and fill missing scores</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Save a missingness flag first so we can still see which values needed a fill.</p>
+      <h3>Look for</h3>
+      <p>Two rows have the missing flag and get the observed median of 11.25.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>clean[&quot;score_missing&quot;] = clean[&quot;score&quot;].isna()
+clean[&quot;score&quot;] = clean[&quot;score&quot;].fillna(clean[&quot;score&quot;].median())
+print(clean[[&quot;id&quot;, &quot;score&quot;, &quot;score_missing&quot;]].sort_values(&quot;id&quot;))</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-7">
+  <h2>7. Validate and create the report</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Check that IDs are unique, scores are in range, and dates parsed. Save the before-and-after counts so someone can reproduce the check.</p>
+      <h3>Look for</h3>
+      <p>The result has 4 rows and no missing scores or repeated IDs. The report identifies 2 scores filled. Pandas writes the clean table as Parquet bytes in memory.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>clean[&quot;group&quot;] = clean[&quot;group&quot;].astype(&quot;category&quot;)
+assert clean[&quot;id&quot;].is_unique and clean[&quot;score&quot;].between(0, 100).all()
+assert clean[&quot;updated&quot;].notna().all()
+after = {&quot;rows&quot;: len(clean), &quot;missing_score&quot;: int(clean[&quot;score&quot;].isna().sum()),
+         &quot;duplicate_ids&quot;: int(clean[&quot;id&quot;].duplicated().sum())}
+report = pd.DataFrame({&quot;before&quot;: before, &quot;after&quot;: after}).rename_axis(&quot;check&quot;)
+print(report.to_csv(), end=&quot;&quot;)
+print(&quot;Scores filled:&quot;, clean[&quot;score_missing&quot;].sum())
+buffer = BytesIO()
+clean.to_parquet(buffer, engine=&quot;pyarrow&quot;, index=False)
+print(&quot;Clean rows read back:&quot;, len(pd.read_parquet(buffer, engine=&quot;pyarrow&quot;)))</code></pre>
+    </div>
+  </div>
+</section>
+  <p class="return"><a href="#top">Back to top</a></p>
+</main>
+</body>
+</html>

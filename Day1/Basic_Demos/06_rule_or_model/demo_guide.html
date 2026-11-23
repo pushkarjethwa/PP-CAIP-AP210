@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>When a rule or a model makes sense | Day 1 demo</title>
+  <link rel="stylesheet" href="../trainer.css">
+</head>
+<body>
+
+<main id="top">
+  <a href="../Day1_Trainer_Transcript.html#slide-6">← Trainer transcript</a>
+  <header>
+    <p class="eyebrow">Day 1 · Slide 6</p>
+    <h1>When a rule or a model makes sense</h1>
+    <div class="files"><a href="starter.py">Starter code</a><a href="solution.py">Complete solution</a></div>
+    <p>From this demo’s folder, run the solution once, or use the numbered sections to show one idea at a time. The code under Setup runs first.</p>
+    <pre><code>python solution.py</code></pre>
+  </header>
+  <details>
+    <summary>Setup code</summary>
+    <pre><code>from sklearn.metrics import confusion_matrix
+from sklearn.tree import DecisionTreeClassifier
+
+values = [2, 4, 6]
+labels_by_code = {&quot;A&quot;: &quot;alpha&quot;, &quot;B&quot;: &quot;beta&quot;}
+x_train = [[0, 0], [0, 1], [1, 0], [1, 1], [2, 0], [2, 1]]
+y_train = [0, 0, 1, 1, 1, 1]
+x_check = [[0, 0], [1, 1], [2, 1]]
+y_check = [0, 1, 0]</code></pre>
+  </details>
+  
+<section class="guide-step" id="step-1">
+  <h2>1. Fixed rule and lookup</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>The threshold and lookup both give exact answers from definitions we&#x27;ve supplied.</p>
+      <h3>Look for</h3>
+      <p>The threshold returns False, False, True. The lookup returns beta.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>print(&quot;Above 4:&quot;, [value &gt; 4 for value in values])
+print(&quot;Code B:&quot;, labels_by_code[&quot;B&quot;])</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-2">
+  <h2>2. Learn and check mistakes</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>A model learns from examples. Look at its mistakes on separate rows and ask whether the examples cover what will come next.</p>
+      <h3>Look for</h3>
+      <p>One check row has a false positive. The confusion matrix puts actual labels on rows and predicted labels on columns.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>model = DecisionTreeClassifier(max_depth=1, random_state=0).fit(x_train, y_train)
+predicted = model.predict(x_check)
+print(&quot;Predicted:&quot;, predicted.tolist(), &quot;Actual:&quot;, y_check)
+print(&quot;Confusion matrix:\n&quot;, confusion_matrix(y_check, predicted, labels=[0, 1]))</code></pre>
+    </div>
+  </div>
+</section>
+  <p class="return"><a href="#top">Back to top</a></p>
+</main>
+</body>
+</html>

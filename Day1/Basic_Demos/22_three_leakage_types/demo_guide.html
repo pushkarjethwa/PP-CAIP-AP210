@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Three ways information can leak | Day 1 demo</title>
+  <link rel="stylesheet" href="../trainer.css">
+</head>
+<body>
+
+<main id="top">
+  <a href="../Day1_Trainer_Transcript.html#slide-22">← Trainer transcript</a>
+  <header>
+    <p class="eyebrow">Day 1 · Slide 22</p>
+    <h1>Three ways information can leak</h1>
+    <div class="files"><a href="starter.py">Starter code</a><a href="solution.py">Complete solution</a></div>
+    <p>From this demo’s folder, run the solution once, or use the numbered sections to show one idea at a time. The code under Setup runs first.</p>
+    <pre><code>python solution.py</code></pre>
+  </header>
+  <details>
+    <summary>Setup code</summary>
+    <pre><code>import numpy as np
+import pandas as pd
+from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.tree import DecisionTreeClassifier
+
+train = pd.DataFrame({&quot;input&quot;: [0, 0, 1, 1, 0, 0, 1, 1],
+                      &quot;label&quot;: [0, 0, 1, 1, 0, 1, 0, 1]})
+test = pd.DataFrame({&quot;input&quot;: [0, 0, 0, 1, 1, 1, 1, 0],
+                     &quot;label&quot;: [0, 0, 0, 1, 1, 0, 1, 1]})</code></pre>
+  </details>
+  
+<section class="guide-step" id="step-1">
+  <h2>1. Target leakage</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>This feature is a copy of the label produced after the outcome. A model gets a perfect score because the answer is in the input.</p>
+      <h3>Look for</h3>
+      <p>The model with the copied outcome gets AUC 1.00. The available-only input gets 0.75.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>train[&quot;outcome_copy&quot;] = train[&quot;label&quot;]
+test[&quot;outcome_copy&quot;] = test[&quot;label&quot;]
+for names in [[&quot;input&quot;], [&quot;input&quot;, &quot;outcome_copy&quot;]]:
+    model = DecisionTreeClassifier(max_depth=1, random_state=0).fit(train[names], train[&quot;label&quot;])
+    score = roc_auc_score(test[&quot;label&quot;], model.predict_proba(test[names])[:, 1])
+    print(names, &quot;test AUC:&quot;, round(score, 2))</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-2">
+  <h2>2. Train-test contamination</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>The mean belongs to the training set. Fitting a scaler after combining both sets lets the test set change that mean.</p>
+      <h3>Look for</h3>
+      <p>The training-only scaler learns mean 2.0. The contaminated scaler learns mean 13.2.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>train_values = [[1], [2], [3]]
+test_values = [[30], [30]]
+honest = StandardScaler().fit(train_values)
+contaminated = StandardScaler().fit(train_values + test_values)
+print(&quot;Training-only mean:&quot;, honest.mean_[0])
+print(&quot;Contaminated mean:&quot;, contaminated.mean_[0])</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-3">
+  <h2>3. Temporal leakage</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>When the model will predict future rows, test on later rows. A shuffled split can train on dates after the ones in the test set.</p>
+      <h3>Look for</h3>
+      <p>The shuffled training set includes time points after some test points. In the ordered split, the latest training point is 7 and the earliest test point is 8.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>time = np.arange(1, 11)
+random_train, random_test = train_test_split(time, test_size=3, random_state=0)
+ordered_train, ordered_test = time[:-3], time[-3:]
+print(&quot;Shuffled train:&quot;, sorted(random_train), &quot;test:&quot;, sorted(random_test))
+print(&quot;Ordered train max:&quot;, ordered_train.max(), &quot;test min:&quot;, ordered_test.min())</code></pre>
+    </div>
+  </div>
+</section>
+  <p class="return"><a href="#top">Back to top</a></p>
+</main>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Why values go missing and how to handle them | Day 1 demo</title>
+  <link rel="stylesheet" href="../trainer.css">
+</head>
+<body>
+
+<main id="top">
+  <a href="../Day1_Trainer_Transcript.html#slide-17">← Trainer transcript</a>
+  <header>
+    <p class="eyebrow">Day 1 · Slide 17</p>
+    <h1>Why values go missing and how to handle them</h1>
+    <div class="files"><a href="starter.py">Starter code</a><a href="solution.py">Complete solution</a></div>
+    <p>From this demo’s folder, run the solution once, or use the numbered sections to show one idea at a time. The code under Setup runs first.</p>
+    <pre><code>python solution.py</code></pre>
+  </header>
+  <details>
+    <summary>Setup code</summary>
+    <pre><code>import numpy as np
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+
+rng = np.random.default_rng(42)
+full = pd.DataFrame({&quot;group&quot;: [&quot;a&quot;, &quot;a&quot;, &quot;b&quot;, &quot;b&quot;, &quot;a&quot;, &quot;b&quot;],
+                     &quot;value&quot;: [2, 4, 6, 8, 10, 12]})
+incomplete = pd.DataFrame({&quot;x&quot;: [1, 2, 3, 4, 5, 6],
+                           &quot;group&quot;: [&quot;a&quot;, &quot;a&quot;, &quot;a&quot;, &quot;b&quot;, &quot;b&quot;, &quot;b&quot;],
+                           &quot;value&quot;: [2, np.nan, 6, 8, np.nan, 12]})</code></pre>
+  </details>
+  
+<section class="guide-step" id="step-1">
+  <h2>1. MCAR</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Missing completely at random means the chance of a blank is independent of both observed and missing values. We choose row positions at random.</p>
+      <h3>Look for</h3>
+      <p>Two values are blank after an independent random selection.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>mcar = full[&quot;value&quot;].copy().astype(float)
+random_rows = rng.choice(len(full), size=2, replace=False)
+mcar.iloc[random_rows] = np.nan
+print(&quot;MCAR:&quot;, mcar.tolist())</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-2">
+  <h2>2. MAR</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Missing at random means an observed variable explains the missingness. Here the observed group controls it.</p>
+      <h3>Look for</h3>
+      <p>Every group b value is dropped in this intentionally extreme illustration.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>print(&quot;MAR:&quot;, full[&quot;value&quot;].mask(full[&quot;group&quot;].eq(&quot;b&quot;)).tolist())</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-3">
+  <h2>3. MNAR</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Missing not at random means the missing value itself can influence whether it is recorded.</p>
+      <h3>Look for</h3>
+      <p>Only the two hidden values above 8 are blank.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>print(&quot;MNAR:&quot;, full[&quot;value&quot;].mask(full[&quot;value&quot;] &gt; 8).tolist())</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-4">
+  <h2>4. Drop rows or fill a simple median</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Dropping blanks changes which rows remain. A median fill leaves all rows in place and supplies one common replacement.</p>
+      <h3>Look for</h3>
+      <p>Dropping leaves four rows. The simple fill replaces both gaps with 7.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>print(&quot;Rows after dropping:&quot;, len(incomplete.dropna(subset=[&quot;value&quot;])))
+values = incomplete[&quot;value&quot;]
+print(&quot;Median fill:&quot;, values.fillna(values.median()).tolist())</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-5">
+  <h2>5. Fill using groups and keep an indicator</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Group medians can differ. Record which rows had missing values before filling.</p>
+      <h3>Look for</h3>
+      <p>The gaps in groups a and b get 4 and 10. Both rows have a True indicator.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>missing = values.isna()
+group_medians = incomplete.groupby(&quot;group&quot;)[&quot;value&quot;].transform(&quot;median&quot;)
+print(incomplete.assign(value_filled=values.fillna(group_medians),
+                        value_missing=missing))</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-6">
+  <h2>6. Model-based fill</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>When another feature predicts the missing column, learn the relationship from observed rows and predict the blanks. In a modelling pipeline, learn this relationship on training rows.</p>
+      <h3>Look for</h3>
+      <p>The toy relationship is exact. The predictions for the missing entries are 4 and 10.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>imputer = LinearRegression().fit(incomplete.loc[~missing, [&quot;x&quot;]], values[~missing])
+predicted = imputer.predict(incomplete.loc[missing, [&quot;x&quot;]])
+print(&quot;Model fills:&quot;, predicted.round(2).tolist())</code></pre>
+    </div>
+  </div>
+</section>
+  <p class="return"><a href="#top">Back to top</a></p>
+</main>
+</body>
+</html>

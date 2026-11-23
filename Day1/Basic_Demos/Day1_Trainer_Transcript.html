@@ -1,0 +1,2109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Day 1 trainer transcript</title>
+  <link rel="stylesheet" href="trainer.css">
+</head>
+<body>
+
+<main id="top">
+  <header>
+    <p class="eyebrow">CAIP AIP-210 · Day 1 · Slides 1–23</p>
+    <h1>Day 1 trainer transcript</h1>
+    <p class="subtitle">AI &amp; ML Foundations and Data Preparation</p>
+    <p>Keep this page beside the <a href="../Slides/Day1_Slides.pptx">Day 1 deck</a>. Read the “Say” column and expand the matching code in “Show and check.” Each demo uses small, self-contained examples.</p>
+    <details class="run-notes">
+      <summary>Run the demos</summary>
+      <ul>
+        <li>Use the course Python environment. Run the Python check from slide 2 to confirm the interpreter and packages.</li>
+        <li>Open each demo folder in your editor or terminal and run <code>python solution.py</code>. For one step at a time, run Setup first and then use the numbered <code># %%</code> sections in an editor that supports Python cells, or paste the blocks into a Python session.</li>
+        <li>Use the starter to type the examples live. The guide gives the code and expected result. Complete the TODOs in order when steps depend on earlier variables.</li>
+        <li>EDA, statistics, gradients, numerical transformations, and data representations include plots. Run <code>python solution.py --plot</code> from the relevant folder to open them. Close the plot to return to the terminal.</li>
+      </ul>
+    </details>
+  </header>
+  <nav id="slide-index" aria-labelledby="slide-index-title">
+    <h2 id="slide-index-title">Slide index</h2>
+    <ol><li><a href="#slide-1"><span>01</span> AI &amp; ML Foundations and Data Preparation</a></li>
+<li><a href="#slide-2"><span>02</span> Day 1 agenda</a></li>
+<li><a href="#slide-3"><span>03</span> Course data and use cases</a></li>
+<li><a href="#slide-4"><span>04</span> How the week works</a></li>
+<li><a href="#slide-5"><span>05</span> AI, ML and deep learning</a></li>
+<li><a href="#slide-6"><span>06</span> Is it an ML problem?</a></li>
+<li><a href="#slide-7"><span>07</span> Formulating the ML problem</a></li>
+<li><a href="#slide-8"><span>08</span> Learning types</a></li>
+<li><a href="#slide-9"><span>09</span> Choosing the task</a></li>
+<li><a href="#slide-10"><span>10</span> Demo D1.1 · Framing and exploratory data analysis</a></li>
+<li><a href="#slide-11"><span>11</span> Python you must read fluently</a></li>
+<li><a href="#slide-12"><span>12</span> Statistics refresher</a></li>
+<li><a href="#slide-13"><span>13</span> Probability for practitioners</a></li>
+<li><a href="#slide-14"><span>14</span> Maths intuition · Vectors, loss, and gradients</a></li>
+<li><a href="#slide-15"><span>15</span> Lab L1.1 · Customer master data-quality remediation</a></li>
+<li><a href="#slide-16"><span>16</span> Data quality dimensions</a></li>
+<li><a href="#slide-17"><span>17</span> Missing data</a></li>
+<li><a href="#slide-18"><span>18</span> Transforming numerical data</a></li>
+<li><a href="#slide-19"><span>19</span> Encoding categorical data</a></li>
+<li><a href="#slide-20"><span>20</span> Feature engineering and selection</a></li>
+<li><a href="#slide-21"><span>21</span> Structured vs unstructured data</a></li>
+<li><a href="#slide-22"><span>22</span> Data leakage</a></li>
+<li><a href="#slide-23"><span>23</span> Demo D1.2 · Transformations, encoding, and leakage</a></li></ol>
+  </nav>
+  
+<section class="slide" id="slide-1">
+  <h2><span class="slide-number">01</span> AI &amp; ML Foundations and Data Preparation</h2>
+  <div class="pair">
+    <div><h3>Say</h3><p>By slide 23, you’ll have seen how to choose a learning task, inspect a dataset, turn data into model inputs, and spot information that shouldn’t be available when we predict. For each concept, I’ll explain it, run a short example, and ask you to read the output with me.</p></div>
+    <div><h3>Show</h3><p>Open the deck beside the terminal. Keep the Python check ready for the environment check.</p></div>
+  </div>
+  <div class="files"><a href="01_python_check/demo_guide.html">Demo guide</a><a href="01_python_check/starter.py">Starter code</a><a href="01_python_check/solution.py">Complete solution</a></div>
+</section>
+<section class="slide" id="slide-2">
+  <h2><span class="slide-number">02</span> Day 1 agenda</h2>
+  <div class="pair">
+    <div><h3>Say</h3><p>We start with the foundations and explore a dataset at 09:15. After the 10:00 break, we refresh Python and maths at 10:15, then work through the data-quality lab from 10:35. After lunch, we start preparing data at 13:05 and run the transformations and leakage demo at 13:30. The 14:15 credit-feature lab leads into the 15:45 break. We finish with learning systems from 16:00 to 17:30. This transcript takes us through the demo on slide 23.</p></div>
+    <div><h3>Show</h3><p>Point to the agenda. During the welcome, run the Python check from the linked guide.</p></div>
+  </div>
+  <div class="files"><a href="01_python_check/demo_guide.html">Demo guide</a><a href="01_python_check/starter.py">Starter code</a><a href="01_python_check/solution.py">Complete solution</a></div>
+</section>
+<section class="slide" id="slide-3">
+  <h2><span class="slide-number">03</span> Course data and use cases</h2>
+  <div class="pair">
+    <div><h3>Say</h3><p>This slide previews the kinds of data used in the course. You’ll see tables, time series, and images. For the live explanations, I’ll work with a few rows at a time so everyone can follow what changes on the screen.</p></div>
+    <div><h3>Show</h3><p>Point out the different data types on the slide. Continue to the lab levels.</p></div>
+  </div>
+  <div class="files"><a href="01_python_check/demo_guide.html">Demo guide</a><a href="01_python_check/starter.py">Starter code</a><a href="01_python_check/solution.py">Complete solution</a></div>
+</section>
+<section class="slide" id="slide-4">
+  <h2><span class="slide-number">04</span> How the week works</h2>
+  <div class="pair">
+    <div><h3>Say</h3><p>There are three ways to approach the course labs. Write from scratch with the guide, fill the gaps in a guided starter, or run the worked solution to check your work. Saved checkpoints help you pick up a lab that needs an earlier result. For our mini-demos, read the starter, predict what the next line does, then compare with the solution.</p></div>
+    <div><h3>Show</h3><p>Show the starter and solution from the Python check. Point out the numbered steps and TODO comments.</p></div>
+  </div>
+  <div class="files"><a href="01_python_check/demo_guide.html">Demo guide</a><a href="01_python_check/starter.py">Starter code</a><a href="01_python_check/solution.py">Complete solution</a></div>
+</section>
+<section class="slide" id="slide-5">
+  <h2><span class="slide-number">05</span> AI, ML and deep learning</h2>
+  <div class="lead"><p>AI is the broad field. Machine learning finds patterns from examples. Deep learning uses neural networks with multiple layers. Data science also includes work such as summarising a dataset.</p></div>
+  <div class="files"><a href="05_ai_ml_deep_learning/demo_guide.html">Demo guide</a><a href="05_ai_ml_deep_learning/starter.py">Starter code</a><a href="05_ai_ml_deep_learning/solution.py">Complete solution</a></div>
+  <details class="step-code"><summary>Setup code</summary><pre><code>import pandas as pd
+from sklearn.linear_model import LinearRegression
+from sklearn.neural_network import MLPClassifier
+
+numbers = [1, 2, 3, 4]
+x = [[1], [2], [3], [4]]
+y = [3, 5, 7, 9]
+bits = [[0, 0], [0, 1], [1, 0], [1, 1]]
+different = [0, 1, 1, 0]</code></pre></details>
+  <div class="pair headings" aria-hidden="true"><span>Say</span><span>Show and check</span></div>
+  
+<div class="demo-row">
+  <h3>1. Written rule</h3>
+  <div class="pair">
+    <div><p>I supplied the rule. The computer applies it to each input.</p></div>
+    <div>
+      <p class="expected">The values at least 3 produce True.</p>
+      <details class="step-code">
+        <summary>Show step 1 code</summary>
+        <pre><code>print([value &gt;= 3 for value in numbers])</code></pre>
+        <p><a href="05_ai_ml_deep_learning/demo_guide.html#step-1">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>2. Learned rule</h3>
+  <div class="pair">
+    <div><p>Here I supply input-output examples. The model learns a line from them.</p></div>
+    <div>
+      <p class="expected">The predicted output for input 5 is 11.</p>
+      <details class="step-code">
+        <summary>Show step 2 code</summary>
+        <pre><code>line = LinearRegression().fit(x, y)
+print(&quot;Prediction for 5:&quot;, round(line.predict([[5]])[0], 2))</code></pre>
+        <p><a href="05_ai_ml_deep_learning/demo_guide.html#step-2">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>3. Neural network</h3>
+  <div class="pair">
+    <div><p>This small network has two hidden layers. It learns that only the pairs with different bits have label 1.</p></div>
+    <div>
+      <p class="expected">The model reproduces the four training labels. These are training predictions for illustration.</p>
+      <details class="step-code">
+        <summary>Show step 3 code</summary>
+        <pre><code>net = MLPClassifier(hidden_layer_sizes=(8, 8), solver=&quot;lbfgs&quot;,
+                    random_state=0, max_iter=1000).fit(bits, different)
+print(&quot;Hidden layers:&quot;, net.hidden_layer_sizes)
+print(&quot;Training predictions:&quot;, net.predict(bits).tolist())</code></pre>
+        <p><a href="05_ai_ml_deep_learning/demo_guide.html#step-3">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>4. Data science without a model</h3>
+  <div class="pair">
+    <div><p>Summarising values is already useful data work.</p></div>
+    <div>
+      <p class="expected">There are four values and their mean is 2.5.</p>
+      <details class="step-code">
+        <summary>Show step 4 code</summary>
+        <pre><code>values = pd.Series(numbers)
+print(&quot;Count:&quot;, values.count(), &quot;Mean:&quot;, values.mean())</code></pre>
+        <p><a href="05_ai_ml_deep_learning/demo_guide.html#step-4">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+  <p class="transition">Ask which examples used a fitted model. The rule and the summary used no fitting.</p>
+  <p class="return"><a href="#slide-index">Slide index ↑</a></p>
+</section>
+<section class="slide" id="slide-6">
+  <h2><span class="slide-number">06</span> Is it an ML problem?</h2>
+  <div class="lead"><p>First ask whether the answer can be written as a fixed rule or looked up. For a learned pattern, check the quality and coverage of the data, what decision the prediction supports, and what each type of error costs.</p></div>
+  <div class="files"><a href="06_rule_or_model/demo_guide.html">Demo guide</a><a href="06_rule_or_model/starter.py">Starter code</a><a href="06_rule_or_model/solution.py">Complete solution</a></div>
+  <details class="step-code"><summary>Setup code</summary><pre><code>from sklearn.metrics import confusion_matrix
+from sklearn.tree import DecisionTreeClassifier
+
+values = [2, 4, 6]
+labels_by_code = {&quot;A&quot;: &quot;alpha&quot;, &quot;B&quot;: &quot;beta&quot;}
+x_train = [[0, 0], [0, 1], [1, 0], [1, 1], [2, 0], [2, 1]]
+y_train = [0, 0, 1, 1, 1, 1]
+x_check = [[0, 0], [1, 1], [2, 1]]
+y_check = [0, 1, 0]</code></pre></details>
+  <div class="pair headings" aria-hidden="true"><span>Say</span><span>Show and check</span></div>
+  
+<div class="demo-row">
+  <h3>1. Fixed rule and lookup</h3>
+  <div class="pair">
+    <div><p>The threshold and lookup both give exact answers from definitions we&#x27;ve supplied.</p></div>
+    <div>
+      <p class="expected">The threshold returns False, False, True. The lookup returns beta.</p>
+      <details class="step-code">
+        <summary>Show step 1 code</summary>
+        <pre><code>print(&quot;Above 4:&quot;, [value &gt; 4 for value in values])
+print(&quot;Code B:&quot;, labels_by_code[&quot;B&quot;])</code></pre>
+        <p><a href="06_rule_or_model/demo_guide.html#step-1">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>2. Learn and check mistakes</h3>
+  <div class="pair">
+    <div><p>A model learns from examples. Look at its mistakes on separate rows and ask whether the examples cover what will come next.</p></div>
+    <div>
+      <p class="expected">One check row has a false positive. The confusion matrix puts actual labels on rows and predicted labels on columns.</p>
+      <details class="step-code">
+        <summary>Show step 2 code</summary>
+        <pre><code>model = DecisionTreeClassifier(max_depth=1, random_state=0).fit(x_train, y_train)
+predicted = model.predict(x_check)
+print(&quot;Predicted:&quot;, predicted.tolist(), &quot;Actual:&quot;, y_check)
+print(&quot;Confusion matrix:\n&quot;, confusion_matrix(y_check, predicted, labels=[0, 1]))</code></pre>
+        <p><a href="06_rule_or_model/demo_guide.html#step-2">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+  <p class="transition">Ask what happens if the next inputs differ from the training inputs. Use the check rows to discuss representative data and the cost of false alarms versus missed cases.</p>
+  <p class="return"><a href="#slide-index">Slide index ↑</a></p>
+</section>
+<section class="slide" id="slide-7">
+  <h2><span class="slide-number">07</span> Formulating the ML problem</h2>
+  <div class="lead"><p>Before choosing an algorithm, say what one row is, when the prediction is made, how far ahead it looks, and how you&#x27;ll judge the error.</p></div>
+  <div class="files"><a href="07_problem_framing/demo_guide.html">Demo guide</a><a href="07_problem_framing/starter.py">Starter code</a><a href="07_problem_framing/solution.py">Complete solution</a></div>
+  <details class="step-code"><summary>Setup code</summary><pre><code>import pandas as pd
+from sklearn.metrics import mean_absolute_error
+
+series = pd.Series([10, 13, 12, 16, 15], name=&quot;reading&quot;)</code></pre></details>
+  <div class="pair headings" aria-hidden="true"><span>Say</span><span>Show and check</span></div>
+  
+<div class="demo-row">
+  <h3>1. Build one row per time point</h3>
+  <div class="pair">
+    <div><p>One row is a time point. The current and previous readings are available by that point.</p></div>
+    <div>
+      <p class="expected">At time 1, the current reading is 13 and the previous reading is 10.</p>
+      <details class="step-code">
+        <summary>Show step 1 code</summary>
+        <pre><code>rows = series.to_frame().assign(previous=series.shift(1))
+print(rows)</code></pre>
+        <p><a href="07_problem_framing/demo_guide.html#step-1">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>2. Define a one-step target</h3>
+  <div class="pair">
+    <div><p>The prediction horizon is one step. We can build the label from the next reading while preparing historical examples.</p></div>
+    <div>
+      <p class="expected">At time 1, the target is 12. The final row has no observed target yet.</p>
+      <details class="step-code">
+        <summary>Show step 2 code</summary>
+        <pre><code>rows[&quot;next_reading&quot;] = series.shift(-1)
+print(rows)
+labelled = rows.dropna(subset=[&quot;previous&quot;, &quot;next_reading&quot;])</code></pre>
+        <p><a href="07_problem_framing/demo_guide.html#step-2">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>3. Score a baseline</h3>
+  <div class="pair">
+    <div><p>Suppose we predict that the next reading equals the current one. Mean absolute error measures the typical size of the miss in the original units.</p></div>
+    <div>
+      <p class="expected">Across these three rows, the mean absolute error is 2.0.</p>
+      <details class="step-code">
+        <summary>Show step 3 code</summary>
+        <pre><code>error = mean_absolute_error(labelled[&quot;next_reading&quot;], labelled[&quot;reading&quot;])
+print(&quot;Baseline MAE:&quot;, error)</code></pre>
+        <p><a href="07_problem_framing/demo_guide.html#step-3">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+  <p class="transition">Ask whether next_reading belongs in the input. We can use it as the historical target and compare with it later, once the next reading arrives.</p>
+  <p class="return"><a href="#slide-index">Slide index ↑</a></p>
+</section>
+<section class="slide" id="slide-8">
+  <h2><span class="slide-number">08</span> Learning types</h2>
+  <div class="lead"><p>Look at where the training signal comes from. These examples use labels, patterns in unlabelled inputs, rewards, a few labels, and targets made from the inputs.</p></div>
+  <div class="files"><a href="08_learning_types/demo_guide.html">Demo guide</a><a href="08_learning_types/starter.py">Starter code</a><a href="08_learning_types/solution.py">Complete solution</a></div>
+  <details class="step-code"><summary>Setup code</summary><pre><code>from collections import Counter
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
+from sklearn.ensemble import IsolationForest
+from sklearn.linear_model import LinearRegression
+from sklearn.semi_supervised import LabelSpreading
+
+x = [[0], [0.2], [0.4], [5], [5.2], [5.4]]</code></pre></details>
+  <div class="pair headings" aria-hidden="true"><span>Say</span><span>Show and check</span></div>
+  
+<div class="demo-row">
+  <h3>1. Supervised</h3>
+  <div class="pair">
+    <div><p>The example outputs are already supplied as labels.</p></div>
+    <div>
+      <p class="expected">The learned line predicts 6 for input 3.</p>
+      <details class="step-code">
+        <summary>Show step 1 code</summary>
+        <pre><code>model = LinearRegression().fit([[1], [2], [4]], [2, 4, 8])
+print(&quot;Prediction for 3:&quot;, round(model.predict([[3]])[0], 2))</code></pre>
+        <p><a href="08_learning_types/demo_guide.html#step-1">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>2. Unsupervised clustering</h3>
+  <div class="pair">
+    <div><p>We only supply the positions. The model groups points by proximity.</p></div>
+    <div>
+      <p class="expected">The first three points share one group and the final three share another. The ID numbers are arbitrary.</p>
+      <details class="step-code">
+        <summary>Show step 2 code</summary>
+        <pre><code>groups = KMeans(n_clusters=2, n_init=10, random_state=0).fit_predict(x)
+print(&quot;Group IDs:&quot;, groups.tolist())</code></pre>
+        <p><a href="08_learning_types/demo_guide.html#step-2">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>3. Unsupervised dimension reduction</h3>
+  <div class="pair">
+    <div><p>PCA finds a direction that preserves as much variation as possible in fewer columns.</p></div>
+    <div>
+      <p class="expected">Three rows with two columns become three rows with one component.</p>
+      <details class="step-code">
+        <summary>Show step 3 code</summary>
+        <pre><code>component = PCA(n_components=1).fit_transform([[1, 2], [2, 4], [3, 6]])
+print(&quot;Reduced shape:&quot;, component.shape)</code></pre>
+        <p><a href="08_learning_types/demo_guide.html#step-3">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>4. Unsupervised anomaly detection</h3>
+  <div class="pair">
+    <div><p>An isolation forest flags values that are easier to separate from the rest.</p></div>
+    <div>
+      <p class="expected">The final value, 20, is flagged with -1.</p>
+      <details class="step-code">
+        <summary>Show step 4 code</summary>
+        <pre><code>points = [[1], [1.1], [1.2], [1.3], [20]]
+flags = IsolationForest(contamination=0.2, random_state=0).fit_predict(points)
+print(&quot;Anomaly flags:&quot;, flags.tolist(), &quot;(-1 means unusual)&quot;)</code></pre>
+        <p><a href="08_learning_types/demo_guide.html#step-4">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>5. Reinforcement learning</h3>
+  <div class="pair">
+    <div><p>This one-state example learns the value of each action from rewards. The simplest policy picks the action with the larger estimated value.</p></div>
+    <div>
+      <p class="expected">The running estimates favour action B after four practice actions.</p>
+      <details class="step-code">
+        <summary>Show step 5 code</summary>
+        <pre><code>q = {&quot;A&quot;: 0.0, &quot;B&quot;: 0.0}
+for action, reward in [(&quot;A&quot;, 1), (&quot;B&quot;, 3), (&quot;A&quot;, 1), (&quot;B&quot;, 3)]:
+    q[action] += 0.5 * (reward - q[action])
+print(&quot;Action values:&quot;, q, &quot;Chosen action:&quot;, max(q, key=q.get))</code></pre>
+        <p><a href="08_learning_types/demo_guide.html#step-5">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>6. Semi-supervised</h3>
+  <div class="pair">
+    <div><p>A model receives a few labelled points and uses their proximity to help assign labels to the remaining points.</p></div>
+    <div>
+      <p class="expected">The model spreads label 0 around the first point and label 1 around the final point.</p>
+      <details class="step-code">
+        <summary>Show step 6 code</summary>
+        <pre><code>partly_labelled = [0, -1, -1, -1, -1, 1]
+spread = LabelSpreading().fit(x, partly_labelled)
+print(&quot;Inferred labels:&quot;, spread.transduction_.tolist())</code></pre>
+        <p><a href="08_learning_types/demo_guide.html#step-6">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>7. Self-supervised</h3>
+  <div class="pair">
+    <div><p>We make the targets from the data itself. In a next-token task, each following token becomes the answer for the preceding token.</p></div>
+    <div>
+      <p class="expected">The generated examples show B most often follows A.</p>
+      <details class="step-code">
+        <summary>Show step 7 code</summary>
+        <pre><code>tokens = &quot;A B A B A C&quot;.split()
+pairs = list(zip(tokens, tokens[1:]))
+after_a = Counter(target for source, target in pairs if source == &quot;A&quot;)
+print(&quot;Generated pairs:&quot;, pairs)
+print(&quot;Most likely next token after A:&quot;, after_a.most_common(1)[0][0])</code></pre>
+        <p><a href="08_learning_types/demo_guide.html#step-7">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+  <p class="transition">Ask where the signal came from in each run. The next slide separates learning type from the kind of output.</p>
+  <p class="return"><a href="#slide-index">Slide index ↑</a></p>
+</section>
+<section class="slide" id="slide-9">
+  <h2><span class="slide-number">09</span> Choosing the task</h2>
+  <div class="lead"><p>Do we want a number, a category, a group found in the data, or a future value in a sequence?</p></div>
+  <div class="files"><a href="09_four_ml_tasks/demo_guide.html">Demo guide</a><a href="09_four_ml_tasks/starter.py">Starter code</a><a href="09_four_ml_tasks/solution.py">Complete solution</a></div>
+  <details class="step-code"><summary>Setup code</summary><pre><code>from sklearn.cluster import KMeans
+from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeClassifier</code></pre></details>
+  <div class="pair headings" aria-hidden="true"><span>Say</span><span>Show and check</span></div>
+  
+<div class="demo-row">
+  <h3>1. Regression</h3>
+  <div class="pair">
+    <div><p>Regression returns a number. This line learns the relationship from three pairs.</p></div>
+    <div>
+      <p class="expected">Input 4 gives the numeric prediction 9.0.</p>
+      <details class="step-code">
+        <summary>Show step 1 code</summary>
+        <pre><code>reg = LinearRegression().fit([[1], [2], [3]], [3, 5, 7])
+print(&quot;Numeric prediction:&quot;, round(reg.predict([[4]])[0], 1))</code></pre>
+        <p><a href="09_four_ml_tasks/demo_guide.html#step-1">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>2. Classification</h3>
+  <div class="pair">
+    <div><p>Classification returns a class from a known set of labels. A binary model learns two classes. A multiclass model can learn three or more.</p></div>
+    <div>
+      <p class="expected">The binary model returns low and high. The three-class model returns middle for 4.</p>
+      <details class="step-code">
+        <summary>Show step 2 code</summary>
+        <pre><code>clf = DecisionTreeClassifier(max_depth=1, random_state=0)
+clf.fit([[0], [1], [8], [9]], [&quot;low&quot;, &quot;low&quot;, &quot;high&quot;, &quot;high&quot;])
+print(&quot;Predicted classes:&quot;, clf.predict([[2], [7]]).tolist())
+three = DecisionTreeClassifier(max_depth=2, random_state=0)
+three.fit([[0], [1], [4], [5], [8], [9]], [&quot;low&quot;, &quot;low&quot;, &quot;middle&quot;, &quot;middle&quot;, &quot;high&quot;, &quot;high&quot;])
+print(&quot;Three-class prediction:&quot;, three.predict([[4]])[0])</code></pre>
+        <p><a href="09_four_ml_tasks/demo_guide.html#step-2">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>3. Clustering</h3>
+  <div class="pair">
+    <div><p>Clustering gets the same kind of inputs without the low and high labels. It discovers two groups from the distances.</p></div>
+    <div>
+      <p class="expected">0 and 1 are together, and 8 and 9 are together. Group IDs can be swapped.</p>
+      <details class="step-code">
+        <summary>Show step 3 code</summary>
+        <pre><code>points = [[0], [1], [8], [9]]
+clusters = KMeans(n_clusters=2, n_init=10, random_state=0).fit_predict(points)
+print(&quot;Group IDs:&quot;, clusters.tolist())</code></pre>
+        <p><a href="09_four_ml_tasks/demo_guide.html#step-3">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>4. Forecasting</h3>
+  <div class="pair">
+    <div><p>Here the input order represents time. Use earlier values to learn and keep the later value for checking.</p></div>
+    <div>
+      <p class="expected">The forecast for time 4 is 16, which matches the held-out observation.</p>
+      <details class="step-code">
+        <summary>Show step 4 code</summary>
+        <pre><code>time_train = [[1], [2], [3]]
+trend = LinearRegression().fit(time_train, [10, 12, 14])
+print(&quot;Time 4 forecast:&quot;, round(trend.predict([[4]])[0], 1), &quot;Actual:&quot;, 16)</code></pre>
+        <p><a href="09_four_ml_tasks/demo_guide.html#step-4">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+  <p class="transition">Read the four outputs aloud. A numeric forecast also depends on the order of the rows.</p>
+  <p class="return"><a href="#slide-index">Slide index ↑</a></p>
+</section>
+<section class="slide" id="slide-10">
+  <h2><span class="slide-number">10</span> Demo D1.1 · Framing and exploratory data analysis</h2>
+  <div class="lead"><p>Exploratory data analysis (EDA) starts with short checks. Look at the size and types, check quality, describe single columns, and then look for relationships.</p></div>
+  <div class="files"><a href="10_eda/demo_guide.html">Demo guide</a><a href="10_eda/starter.py">Starter code</a><a href="10_eda/solution.py">Complete solution</a></div>
+  <details class="step-code"><summary>Setup code</summary><pre><code>from io import StringIO
+import sys
+
+import pandas as pd
+
+csv_text = &quot;&quot;&quot;id,group,x,y
+1,a,10,2
+2,A,11,3
+3,b,12,4
+3,b,12,4
+4,b,,5
+5,a,14,6
+6,b,100,10
+7,c,16,7
+8,c,-2,8
+&quot;&quot;&quot;
+df = pd.read_csv(StringIO(csv_text))</code></pre></details>
+  <div class="pair headings" aria-hidden="true"><span>Say</span><span>Show and check</span></div>
+  
+<div class="demo-row">
+  <h3>1. Load, size, and preview</h3>
+  <div class="pair">
+    <div><p>Start by confirming what came in. A CSV read creates a DataFrame.</p></div>
+    <div>
+      <p class="expected">There are 9 rows and 4 columns. head() shows the first three rows.</p>
+      <details class="step-code">
+        <summary>Show step 1 code</summary>
+        <pre><code>print(&quot;Rows, columns:&quot;, df.shape)
+print(&quot;Column names:&quot;, df.columns.tolist())
+print(df.head(3))</code></pre>
+        <p><a href="10_eda/demo_guide.html#step-1">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>2. Types and memory</h3>
+  <div class="pair">
+    <div><p>Check which columns are numeric and how much memory the DataFrame uses.</p></div>
+    <div>
+      <p class="expected">x has a floating type because one value is missing. The group column stores text.</p>
+      <details class="step-code">
+        <summary>Show step 2 code</summary>
+        <pre><code>df.info()
+print(&quot;Total memory in bytes:&quot;, df.memory_usage(deep=True).sum())</code></pre>
+        <p><a href="10_eda/demo_guide.html#step-2">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>3. Reduce memory for repeated text</h3>
+  <div class="pair">
+    <div><p>When the same category labels repeat, pandas can store a short code per row and keep the text once.</p></div>
+    <div>
+      <p class="expected">On the repeated group values, the categorical dtype takes fewer bytes.</p>
+      <details class="step-code">
+        <summary>Show step 3 code</summary>
+        <pre><code>repeated = pd.concat([df[&quot;group&quot;]] * 100, ignore_index=True)
+category = repeated.astype(&quot;category&quot;)
+print(&quot;Text bytes:&quot;, repeated.memory_usage(index=False, deep=True))
+print(&quot;Category bytes:&quot;, category.memory_usage(index=False, deep=True))</code></pre>
+        <p><a href="10_eda/demo_guide.html#step-3">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>4. Missing values</h3>
+  <div class="pair">
+    <div><p>Count blanks and divide by the row count to compare columns.</p></div>
+    <div>
+      <p class="expected">x has one blank, which is about 11.1% of the rows.</p>
+      <details class="step-code">
+        <summary>Show step 4 code</summary>
+        <pre><code>print(&quot;Missing counts:\n&quot;, df.isna().sum())
+print(&quot;Missing percent:\n&quot;, (100 * df.isna().mean()).round(1))</code></pre>
+        <p><a href="10_eda/demo_guide.html#step-4">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>5. Duplicates</h3>
+  <div class="pair">
+    <div><p>Check for repeated rows and repeated IDs. Those answer different questions.</p></div>
+    <div>
+      <p class="expected">There is one repeated row and one repeated ID after its first occurrence.</p>
+      <details class="step-code">
+        <summary>Show step 5 code</summary>
+        <pre><code>print(&quot;Duplicate rows:&quot;, df.duplicated().sum())
+print(&quot;Duplicate IDs after the first:&quot;, df[&quot;id&quot;].duplicated().sum())</code></pre>
+        <p><a href="10_eda/demo_guide.html#step-5">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>6. Categorical counts</h3>
+  <div class="pair">
+    <div><p>Frequency counts can surface a spelling or case issue.</p></div>
+    <div>
+      <p class="expected">The counts list a and A as separate values.</p>
+      <details class="step-code">
+        <summary>Show step 6 code</summary>
+        <pre><code>print(df[&quot;group&quot;].value_counts(dropna=False))</code></pre>
+        <p><a href="10_eda/demo_guide.html#step-6">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>7. Numeric summary</h3>
+  <div class="pair">
+    <div><p>Use the summary and quantiles to get a quick sense of the centre, spread, and extremes.</p></div>
+    <div>
+      <p class="expected">For x, the mean is higher than the median and the maximum is 100.</p>
+      <details class="step-code">
+        <summary>Show step 7 code</summary>
+        <pre><code>print(df[[&quot;x&quot;, &quot;y&quot;]].describe().round(2))
+print(&quot;x skew:&quot;, round(df[&quot;x&quot;].skew(), 2))</code></pre>
+        <p><a href="10_eda/demo_guide.html#step-7">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>8. Validity and possible outliers</h3>
+  <div class="pair">
+    <div><p>A known range can flag invalid values. An IQR rule flags values to investigate.</p></div>
+    <div>
+      <p class="expected">The negative x breaks the non-negative rule. The high value 100 is above the upper IQR fence.</p>
+      <details class="step-code">
+        <summary>Show step 8 code</summary>
+        <pre><code>print(&quot;Negative x:\n&quot;, df.loc[df[&quot;x&quot;] &lt; 0, [&quot;id&quot;, &quot;x&quot;]])
+q1, q3 = df[&quot;x&quot;].quantile([0.25, 0.75])
+upper = q3 + 1.5 * (q3 - q1)
+print(&quot;Above upper IQR fence:\n&quot;, df.loc[df[&quot;x&quot;] &gt; upper, [&quot;id&quot;, &quot;x&quot;]])</code></pre>
+        <p><a href="10_eda/demo_guide.html#step-8">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>9. Group summaries and correlation</h3>
+  <div class="pair">
+    <div><p>Compare groups with a simple summary. Then use correlation to check for a linear association between two numeric columns.</p></div>
+    <div>
+      <p class="expected">Grouping reveals different means. The correlation matrix gives an initial relationship to check on a scatter plot.</p>
+      <details class="step-code">
+        <summary>Show step 9 code</summary>
+        <pre><code>print(&quot;Group means:\n&quot;, df.groupby(&quot;group&quot;)[[&quot;x&quot;, &quot;y&quot;]].mean().round(2))
+print(&quot;Correlation:\n&quot;, df[[&quot;x&quot;, &quot;y&quot;]].corr().round(2))</code></pre>
+        <p><a href="10_eda/demo_guide.html#step-9">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>10. Histogram, box plot, and scatter plot</h3>
+  <div class="pair">
+    <div><p>A histogram shows the shape, a box plot flags extremes, and a scatter plot shows pairs of values.</p></div>
+    <div>
+      <p class="expected">With --plot, the display shows three plots. Look for how the isolated value affects each view.</p>
+      <details class="step-code">
+        <summary>Show step 10 code</summary>
+        <pre><code>if &quot;--plot&quot; in sys.argv:
+    import matplotlib.pyplot as plt
+
+    fig, axes = plt.subplots(1, 3, figsize=(10, 3))
+    axes[0].hist(df[&quot;x&quot;].dropna(), bins=8)
+    axes[0].set(xlabel=&quot;x&quot;, ylabel=&quot;Count&quot;, title=&quot;Histogram&quot;)
+    axes[1].boxplot(df[&quot;x&quot;].dropna())
+    axes[1].set(ylabel=&quot;x&quot;, title=&quot;Box plot&quot;)
+    axes[2].scatter(df[&quot;x&quot;], df[&quot;y&quot;])
+    axes[2].set(xlabel=&quot;x&quot;, ylabel=&quot;y&quot;, title=&quot;Scatter plot&quot;)
+    fig.tight_layout()
+    plt.show()</code></pre>
+        <p><a href="10_eda/demo_guide.html#step-10">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+  <p class="transition">Use the EDA guide as the live run. To cover the full set of D1.1 concepts, bring back the framing example from slide 7, then point learners to the short NumPy, statistics, probability, and gradient examples on slides 11–14.</p>
+  <p class="return"><a href="#slide-index">Slide index ↑</a></p>
+</section>
+<section class="slide" id="slide-11">
+  <h2><span class="slide-number">11</span> Python you must read fluently</h2>
+  <div class="lead"><p>Read each short expression from left to right. Say what goes in, what happens, and what type of result comes out.</p></div>
+  <div class="files"><a href="11_python_numpy_pandas/demo_guide.html">Demo guide</a><a href="11_python_numpy_pandas/starter.py">Starter code</a><a href="11_python_numpy_pandas/solution.py">Complete solution</a></div>
+  <details class="step-code"><summary>Setup code</summary><pre><code>from time import perf_counter
+
+import numpy as np
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+
+values = np.array([10, 20, 30])
+big = np.arange(300_000)
+table = pd.DataFrame({&quot;id&quot;: [1, 2, 3, 4], &quot;group&quot;: [&quot;a&quot;, &quot;a&quot;, &quot;b&quot;, &quot;b&quot;],
+                      &quot;value&quot;: [2, 4, 6, 8]})
+labels = pd.DataFrame({&quot;group&quot;: [&quot;a&quot;, &quot;b&quot;], &quot;name&quot;: [&quot;alpha&quot;, &quot;beta&quot;]})
+train_x = [[1], [2], [3]]
+train_y = [2, 4, 6]</code></pre></details>
+  <div class="pair headings" aria-hidden="true"><span>Say</span><span>Show and check</span></div>
+  
+<div class="demo-row">
+  <h3>1. Array, shape, dtype, and boolean mask</h3>
+  <div class="pair">
+    <div><p>Shape tells us the size of each axis. A comparison gives one True or False per value. The mask keeps only True entries.</p></div>
+    <div>
+      <p class="expected">The array has shape (3,), contains integers, and the mask selects 20 and 30.</p>
+      <details class="step-code">
+        <summary>Show step 1 code</summary>
+        <pre><code>print(&quot;Shape:&quot;, values.shape, &quot;dtype:&quot;, values.dtype)
+mask = values &gt;= 20
+print(&quot;Mask:&quot;, mask.tolist(), &quot;Selected:&quot;, values[mask].tolist())</code></pre>
+        <p><a href="11_python_numpy_pandas/demo_guide.html#step-1">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>2. Vectorized maths vs a Python loop</h3>
+  <div class="pair">
+    <div><p>The operation is doubling. The loop calls Python for each value. The array expression passes the job to NumPy.</p></div>
+    <div>
+      <p class="expected">The outputs match. The measured timings vary by machine and run.</p>
+      <details class="step-code">
+        <summary>Show step 2 code</summary>
+        <pre><code>start = perf_counter()
+doubled_loop = []
+for value in big:
+    doubled_loop.append(value * 2)
+loop_seconds = perf_counter() - start
+start = perf_counter()
+doubled_array = big * 2
+array_seconds = perf_counter() - start
+print(&quot;Same values:&quot;, np.array_equal(doubled_loop, doubled_array))
+print(f&quot;Loop: {loop_seconds:.5f}s | Array: {array_seconds:.5f}s&quot;)</code></pre>
+        <p><a href="11_python_numpy_pandas/demo_guide.html#step-2">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>3. DataFrame, Series, dtypes, and apply</h3>
+  <div class="pair">
+    <div><p>A DataFrame is the table. Selecting one column gives a Series. apply calls the function for each value here.</p></div>
+    <div>
+      <p class="expected">The apply result matches the vectorized multiplication.</p>
+      <details class="step-code">
+        <summary>Show step 3 code</summary>
+        <pre><code>column = table[&quot;value&quot;]
+print(type(table).__name__, type(column).__name__)
+print(table.dtypes)
+print(&quot;Same result:&quot;, column.apply(lambda x: x * 2).equals(column * 2))</code></pre>
+        <p><a href="11_python_numpy_pandas/demo_guide.html#step-3">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>4. Chaining and named aggregation</h3>
+  <div class="pair">
+    <div><p>assign adds a column to the returned table. groupby creates groups and agg names the summaries.</p></div>
+    <div>
+      <p class="expected">The summary counts rows and shows their means by group and by high value.</p>
+      <details class="step-code">
+        <summary>Show step 4 code</summary>
+        <pre><code>summary = (table.assign(high=table[&quot;value&quot;] &gt; 4)
+           .groupby([&quot;group&quot;, &quot;high&quot;])
+           .agg(count=(&quot;id&quot;, &quot;size&quot;), mean=(&quot;value&quot;, &quot;mean&quot;)))
+print(summary)</code></pre>
+        <p><a href="11_python_numpy_pandas/demo_guide.html#step-4">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>5. Merge tables</h3>
+  <div class="pair">
+    <div><p>The group column links the two tables. A left merge preserves the original rows.</p></div>
+    <div>
+      <p class="expected">Rows in group a get alpha and rows in group b get beta.</p>
+      <details class="step-code">
+        <summary>Show step 5 code</summary>
+        <pre><code>print(table.merge(labels, on=&quot;group&quot;, how=&quot;left&quot;))</code></pre>
+        <p><a href="11_python_numpy_pandas/demo_guide.html#step-5">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>6. Pure transformation</h3>
+  <div class="pair">
+    <div><p>A pure function takes an input and returns a result without changing the original table.</p></div>
+    <div>
+      <p class="expected">The new result has doubled. The original columns are unchanged.</p>
+      <details class="step-code">
+        <summary>Show step 6 code</summary>
+        <pre><code>def add_doubled(frame):
+    return frame.assign(doubled=frame[&quot;value&quot;] * 2)
+
+print(add_doubled(table))
+print(&quot;Original columns:&quot;, table.columns.tolist())</code></pre>
+        <p><a href="11_python_numpy_pandas/demo_guide.html#step-6">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>7. fit, transform, predict, and Pipeline</h3>
+  <div class="pair">
+    <div><p>fit learns parameters. transform applies a learned conversion. predict returns model outputs. A Pipeline runs the steps in order.</p></div>
+    <div>
+      <p class="expected">The scaler learns mean 2. The fitted pipeline predicts 8 for input 4.</p>
+      <details class="step-code">
+        <summary>Show step 7 code</summary>
+        <pre><code>scaler = StandardScaler().fit(train_x)
+print(&quot;Learned mean:&quot;, scaler.mean_, &quot;Scaled 4:&quot;, scaler.transform([[4]]))
+pipe = Pipeline([(&quot;scale&quot;, StandardScaler()), (&quot;model&quot;, LinearRegression())])
+pipe.fit(train_x, train_y)
+print(&quot;Prediction for 4:&quot;, pipe.predict([[4]]).round(2))</code></pre>
+        <p><a href="11_python_numpy_pandas/demo_guide.html#step-7">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+  <p class="transition">Ask what assign returns. Point to the unchanged original table after the pure-function example.</p>
+  <p class="return"><a href="#slide-index">Slide index ↑</a></p>
+</section>
+<section class="slide" id="slide-12">
+  <h2><span class="slide-number">12</span> Statistics refresher</h2>
+  <div class="lead"><p>Start with the typical value, then ask how spread out the numbers are and what shape they make. A few large values can pull the mean upwards.</p></div>
+  <div class="files"><a href="12_statistics/demo_guide.html">Demo guide</a><a href="12_statistics/starter.py">Starter code</a><a href="12_statistics/solution.py">Complete solution</a></div>
+  <details class="step-code"><summary>Setup code</summary><pre><code>import sys
+
+import numpy as np
+import pandas as pd
+
+values = pd.Series([1, 2, 2, 3, 12])
+rng = np.random.default_rng(42)</code></pre></details>
+  <div class="pair headings" aria-hidden="true"><span>Say</span><span>Show and check</span></div>
+  
+<div class="demo-row">
+  <h3>1. Mean and median</h3>
+  <div class="pair">
+    <div><p>The mean uses every magnitude. The median sits at the middle of the sorted values.</p></div>
+    <div>
+      <p class="expected">The mean is 4.0 and the median is 2.0.</p>
+      <details class="step-code">
+        <summary>Show step 1 code</summary>
+        <pre><code>print(&quot;Mean:&quot;, values.mean(), &quot;Median:&quot;, values.median())</code></pre>
+        <p><a href="12_statistics/demo_guide.html#step-1">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>2. Variance and standard deviation</h3>
+  <div class="pair">
+    <div><p>Both describe spread. Standard deviation is the square root of variance and is in the same units as the values.</p></div>
+    <div>
+      <p class="expected">Using sample formulas, variance is 20.5 and standard deviation is about 4.53.</p>
+      <details class="step-code">
+        <summary>Show step 2 code</summary>
+        <pre><code>print(&quot;Sample variance:&quot;, round(values.var(), 2))
+print(&quot;Sample standard deviation:&quot;, round(values.std(), 2))</code></pre>
+        <p><a href="12_statistics/demo_guide.html#step-2">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>3. Skew and a log</h3>
+  <div class="pair">
+    <div><p>The large value makes a right tail. A log compresses the higher values more than the lower ones.</p></div>
+    <div>
+      <p class="expected">The skew is positive and decreases after the log.</p>
+      <details class="step-code">
+        <summary>Show step 3 code</summary>
+        <pre><code>print(&quot;Skew before log:&quot;, round(values.skew(), 2))
+print(&quot;Skew after log:&quot;, round(np.log(values).skew(), 2))</code></pre>
+        <p><a href="12_statistics/demo_guide.html#step-3">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>4. Normal, log-normal, binomial, and Poisson</h3>
+  <div class="pair">
+    <div><p>The normal is symmetric. The log-normal is positive and often right-skewed. A binomial counts successes in a fixed number of tries, and a Poisson counts events in an interval.</p></div>
+    <div>
+      <p class="expected">With --plot, the first two panels show continuous values and the last two show integer counts. Binomial values stay between 0 and 10.</p>
+      <details class="step-code">
+        <summary>Show step 4 code</summary>
+        <pre><code>samples = {
+    &quot;Normal&quot;: rng.normal(0, 1, 500),
+    &quot;Log-normal&quot;: rng.lognormal(0, 1, 500),
+    &quot;Binomial&quot;: rng.binomial(10, 0.3, 500),
+    &quot;Poisson&quot;: rng.poisson(3, 500),
+}
+for name, sample in samples.items():
+    print(name, &quot;mean =&quot;, round(sample.mean(), 2),
+          &quot;range =&quot;, np.round([sample.min(), sample.max()], 2))
+
+if &quot;--plot&quot; in sys.argv:
+    import matplotlib.pyplot as plt
+
+    fig, axes = plt.subplots(2, 2, figsize=(7, 5))
+    for ax, (name, sample) in zip(axes.flat, samples.items()):
+        bins = np.arange(sample.max() + 2) - 0.5 if sample.dtype.kind == &quot;i&quot; else 24
+        ax.hist(sample, bins=bins)
+        ax.set(title=name, xlabel=&quot;Value&quot;, ylabel=&quot;Frequency&quot;)
+    fig.tight_layout()
+    plt.show()</code></pre>
+        <p><a href="12_statistics/demo_guide.html#step-4">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+  <p class="transition">Ask whether rescaling the axes alone changes the shape. Carry that question forward to slide 18.</p>
+  <p class="return"><a href="#slide-index">Slide index ↑</a></p>
+</section>
+<section class="slide" id="slide-13">
+  <h2><span class="slide-number">13</span> Probability for practitioners</h2>
+  <div class="lead"><p>Count the same event in the whole table and in a subset. The denominator tells you which question you&#x27;re answering.</p></div>
+  <div class="files"><a href="13_probability/demo_guide.html">Demo guide</a><a href="13_probability/starter.py">Starter code</a><a href="13_probability/solution.py">Complete solution</a></div>
+  <details class="step-code"><summary>Setup code</summary><pre><code>import pandas as pd
+
+table = pd.DataFrame({
+    &quot;X&quot;: [True, True, True, True, False, False, False, False],
+    &quot;Y&quot;: [True, True, True, False, True, False, False, False],
+})</code></pre></details>
+  <div class="pair headings" aria-hidden="true"><span>Say</span><span>Show and check</span></div>
+  
+<div class="demo-row">
+  <h3>1. Base rate</h3>
+  <div class="pair">
+    <div><p>The base rate uses all eight rows. The mean of a Boolean column is its True fraction.</p></div>
+    <div>
+      <p class="expected">P(Y) is 4 out of 8, or 0.50.</p>
+      <details class="step-code">
+        <summary>Show step 1 code</summary>
+        <pre><code>base = table[&quot;Y&quot;].mean()
+print(&quot;P(Y):&quot;, base)</code></pre>
+        <p><a href="13_probability/demo_guide.html#step-1">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>2. Conditional probability and lift</h3>
+  <div class="pair">
+    <div><p>Keep the rows where X is true. The fraction of Y in these rows answers P(Y given X). Lift divides that fraction by the base rate.</p></div>
+    <div>
+      <p class="expected">P(Y given X) is 0.75 and lift is 1.5.</p>
+      <details class="step-code">
+        <summary>Show step 2 code</summary>
+        <pre><code>y_given_x = table.loc[table[&quot;X&quot;], &quot;Y&quot;].mean()
+print(&quot;P(Y given X):&quot;, y_given_x, &quot;Lift:&quot;, y_given_x / base)</code></pre>
+        <p><a href="13_probability/demo_guide.html#step-2">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>3. Bayes&#x27; rule</h3>
+  <div class="pair">
+    <div><p>Reverse the condition using P(Y given X), P(X), and P(Y). Then check it by counting directly.</p></div>
+    <div>
+      <p class="expected">Both approaches return 0.75 for P(X given Y).</p>
+      <details class="step-code">
+        <summary>Show step 3 code</summary>
+        <pre><code>bayes = y_given_x * table[&quot;X&quot;].mean() / base
+direct = table.loc[table[&quot;Y&quot;], &quot;X&quot;].mean()
+print(&quot;P(X given Y), Bayes:&quot;, bayes, &quot;Direct count:&quot;, direct)</code></pre>
+        <p><a href="13_probability/demo_guide.html#step-3">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>4. Correlation and cause</h3>
+  <div class="pair">
+    <div><p>I generated both columns from z. Their correlation is perfect because they share that input. Look at the expressions to see what controls b.</p></div>
+    <div>
+      <p class="expected">The correlation is 1.0. Reassigning a leaves b as [3, 6, 9, 12].</p>
+      <details class="step-code">
+        <summary>Show step 4 code</summary>
+        <pre><code>z = pd.Series([1, 2, 3, 4])
+a, b = 2 * z, 3 * z
+print(&quot;Correlation:&quot;, round(a.corr(b), 2))
+a = a + 10
+print(&quot;b after changing a:&quot;, b.tolist())</code></pre>
+        <p><a href="13_probability/demo_guide.html#step-4">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+  <p class="transition">Ask learners to say the denominator before reading a probability. End by asking what else could explain the association between the two columns.</p>
+  <p class="return"><a href="#slide-index">Slide index ↑</a></p>
+</section>
+<section class="slide" id="slide-14">
+  <h2><span class="slide-number">14</span> Maths intuition · Vectors, loss, and gradients</h2>
+  <div class="lead"><p>A model predicts, a loss tells us how far off the prediction was, and a gradient tells us which way the loss increases.</p></div>
+  <div class="files"><a href="14_loss_and_gradients/demo_guide.html">Demo guide</a><a href="14_loss_and_gradients/starter.py">Starter code</a><a href="14_loss_and_gradients/solution.py">Complete solution</a></div>
+  <details class="step-code"><summary>Setup code</summary><pre><code>import sys
+
+import numpy as np
+from sklearn.metrics import log_loss
+
+x = np.array([2, 3])
+w = np.array([4, 1])
+b = 1</code></pre></details>
+  <div class="pair headings" aria-hidden="true"><span>Say</span><span>Show and check</span></div>
+  
+<div class="demo-row">
+  <h3>1. Vector and dot product</h3>
+  <div class="pair">
+    <div><p>Multiply matching entries, add the products, and then add the intercept.</p></div>
+    <div>
+      <p class="expected">The dot product is 11 and the prediction is 12.</p>
+      <details class="step-code">
+        <summary>Show step 1 code</summary>
+        <pre><code>score = x @ w
+print(&quot;Dot product:&quot;, score, &quot;Prediction:&quot;, score + b)</code></pre>
+        <p><a href="14_loss_and_gradients/demo_guide.html#step-1">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>2. Mean squared error</h3>
+  <div class="pair">
+    <div><p>Subtract actual values from predictions, square each error, and average.</p></div>
+    <div>
+      <p class="expected">The two squared errors are 1 and 4. MSE is 2.5.</p>
+      <details class="step-code">
+        <summary>Show step 2 code</summary>
+        <pre><code>squared_errors = (np.array([2, 7]) - np.array([1, 5])) ** 2
+print(&quot;Squared errors:&quot;, squared_errors.tolist(), &quot;MSE:&quot;, squared_errors.mean())</code></pre>
+        <p><a href="14_loss_and_gradients/demo_guide.html#step-2">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>3. Binary cross-entropy</h3>
+  <div class="pair">
+    <div><p>For classification, cross-entropy penalises confident errors heavily. Here the input probabilities refer to class 1.</p></div>
+    <div>
+      <p class="expected">The better probabilities have loss about 0.105. The confident errors have loss about 2.303.</p>
+      <details class="step-code">
+        <summary>Show step 3 code</summary>
+        <pre><code>print(&quot;Well matched:&quot;, round(log_loss([0, 1], [0.1, 0.9]), 3))
+print(&quot;Confident errors:&quot;, round(log_loss([0, 1], [0.9, 0.1]), 3))</code></pre>
+        <p><a href="14_loss_and_gradients/demo_guide.html#step-3">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>4. Gradient descent and learning rate</h3>
+  <div class="pair">
+    <div><p>At each step, subtract the gradient times the learning rate. Watch where the weight goes when I make the step too large.</p></div>
+    <div>
+      <p class="expected">Rate 0.25 moves toward weight 3 and loss 0. Rate 1.1 overshoots and the loss grows.</p>
+      <details class="step-code">
+        <summary>Show step 4 code</summary>
+        <pre><code>paths = {}
+for rate in [0.25, 1.1]:
+    weight = 0.0
+    weights = [weight]
+    for _ in range(4):
+        gradient = 2 * (weight - 3)
+        weight -= rate * gradient
+        weights.append(weight)
+    paths[rate] = np.array(weights)
+    print(&quot;Rate:&quot;, rate, &quot;Weights:&quot;, paths[rate].round(2),
+          &quot;Losses:&quot;, ((paths[rate] - 3) ** 2).round(2))</code></pre>
+        <p><a href="14_loss_and_gradients/demo_guide.html#step-4">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>5. Show the loss curve</h3>
+  <div class="pair">
+    <div><p>The bottom of the curve is the minimum. The dots show successive weights for the smaller step size.</p></div>
+    <div>
+      <p class="expected">With --plot, the points move down a U-shaped curve toward weight 3.</p>
+      <details class="step-code">
+        <summary>Show step 5 code</summary>
+        <pre><code>if &quot;--plot&quot; in sys.argv:
+    import matplotlib.pyplot as plt
+
+    grid = np.linspace(-0.5, 6.5, 150)
+    plt.plot(grid, (grid - 3) ** 2, label=&quot;Loss&quot;)
+    plt.scatter(paths[0.25], (paths[0.25] - 3) ** 2, label=&quot;Descent steps&quot;)
+    plt.xlabel(&quot;Weight&quot;)
+    plt.ylabel(&quot;Loss&quot;)
+    plt.legend()
+    plt.tight_layout()
+    plt.show()</code></pre>
+        <p><a href="14_loss_and_gradients/demo_guide.html#step-5">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+  <p class="transition">Ask what can go wrong when the learning rate is too large. Show the growing losses.</p>
+  <p class="return"><a href="#slide-index">Slide index ↑</a></p>
+</section>
+<section class="slide" id="slide-15">
+  <h2><span class="slide-number">15</span> Lab L1.1 · Customer master data-quality remediation</h2>
+  <div class="lead"><p>Walk through one small cleaning pass before opening the lab. Show what changes at each step and how to prove the final table passed the checks.</p></div>
+  <div class="files"><a href="15_mini_cleanup/demo_guide.html">Demo guide</a><a href="15_mini_cleanup/starter.py">Starter code</a><a href="15_mini_cleanup/solution.py">Complete solution</a></div>
+  <details class="step-code"><summary>Setup code</summary><pre><code>from io import BytesIO, StringIO
+
+import pandas as pd
+
+csv_text = &quot;&quot;&quot;id,group,score,updated,email,future_flag
+1, a ,9.50,2025-01-01,a@example.invalid,1
+1,A,10.50,2025/01/03,a@example.invalid,1
+2,b,200,02 Jan 2025,b@example.invalid,0
+3,B,,2025-01-02,c@example.invalid,0
+4,c,12,2025/01/02,d@example.invalid,1
+&quot;&quot;&quot;</code></pre></details>
+  <div class="pair headings" aria-hidden="true"><span>Say</span><span>Show and check</span></div>
+  
+<div class="demo-row">
+  <h3>1. Load and profile</h3>
+  <div class="pair">
+    <div><p>Check row count, missing values, and duplicates before touching the data.</p></div>
+    <div>
+      <p class="expected">There are 5 rows, 1 missing score, and 1 repeated ID.</p>
+      <details class="step-code">
+        <summary>Show step 1 code</summary>
+        <pre><code>raw = pd.read_csv(StringIO(csv_text), dtype={&quot;score&quot;: &quot;string&quot;})
+before = {&quot;rows&quot;: len(raw), &quot;missing_score&quot;: int(raw[&quot;score&quot;].isna().sum()),
+          &quot;duplicate_ids&quot;: int(raw[&quot;id&quot;].duplicated().sum())}
+print(&quot;Before:&quot;, before)</code></pre>
+        <p><a href="15_mini_cleanup/demo_guide.html#step-1">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>2. Remove sensitive and future columns</h3>
+  <div class="pair">
+    <div><p>Email identifies a person. The future flag is unavailable at the time the features are needed. Drop both for their respective reasons.</p></div>
+    <div>
+      <p class="expected">The working columns are id, group, score, and updated.</p>
+      <details class="step-code">
+        <summary>Show step 2 code</summary>
+        <pre><code>clean = raw.drop(columns=[&quot;email&quot;, &quot;future_flag&quot;])
+print(&quot;Working columns:&quot;, clean.columns.tolist())</code></pre>
+        <p><a href="15_mini_cleanup/demo_guide.html#step-2">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>3. Standardise categories</h3>
+  <div class="pair">
+    <div><p>Trim spaces and use one case so the same group has the same value.</p></div>
+    <div>
+      <p class="expected">The spellings a and A become a, and b and B become b.</p>
+      <details class="step-code">
+        <summary>Show step 3 code</summary>
+        <pre><code>clean[&quot;group&quot;] = clean[&quot;group&quot;].str.strip().str.lower()
+print(&quot;Groups:&quot;, sorted(clean[&quot;group&quot;].unique()))</code></pre>
+        <p><a href="15_mini_cleanup/demo_guide.html#step-3">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>4. Parse numbers and dates</h3>
+  <div class="pair">
+    <div><p>A text representation needs to become a number or a date before we can compare it consistently.</p></div>
+    <div>
+      <p class="expected">score becomes numeric and updated becomes a datetime.</p>
+      <details class="step-code">
+        <summary>Show step 4 code</summary>
+        <pre><code>clean[&quot;score&quot;] = pd.to_numeric(clean[&quot;score&quot;], errors=&quot;coerce&quot;)
+clean[&quot;updated&quot;] = pd.to_datetime(clean[&quot;updated&quot;], format=&quot;mixed&quot;, errors=&quot;coerce&quot;)
+print(clean.dtypes)</code></pre>
+        <p><a href="15_mini_cleanup/demo_guide.html#step-4">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>5. Validate range and remove repeated IDs</h3>
+  <div class="pair">
+    <div><p>Mark out-of-range scores as missing. Keep the most recently updated row for each ID.</p></div>
+    <div>
+      <p class="expected">The value 200 becomes missing and ID 1 keeps the score of 10.5.</p>
+      <details class="step-code">
+        <summary>Show step 5 code</summary>
+        <pre><code>clean[&quot;score&quot;] = clean[&quot;score&quot;].where(clean[&quot;score&quot;].between(0, 100))
+clean = clean.sort_values(&quot;updated&quot;).drop_duplicates(&quot;id&quot;, keep=&quot;last&quot;).copy()
+print(clean[[&quot;id&quot;, &quot;score&quot;, &quot;updated&quot;]].sort_values(&quot;id&quot;))</code></pre>
+        <p><a href="15_mini_cleanup/demo_guide.html#step-5">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>6. Flag and fill missing scores</h3>
+  <div class="pair">
+    <div><p>Save a missingness flag first so we can still see which values needed a fill.</p></div>
+    <div>
+      <p class="expected">Two rows have the missing flag and get the observed median of 11.25.</p>
+      <details class="step-code">
+        <summary>Show step 6 code</summary>
+        <pre><code>clean[&quot;score_missing&quot;] = clean[&quot;score&quot;].isna()
+clean[&quot;score&quot;] = clean[&quot;score&quot;].fillna(clean[&quot;score&quot;].median())
+print(clean[[&quot;id&quot;, &quot;score&quot;, &quot;score_missing&quot;]].sort_values(&quot;id&quot;))</code></pre>
+        <p><a href="15_mini_cleanup/demo_guide.html#step-6">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>7. Validate and create the report</h3>
+  <div class="pair">
+    <div><p>Check that IDs are unique, scores are in range, and dates parsed. Save the before-and-after counts so someone can reproduce the check.</p></div>
+    <div>
+      <p class="expected">The result has 4 rows and no missing scores or repeated IDs. The report identifies 2 scores filled. Pandas writes the clean table as Parquet bytes in memory.</p>
+      <details class="step-code">
+        <summary>Show step 7 code</summary>
+        <pre><code>clean[&quot;group&quot;] = clean[&quot;group&quot;].astype(&quot;category&quot;)
+assert clean[&quot;id&quot;].is_unique and clean[&quot;score&quot;].between(0, 100).all()
+assert clean[&quot;updated&quot;].notna().all()
+after = {&quot;rows&quot;: len(clean), &quot;missing_score&quot;: int(clean[&quot;score&quot;].isna().sum()),
+         &quot;duplicate_ids&quot;: int(clean[&quot;id&quot;].duplicated().sum())}
+report = pd.DataFrame({&quot;before&quot;: before, &quot;after&quot;: after}).rename_axis(&quot;check&quot;)
+print(report.to_csv(), end=&quot;&quot;)
+print(&quot;Scores filled:&quot;, clean[&quot;score_missing&quot;].sum())
+buffer = BytesIO()
+clean.to_parquet(buffer, engine=&quot;pyarrow&quot;, index=False)
+print(&quot;Clean rows read back:&quot;, len(pd.read_parquet(buffer, engine=&quot;pyarrow&quot;)))</code></pre>
+        <p><a href="15_mini_cleanup/demo_guide.html#step-7">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+  <p class="transition">Switch to the existing Lab L1.1 once the miniature run is clear. Point out the clean Parquet and the CSV quality report learners will produce in the lab.</p>
+  <p class="return"><a href="#slide-index">Slide index ↑</a></p>
+</section>
+<section class="slide" id="slide-16">
+  <h2><span class="slide-number">16</span> Data quality dimensions</h2>
+  <div class="lead"><p>Each dimension asks a different question. Run one check at a time and look at the flagged rows.</p></div>
+  <div class="files"><a href="16_data_quality/demo_guide.html">Demo guide</a><a href="16_data_quality/starter.py">Starter code</a><a href="16_data_quality/solution.py">Complete solution</a></div>
+  <details class="step-code"><summary>Setup code</summary><pre><code>import pandas as pd
+
+table = pd.DataFrame({
+    &quot;id&quot;: [1, 2, 2, 3, 4],
+    &quot;value&quot;: [12, 200, 20, None, 40],
+    &quot;reference&quot;: [10, 200, 20, 30, 40],
+    &quot;group&quot;: [&quot;red&quot;, &quot; BLUE &quot;, &quot;blue&quot;, &quot;red&quot;, &quot;green&quot;],
+    &quot;updated&quot;: pd.to_datetime([&quot;2025-01-09&quot;, &quot;2024-12-20&quot;, &quot;2025-01-08&quot;,
+                               &quot;2025-01-07&quot;, &quot;2025-01-06&quot;]),
+})
+snapshot = pd.Timestamp(&quot;2025-01-10&quot;)</code></pre></details>
+  <div class="pair headings" aria-hidden="true"><span>Say</span><span>Show and check</span></div>
+  
+<div class="demo-row">
+  <h3>1. Completeness</h3>
+  <div class="pair">
+    <div><p>Is the required value present?</p></div>
+    <div>
+      <p class="expected">ID 3 has a missing value.</p>
+      <details class="step-code">
+        <summary>Show step 1 code</summary>
+        <pre><code>print(&quot;Missing value IDs:&quot;, table.loc[table[&quot;value&quot;].isna(), &quot;id&quot;].tolist())</code></pre>
+        <p><a href="16_data_quality/demo_guide.html#step-1">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>2. Validity</h3>
+  <div class="pair">
+    <div><p>Does a present value obey the allowed range or format?</p></div>
+    <div>
+      <p class="expected">200 is outside 0 to 100. The second date string fails the date format check.</p>
+      <details class="step-code">
+        <summary>Show step 2 code</summary>
+        <pre><code>present = table[&quot;value&quot;].notna()
+invalid = present &amp; ~table[&quot;value&quot;].between(0, 100)
+print(&quot;Invalid values:&quot;, table.loc[invalid, &quot;value&quot;].tolist())
+parsed = pd.to_datetime([&quot;2025-01-10&quot;, &quot;01/10/2025&quot;], format=&quot;%Y-%m-%d&quot;, errors=&quot;coerce&quot;)
+print(&quot;Invalid date format:&quot;, parsed.isna().tolist())</code></pre>
+        <p><a href="16_data_quality/demo_guide.html#step-2">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>3. Consistency</h3>
+  <div class="pair">
+    <div><p>Are equivalent values represented the same way?</p></div>
+    <div>
+      <p class="expected">The two blue spellings collapse to one canonical value.</p>
+      <details class="step-code">
+        <summary>Show step 3 code</summary>
+        <pre><code>canonical = table[&quot;group&quot;].str.strip().str.lower()
+print(&quot;Before:&quot;, table[&quot;group&quot;].unique().tolist())
+print(&quot;After:&quot;, canonical.unique().tolist())</code></pre>
+        <p><a href="16_data_quality/demo_guide.html#step-3">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>4. Uniqueness</h3>
+  <div class="pair">
+    <div><p>Does the identifier occur once per entity?</p></div>
+    <div>
+      <p class="expected">Both rows for ID 2 are flagged.</p>
+      <details class="step-code">
+        <summary>Show step 4 code</summary>
+        <pre><code>print(&quot;Repeated IDs:&quot;, table.loc[table.duplicated(&quot;id&quot;, keep=False), &quot;id&quot;].tolist())</code></pre>
+        <p><a href="16_data_quality/demo_guide.html#step-4">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>5. Timeliness</h3>
+  <div class="pair">
+    <div><p>Is the value recent enough at the chosen date?</p></div>
+    <div>
+      <p class="expected">The December 20 record is older than seven days.</p>
+      <details class="step-code">
+        <summary>Show step 5 code</summary>
+        <pre><code>age_days = (snapshot - table[&quot;updated&quot;]).dt.days
+print(&quot;Stale updates:&quot;, table.loc[age_days &gt; 7, &quot;updated&quot;].dt.date.tolist())</code></pre>
+        <p><a href="16_data_quality/demo_guide.html#step-5">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>6. Accuracy</h3>
+  <div class="pair">
+    <div><p>Does the value agree with a trusted source? A number can be in range and still be wrong.</p></div>
+    <div>
+      <p class="expected">ID 1 is in range but has 12 where the reference says 10.</p>
+      <details class="step-code">
+        <summary>Show step 6 code</summary>
+        <pre><code>disagrees = present &amp; ~invalid &amp; table[&quot;value&quot;].ne(table[&quot;reference&quot;])
+print(table.loc[disagrees, [&quot;id&quot;, &quot;value&quot;, &quot;reference&quot;]])</code></pre>
+        <p><a href="16_data_quality/demo_guide.html#step-6">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+  <p class="transition">Ask which checks can be made from the table alone and which need a snapshot date or trusted reference.</p>
+  <p class="return"><a href="#slide-index">Slide index ↑</a></p>
+</section>
+<section class="slide" id="slide-17">
+  <h2><span class="slide-number">17</span> Missing data</h2>
+  <div class="lead"><p>The reason a value is missing matters. In a real table, the missing values themselves usually can&#x27;t tell us the reason. Here we create each mechanism so we can see the difference.</p></div>
+  <div class="files"><a href="17_missing_data/demo_guide.html">Demo guide</a><a href="17_missing_data/starter.py">Starter code</a><a href="17_missing_data/solution.py">Complete solution</a></div>
+  <details class="step-code"><summary>Setup code</summary><pre><code>import numpy as np
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+
+rng = np.random.default_rng(42)
+full = pd.DataFrame({&quot;group&quot;: [&quot;a&quot;, &quot;a&quot;, &quot;b&quot;, &quot;b&quot;, &quot;a&quot;, &quot;b&quot;],
+                     &quot;value&quot;: [2, 4, 6, 8, 10, 12]})
+incomplete = pd.DataFrame({&quot;x&quot;: [1, 2, 3, 4, 5, 6],
+                           &quot;group&quot;: [&quot;a&quot;, &quot;a&quot;, &quot;a&quot;, &quot;b&quot;, &quot;b&quot;, &quot;b&quot;],
+                           &quot;value&quot;: [2, np.nan, 6, 8, np.nan, 12]})</code></pre></details>
+  <div class="pair headings" aria-hidden="true"><span>Say</span><span>Show and check</span></div>
+  
+<div class="demo-row">
+  <h3>1. MCAR</h3>
+  <div class="pair">
+    <div><p>Missing completely at random means the chance of a blank is independent of both observed and missing values. We choose row positions at random.</p></div>
+    <div>
+      <p class="expected">Two values are blank after an independent random selection.</p>
+      <details class="step-code">
+        <summary>Show step 1 code</summary>
+        <pre><code>mcar = full[&quot;value&quot;].copy().astype(float)
+random_rows = rng.choice(len(full), size=2, replace=False)
+mcar.iloc[random_rows] = np.nan
+print(&quot;MCAR:&quot;, mcar.tolist())</code></pre>
+        <p><a href="17_missing_data/demo_guide.html#step-1">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>2. MAR</h3>
+  <div class="pair">
+    <div><p>Missing at random means an observed variable explains the missingness. Here the observed group controls it.</p></div>
+    <div>
+      <p class="expected">Every group b value is dropped in this intentionally extreme illustration.</p>
+      <details class="step-code">
+        <summary>Show step 2 code</summary>
+        <pre><code>print(&quot;MAR:&quot;, full[&quot;value&quot;].mask(full[&quot;group&quot;].eq(&quot;b&quot;)).tolist())</code></pre>
+        <p><a href="17_missing_data/demo_guide.html#step-2">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>3. MNAR</h3>
+  <div class="pair">
+    <div><p>Missing not at random means the missing value itself can influence whether it is recorded.</p></div>
+    <div>
+      <p class="expected">Only the two hidden values above 8 are blank.</p>
+      <details class="step-code">
+        <summary>Show step 3 code</summary>
+        <pre><code>print(&quot;MNAR:&quot;, full[&quot;value&quot;].mask(full[&quot;value&quot;] &gt; 8).tolist())</code></pre>
+        <p><a href="17_missing_data/demo_guide.html#step-3">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>4. Drop rows or fill a simple median</h3>
+  <div class="pair">
+    <div><p>Dropping blanks changes which rows remain. A median fill leaves all rows in place and supplies one common replacement.</p></div>
+    <div>
+      <p class="expected">Dropping leaves four rows. The simple fill replaces both gaps with 7.</p>
+      <details class="step-code">
+        <summary>Show step 4 code</summary>
+        <pre><code>print(&quot;Rows after dropping:&quot;, len(incomplete.dropna(subset=[&quot;value&quot;])))
+values = incomplete[&quot;value&quot;]
+print(&quot;Median fill:&quot;, values.fillna(values.median()).tolist())</code></pre>
+        <p><a href="17_missing_data/demo_guide.html#step-4">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>5. Fill using groups and keep an indicator</h3>
+  <div class="pair">
+    <div><p>Group medians can differ. Record which rows had missing values before filling.</p></div>
+    <div>
+      <p class="expected">The gaps in groups a and b get 4 and 10. Both rows have a True indicator.</p>
+      <details class="step-code">
+        <summary>Show step 5 code</summary>
+        <pre><code>missing = values.isna()
+group_medians = incomplete.groupby(&quot;group&quot;)[&quot;value&quot;].transform(&quot;median&quot;)
+print(incomplete.assign(value_filled=values.fillna(group_medians),
+                        value_missing=missing))</code></pre>
+        <p><a href="17_missing_data/demo_guide.html#step-5">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>6. Model-based fill</h3>
+  <div class="pair">
+    <div><p>When another feature predicts the missing column, learn the relationship from observed rows and predict the blanks. In a modelling pipeline, learn this relationship on training rows.</p></div>
+    <div>
+      <p class="expected">The toy relationship is exact. The predictions for the missing entries are 4 and 10.</p>
+      <details class="step-code">
+        <summary>Show step 6 code</summary>
+        <pre><code>imputer = LinearRegression().fit(incomplete.loc[~missing, [&quot;x&quot;]], values[~missing])
+predicted = imputer.predict(incomplete.loc[missing, [&quot;x&quot;]])
+print(&quot;Model fills:&quot;, predicted.round(2).tolist())</code></pre>
+        <p><a href="17_missing_data/demo_guide.html#step-6">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+  <p class="transition">Ask what the indicator preserves after imputation. Summarise the difference between where a gap comes from and what we choose to fill it with.</p>
+  <p class="return"><a href="#slide-index">Slide index ↑</a></p>
+</section>
+<section class="slide" id="slide-18">
+  <h2><span class="slide-number">18</span> Transforming numerical data</h2>
+  <div class="lead"><p>Standardisation and min-max scaling change units. A nonlinear transform can change the shape. Binning turns a range of numbers into groups.</p></div>
+  <div class="files"><a href="18_numeric_transforms/demo_guide.html">Demo guide</a><a href="18_numeric_transforms/starter.py">Starter code</a><a href="18_numeric_transforms/solution.py">Complete solution</a></div>
+  <details class="step-code"><summary>Setup code</summary><pre><code>import sys
+
+import numpy as np
+import pandas as pd
+from scipy.stats import boxcox, skew
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
+
+train = np.array([1, 2, 4, 8, 32, 128], dtype=float).reshape(-1, 1)</code></pre></details>
+  <div class="pair headings" aria-hidden="true"><span>Say</span><span>Show and check</span></div>
+  
+<div class="demo-row">
+  <h3>1. Standardisation</h3>
+  <div class="pair">
+    <div><p>Subtract the training mean and divide by the training standard deviation. The fitted training values then have mean 0 and standard deviation 1.</p></div>
+    <div>
+      <p class="expected">The standardised values have mean about 0 and population standard deviation 1.</p>
+      <details class="step-code">
+        <summary>Show step 1 code</summary>
+        <pre><code>scaler = StandardScaler().fit(train)
+standard = scaler.transform(train).ravel()
+print(&quot;Standardised:&quot;, standard.round(2))
+print(f&quot;Mean {standard.mean():.2f} | Population SD {standard.std():.2f}&quot;)</code></pre>
+        <p><a href="18_numeric_transforms/demo_guide.html#step-1">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>2. Min-max and outlier sensitivity</h3>
+  <div class="pair">
+    <div><p>The training minimum maps to 0 and the maximum maps to 1. One large training value squeezes most other values together.</p></div>
+    <div>
+      <p class="expected">With the outlier, 32 maps to about 0.24. When 32 is the training maximum, it maps to 1.</p>
+      <details class="step-code">
+        <summary>Show step 2 code</summary>
+        <pre><code>minmax = MinMaxScaler().fit_transform(train).ravel()
+without_outlier = MinMaxScaler().fit_transform(train[:-1]).ravel()
+print(&quot;Min-max with 128:&quot;, minmax.round(2))
+print(&quot;Min-max without 128:&quot;, without_outlier.round(2))</code></pre>
+        <p><a href="18_numeric_transforms/demo_guide.html#step-2">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>3. Log and Box-Cox</h3>
+  <div class="pair">
+    <div><p>Taking a log can compress a right tail. Box-Cox chooses a power from positive training values. For new inputs we would reuse that fitted power.</p></div>
+    <div>
+      <p class="expected">The raw, standardised, and min-max skews match. The log and fitted Box-Cox reduce the skew in this sample.</p>
+      <details class="step-code">
+        <summary>Show step 3 code</summary>
+        <pre><code>logged = np.log(train.ravel())
+powered, power = boxcox(train.ravel())
+for name, values in [(&quot;Raw&quot;, train.ravel()), (&quot;Standard&quot;, standard),
+                     (&quot;Min-max&quot;, minmax), (&quot;Log&quot;, logged), (&quot;Box-Cox&quot;, powered)]:
+    print(name, &quot;skew:&quot;, round(skew(values), 2))
+print(&quot;Fitted Box-Cox power:&quot;, round(power, 2))</code></pre>
+        <p><a href="18_numeric_transforms/demo_guide.html#step-3">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>4. Binning</h3>
+  <div class="pair">
+    <div><p>Choose the cut points ahead of time when fixed bands make the output easier to use.</p></div>
+    <div>
+      <p class="expected">4 is small, 8 and 32 are medium, and 128 is large.</p>
+      <details class="step-code">
+        <summary>Show step 4 code</summary>
+        <pre><code>bands = pd.cut(train.ravel(), bins=[0, 5, 35, np.inf],
+               labels=[&quot;small&quot;, &quot;medium&quot;, &quot;large&quot;], right=False)
+print(&quot;Bands:&quot;, list(zip(train.ravel().tolist(), bands.tolist())))</code></pre>
+        <p><a href="18_numeric_transforms/demo_guide.html#step-4">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>5. Fit on training, reuse on new values</h3>
+  <div class="pair">
+    <div><p>Only the training data determines the scale. A new value can exceed the training maximum and map outside 0 to 1.</p></div>
+    <div>
+      <p class="expected">256 maps above 1. The standard scaler still uses the original training mean.</p>
+      <details class="step-code">
+        <summary>Show step 5 code</summary>
+        <pre><code>print(&quot;New min-max value:&quot;, MinMaxScaler().fit(train).transform([[256]]).round(2))
+print(&quot;New standard value:&quot;, scaler.transform([[256]]).round(2))
+print(&quot;Unchanged training mean:&quot;, scaler.mean_)</code></pre>
+        <p><a href="18_numeric_transforms/demo_guide.html#step-5">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>6. See the shape</h3>
+  <div class="pair">
+    <div><p>Compare the right tail before and after scaling or logging.</p></div>
+    <div>
+      <p class="expected">With --plot, the first three histograms show the same pattern on different axes. Log changes that pattern.</p>
+      <details class="step-code">
+        <summary>Show step 6 code</summary>
+        <pre><code>if &quot;--plot&quot; in sys.argv:
+    import matplotlib.pyplot as plt
+
+    fig, axes = plt.subplots(1, 4, figsize=(10, 3))
+    for ax, (name, values) in zip(axes, [(&quot;Raw&quot;, train.ravel()),
+             (&quot;Standard&quot;, standard), (&quot;Min-max&quot;, minmax), (&quot;Log&quot;, logged)]):
+        ax.hist(values, bins=5)
+        ax.set(title=name, xlabel=&quot;Value&quot;, ylabel=&quot;Count&quot;)
+    fig.tight_layout()
+    plt.show()</code></pre>
+        <p><a href="18_numeric_transforms/demo_guide.html#step-6">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+  <p class="transition">Ask learners to identify which operation changes units, which changes shape, and which creates groups.</p>
+  <p class="return"><a href="#slide-index">Slide index ↑</a></p>
+</section>
+<section class="slide" id="slide-19">
+  <h2><span class="slide-number">19</span> Encoding categorical data</h2>
+  <div class="lead"><p>First ask whether the categories have a meaningful order. Then decide what a trained encoder should do when a rare or unseen value arrives.</p></div>
+  <div class="files"><a href="19_categorical_encoding/demo_guide.html">Demo guide</a><a href="19_categorical_encoding/starter.py">Starter code</a><a href="19_categorical_encoding/solution.py">Complete solution</a></div>
+  <details class="step-code"><summary>Setup code</summary><pre><code>import numpy as np
+import pandas as pd
+from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, TargetEncoder
+
+colors = [[&quot;red&quot;], [&quot;red&quot;], [&quot;blue&quot;], [&quot;blue&quot;], [&quot;green&quot;], [&quot;yellow&quot;]]
+sizes = [[&quot;small&quot;], [&quot;medium&quot;], [&quot;large&quot;]]
+ids = np.array([[&quot;a&quot;], [&quot;b&quot;], [&quot;c&quot;], [&quot;d&quot;], [&quot;e&quot;], [&quot;f&quot;], [&quot;g&quot;], [&quot;h&quot;]])
+target = np.array([0., 1., 0., 1., 1., 0., 1., 0.])</code></pre></details>
+  <div class="pair headings" aria-hidden="true"><span>Say</span><span>Show and check</span></div>
+  
+<div class="demo-row">
+  <h3>1. One-hot encoding</h3>
+  <div class="pair">
+    <div><p>Each category gets its own indicator column. Red, blue, and green have no rank.</p></div>
+    <div>
+      <p class="expected">There is one 1 per known row, and the column names tell us which category it marks.</p>
+      <details class="step-code">
+        <summary>Show step 1 code</summary>
+        <pre><code>onehot = OneHotEncoder(handle_unknown=&quot;ignore&quot;, sparse_output=False).fit(colors)
+print(onehot.get_feature_names_out().tolist())
+print(onehot.transform([[&quot;red&quot;], [&quot;blue&quot;]]).astype(int))</code></pre>
+        <p><a href="19_categorical_encoding/demo_guide.html#step-1">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>2. Unknown category</h3>
+  <div class="pair">
+    <div><p>Use the encoder we already fitted. With handle_unknown set to ignore, a new category becomes all zeros.</p></div>
+    <div>
+      <p class="expected">Purple encodes as four zeros because it was absent from training.</p>
+      <details class="step-code">
+        <summary>Show step 2 code</summary>
+        <pre><code>print(&quot;Unseen purple:&quot;, onehot.transform([[&quot;purple&quot;]]).astype(int))</code></pre>
+        <p><a href="19_categorical_encoding/demo_guide.html#step-2">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>3. Ordinal encoding</h3>
+  <div class="pair">
+    <div><p>Small, medium, and large have an order, so we supply it explicitly.</p></div>
+    <div>
+      <p class="expected">Small maps to 0, medium to 1, and large to 2.</p>
+      <details class="step-code">
+        <summary>Show step 3 code</summary>
+        <pre><code>ordinal = OrdinalEncoder(categories=[[&quot;small&quot;, &quot;medium&quot;, &quot;large&quot;]]).fit(sizes)
+print(&quot;Ordered size codes:&quot;, ordinal.transform(sizes).ravel().astype(int).tolist())</code></pre>
+        <p><a href="19_categorical_encoding/demo_guide.html#step-3">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>4. Group rare categories</h3>
+  <div class="pair">
+    <div><p>Green and yellow each appear once. We can train the encoder to put those values in one infrequent column.</p></div>
+    <div>
+      <p class="expected">Green, yellow, and unseen purple all activate the infrequent category.</p>
+      <details class="step-code">
+        <summary>Show step 4 code</summary>
+        <pre><code>rare = OneHotEncoder(min_frequency=2, handle_unknown=&quot;infrequent_if_exist&quot;,
+                     sparse_output=False).fit(colors)
+print(rare.get_feature_names_out().tolist())
+print(rare.transform([[&quot;green&quot;], [&quot;yellow&quot;], [&quot;purple&quot;]]).astype(int))</code></pre>
+        <p><a href="19_categorical_encoding/demo_guide.html#step-4">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>5. Target encoding with cross-fitting</h3>
+  <div class="pair">
+    <div><p>A simple target encoding uses a category&#x27;s average target. If each ID occurs once, doing that on the same rows copies their answers. Cross-fitting uses other training rows to encode each training fold.</p></div>
+    <div>
+      <p class="expected">The naive ID encoding repeats the target. Cross-fitted singleton IDs get the other fold&#x27;s mean, and an unseen ID at inference gets the full training mean.</p>
+      <details class="step-code">
+        <summary>Show step 5 code</summary>
+        <pre><code>examples = pd.DataFrame({&quot;id&quot;: ids.ravel(), &quot;target&quot;: target})
+naive = examples.groupby(&quot;id&quot;)[&quot;target&quot;].transform(&quot;mean&quot;)
+encoder = TargetEncoder(target_type=&quot;continuous&quot;, smooth=0.0, cv=2,
+                        random_state=0)
+cross_fitted = encoder.fit_transform(ids, target).ravel()
+print(&quot;Naive:&quot;, naive.tolist())
+print(&quot;Cross-fitted:&quot;, cross_fitted.tolist())
+print(&quot;Unseen ID:&quot;, encoder.transform([[&quot;new&quot;]]).ravel().tolist())</code></pre>
+        <p><a href="19_categorical_encoding/demo_guide.html#step-5">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+  <p class="transition">Ask why small, medium, and large can be ranked while colours have no natural rank.</p>
+  <p class="return"><a href="#slide-index">Slide index ↑</a></p>
+</section>
+<section class="slide" id="slide-20">
+  <h2><span class="slide-number">20</span> Feature engineering and selection</h2>
+  <div class="lead"><p>Feature engineering makes a new input from existing data. Feature selection asks which inputs to keep. We&#x27;ll make ratios, time features, interactions, and aggregates, then compare three ways to select features.</p></div>
+  <div class="files"><a href="20_feature_engineering/demo_guide.html">Demo guide</a><a href="20_feature_engineering/starter.py">Starter code</a><a href="20_feature_engineering/solution.py">Complete solution</a></div>
+  <details class="step-code"><summary>Setup code</summary><pre><code>import numpy as np
+import pandas as pd
+from sklearn.feature_selection import RFE, mutual_info_regression
+from sklearn.linear_model import Lasso, LinearRegression
+from sklearn.tree import DecisionTreeRegressor
+
+values = pd.DataFrame({&quot;amount&quot;: [1200, 2400], &quot;monthly_income&quot;: [100, 200],
+                       &quot;existing_payment&quot;: [10, 40], &quot;new_payment&quot;: [20, 60]})
+series = pd.Series([4, 8, 6, 10], name=&quot;value&quot;)
+points = pd.DataFrame({&quot;id&quot;: [&quot;a&quot;, &quot;a&quot;, &quot;b&quot;], &quot;units&quot;: [2, 3, 4],
+                       &quot;price&quot;: [5, 5, 2]})
+rng = np.random.default_rng(42)
+signal = np.linspace(-2, 2, 81)
+noise = rng.normal(size=len(signal))
+X = pd.DataFrame({&quot;signal&quot;: signal, &quot;noise&quot;: noise})
+y = 5 * signal + 0.05 * noise</code></pre></details>
+  <div class="pair headings" aria-hidden="true"><span>Say</span><span>Show and check</span></div>
+  
+<div class="demo-row">
+  <h3>1. Domain ratios and disposable income</h3>
+  <div class="pair">
+    <div><p>Compute LTI with annual income. Compute DBR and remaining income using the same monthly units as the payments.</p></div>
+    <div>
+      <p class="expected">Both LTI values are 1.0, DBR values are 0.3 and 0.5, and disposable amounts are 70 and 100.</p>
+      <details class="step-code">
+        <summary>Show step 1 code</summary>
+        <pre><code>payments = values[&quot;existing_payment&quot;] + values[&quot;new_payment&quot;]
+monthly = values[&quot;monthly_income&quot;]
+ratios = values.assign(lti=values[&quot;amount&quot;] / (12 * monthly),
+                       dbr=payments / monthly, disposable=monthly - payments)
+print(ratios[[&quot;lti&quot;, &quot;dbr&quot;, &quot;disposable&quot;]])</code></pre>
+        <p><a href="20_feature_engineering/demo_guide.html#step-1">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>2. Lag, rolling average, and recency</h3>
+  <div class="pair">
+    <div><p>Use previous rows for a lag or trailing average. Recency counts how long ago the last available event happened.</p></div>
+    <div>
+      <p class="expected">The final row&#x27;s lag is 6 and its previous-two average is 7. The most recent event was 2 days before the cutoff.</p>
+      <details class="step-code">
+        <summary>Show step 2 code</summary>
+        <pre><code>previous = series.shift(1)
+print(pd.DataFrame({&quot;current&quot;: series, &quot;lag&quot;: previous,
+                    &quot;previous_two_mean&quot;: previous.rolling(2).mean()}))
+cutoff = pd.Timestamp(&quot;2025-01-05&quot;)
+events = pd.to_datetime([&quot;2025-01-01&quot;, &quot;2025-01-03&quot;, &quot;2025-01-07&quot;])
+last_known = events[events &lt;= cutoff].max()
+print(&quot;Recency in days:&quot;, (cutoff - last_known).days)</code></pre>
+        <p><a href="20_feature_engineering/demo_guide.html#step-2">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>3. Interactions and aggregation</h3>
+  <div class="pair">
+    <div><p>Multiplying two columns creates a new feature. Grouping turns multiple rows into one summary per ID.</p></div>
+    <div>
+      <p class="expected">ID a has 2 rows with total 25. ID b has 1 row with total 8.</p>
+      <details class="step-code">
+        <summary>Show step 3 code</summary>
+        <pre><code>features = points.assign(total=points[&quot;units&quot;] * points[&quot;price&quot;])
+print(features.groupby(&quot;id&quot;).agg(count=(&quot;total&quot;, &quot;size&quot;),
+                                sum_total=(&quot;total&quot;, &quot;sum&quot;)))</code></pre>
+        <p><a href="20_feature_engineering/demo_guide.html#step-3">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>4. Filter with correlation and mutual information</h3>
+  <div class="pair">
+    <div><p>Correlation measures linear association. Mutual information can find a relationship even when a positive and negative slope cancel in correlation.</p></div>
+    <div>
+      <p class="expected">The signal&#x27;s correlation with its square is near zero. Mutual information identifies that relationship.</p>
+      <details class="step-code">
+        <summary>Show step 4 code</summary>
+        <pre><code>curve = pd.Series(signal ** 2)
+print(&quot;Correlation:\n&quot;, X.corrwith(curve).round(3))
+mi = mutual_info_regression(X, curve, random_state=0)
+print(&quot;Mutual information:\n&quot;, pd.Series(mi, index=X.columns).round(3))</code></pre>
+        <p><a href="20_feature_engineering/demo_guide.html#step-4">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>5. Wrapper selection with RFE</h3>
+  <div class="pair">
+    <div><p>Recursive feature elimination fits a model, removes lower-ranked inputs, and repeats until the requested number is left.</p></div>
+    <div>
+      <p class="expected">The wrapper selects signal.</p>
+      <details class="step-code">
+        <summary>Show step 5 code</summary>
+        <pre><code>selector = RFE(LinearRegression(), n_features_to_select=1).fit(X, y)
+print(&quot;RFE selects:&quot;, X.columns[selector.support_].tolist())</code></pre>
+        <p><a href="20_feature_engineering/demo_guide.html#step-5">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>6. Embedded selection with Lasso and a tree</h3>
+  <div class="pair">
+    <div><p>Lasso can shrink a coefficient to zero during fitting. A tree also learns which features it used to reduce error. We can use those importances to rank features.</p></div>
+    <div>
+      <p class="expected">Lasso sets the noise coefficient to zero. The small tree uses signal.</p>
+      <details class="step-code">
+        <summary>Show step 6 code</summary>
+        <pre><code>lasso = Lasso(alpha=0.15).fit(X, y)
+tree = DecisionTreeRegressor(max_depth=2, random_state=0).fit(X, y)
+print(&quot;Lasso coefficients:&quot;, dict(zip(X.columns, lasso.coef_.round(3).tolist())))
+print(&quot;Tree importances:&quot;, dict(zip(X.columns, tree.feature_importances_.round(3).tolist())))</code></pre>
+        <p><a href="20_feature_engineering/demo_guide.html#step-6">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+  <p class="transition">Ask learners to name one example of creating a feature and one example of deciding which feature to keep.</p>
+  <p class="return"><a href="#slide-index">Slide index ↑</a></p>
+</section>
+<section class="slide" id="slide-21">
+  <h2><span class="slide-number">21</span> Structured vs unstructured data</h2>
+  <div class="lead"><p>We start with a table, a few words, and a handful of samples. Look at what each row, column, or axis means after conversion.</p></div>
+  <div class="files"><a href="21_data_representations/demo_guide.html">Demo guide</a><a href="21_data_representations/starter.py">Starter code</a><a href="21_data_representations/solution.py">Complete solution</a></div>
+  <details class="step-code"><summary>Setup code</summary><pre><code>import sys
+
+import numpy as np
+import pandas as pd
+from scipy.signal import spectrogram
+from sklearn.feature_extraction.text import CountVectorizer
+
+texts = [&quot;red red blue&quot;, &quot;blue green&quot;]
+image = np.array([[0, 0, 255], [0, 255, 255]], dtype=np.uint8)
+sample_rate = 1024</code></pre></details>
+  <div class="pair headings" aria-hidden="true"><span>Say</span><span>Show and check</span></div>
+  
+<div class="demo-row">
+  <h3>1. Structured tables</h3>
+  <div class="pair">
+    <div><p>Each table row is a record. Named columns have a consistent meaning and type.</p></div>
+    <div>
+      <p class="expected">There are two records, with a text column and an integer column.</p>
+      <details class="step-code">
+        <summary>Show step 1 code</summary>
+        <pre><code>table = pd.DataFrame({&quot;letter&quot;: [&quot;a&quot;, &quot;b&quot;], &quot;value&quot;: [3, 5]})
+print(table)
+print(table.dtypes)</code></pre>
+        <p><a href="21_data_representations/demo_guide.html#step-1">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>2. Text tokens, counts, and embeddings</h3>
+  <div class="pair">
+    <div><p>Split into tokens and count each word. An embedding gives a token a short numeric vector. These tiny vectors are supplied to show their shape. Learned embeddings get their values from training.</p></div>
+    <div>
+      <p class="expected">Red appears twice in the first text. The embedding lookup represents its three tokens by a 3-by-2 array.</p>
+      <details class="step-code">
+        <summary>Show step 2 code</summary>
+        <pre><code>tokens = texts[0].split()
+counts = CountVectorizer()
+matrix = counts.fit_transform(texts)
+print(&quot;Tokens:&quot;, tokens)
+print(&quot;Vocabulary:&quot;, counts.get_feature_names_out().tolist())
+print(&quot;Word counts:\n&quot;, matrix.toarray())
+embedding = {&quot;red&quot;: [1.0, 0.0], &quot;blue&quot;: [0.8, 0.2], &quot;green&quot;: [0.1, 0.9]}
+print(&quot;Lookup vectors:\n&quot;, np.array([embedding[token] for token in tokens]))</code></pre>
+        <p><a href="21_data_representations/demo_guide.html#step-2">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>3. Image pixels and flattening</h3>
+  <div class="pair">
+    <div><p>A grayscale image is a grid of pixel intensities. Flattening gives a row of numbers. Keeping the grid preserves the row and column layout as separate axes.</p></div>
+    <div>
+      <p class="expected">The image has shape (2, 3). The flattened version has six intensity values.</p>
+      <details class="step-code">
+        <summary>Show step 3 code</summary>
+        <pre><code>print(&quot;Image shape:&quot;, image.shape)
+print(&quot;Flattened pixels:&quot;, image.ravel().tolist())</code></pre>
+        <p><a href="21_data_representations/demo_guide.html#step-3">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>4. Audio samples and spectrogram</h3>
+  <div class="pair">
+    <div><p>Audio is a series of samples. A spectrogram tells us which frequencies are present in each short time window.</p></div>
+    <div>
+      <p class="expected">The synthetic wave has 128 samples. Its dominant spectrogram frequency is 128 Hz.</p>
+      <details class="step-code">
+        <summary>Show step 4 code</summary>
+        <pre><code>seconds = np.arange(128) / sample_rate
+wave = np.sin(2 * np.pi * 128 * seconds)
+frequencies, times, power = spectrogram(wave, fs=sample_rate, nperseg=32, noverlap=16)
+print(&quot;Audio samples:&quot;, wave.shape, &quot;Spectrogram shape:&quot;, power.shape)
+print(&quot;Dominant frequency:&quot;, frequencies[power.mean(axis=1).argmax()], &quot;Hz&quot;)</code></pre>
+        <p><a href="21_data_representations/demo_guide.html#step-4">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>5. Video frames and a visual check</h3>
+  <div class="pair">
+    <div><p>A video adds time to the pixel grid. Here it has just two frames.</p></div>
+    <div>
+      <p class="expected">Video shape is (2, 2, 3). With --plot, see the six grayscale pixels and the frequency band in the audio.</p>
+      <details class="step-code">
+        <summary>Show step 5 code</summary>
+        <pre><code>video = np.stack([image, np.fliplr(image)])
+print(&quot;Video shape (frames, rows, columns):&quot;, video.shape)
+
+if &quot;--plot&quot; in sys.argv:
+    import matplotlib.pyplot as plt
+
+    fig, axes = plt.subplots(1, 2, figsize=(7, 3))
+    axes[0].imshow(image, cmap=&quot;gray&quot;, interpolation=&quot;nearest&quot;, vmin=0, vmax=255)
+    axes[0].set(title=&quot;Image pixels&quot;, xlabel=&quot;Column&quot;, ylabel=&quot;Row&quot;)
+    axes[1].pcolormesh(times, frequencies, power, shading=&quot;auto&quot;)
+    axes[1].set(title=&quot;Audio spectrogram&quot;, xlabel=&quot;Time (s)&quot;, ylabel=&quot;Frequency (Hz)&quot;)
+    fig.tight_layout()
+    plt.show()</code></pre>
+        <p><a href="21_data_representations/demo_guide.html#step-5">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+  <p class="transition">Ask learners to name the axes in each array. For video, the extra axis is time.</p>
+  <p class="return"><a href="#slide-index">Slide index ↑</a></p>
+</section>
+<section class="slide" id="slide-22">
+  <h2><span class="slide-number">22</span> Data leakage</h2>
+  <div class="lead"><p>Was each input available at prediction time? Did we learn any preprocessing details from data we were supposed to hold back?</p></div>
+  <div class="files"><a href="22_three_leakage_types/demo_guide.html">Demo guide</a><a href="22_three_leakage_types/starter.py">Starter code</a><a href="22_three_leakage_types/solution.py">Complete solution</a></div>
+  <details class="step-code"><summary>Setup code</summary><pre><code>import numpy as np
+import pandas as pd
+from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.tree import DecisionTreeClassifier
+
+train = pd.DataFrame({&quot;input&quot;: [0, 0, 1, 1, 0, 0, 1, 1],
+                      &quot;label&quot;: [0, 0, 1, 1, 0, 1, 0, 1]})
+test = pd.DataFrame({&quot;input&quot;: [0, 0, 0, 1, 1, 1, 1, 0],
+                     &quot;label&quot;: [0, 0, 0, 1, 1, 0, 1, 1]})</code></pre></details>
+  <div class="pair headings" aria-hidden="true"><span>Say</span><span>Show and check</span></div>
+  
+<div class="demo-row">
+  <h3>1. Target leakage</h3>
+  <div class="pair">
+    <div><p>This feature is a copy of the label produced after the outcome. A model gets a perfect score because the answer is in the input.</p></div>
+    <div>
+      <p class="expected">The model with the copied outcome gets AUC 1.00. The available-only input gets 0.75.</p>
+      <details class="step-code">
+        <summary>Show step 1 code</summary>
+        <pre><code>train[&quot;outcome_copy&quot;] = train[&quot;label&quot;]
+test[&quot;outcome_copy&quot;] = test[&quot;label&quot;]
+for names in [[&quot;input&quot;], [&quot;input&quot;, &quot;outcome_copy&quot;]]:
+    model = DecisionTreeClassifier(max_depth=1, random_state=0).fit(train[names], train[&quot;label&quot;])
+    score = roc_auc_score(test[&quot;label&quot;], model.predict_proba(test[names])[:, 1])
+    print(names, &quot;test AUC:&quot;, round(score, 2))</code></pre>
+        <p><a href="22_three_leakage_types/demo_guide.html#step-1">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>2. Train-test contamination</h3>
+  <div class="pair">
+    <div><p>The mean belongs to the training set. Fitting a scaler after combining both sets lets the test set change that mean.</p></div>
+    <div>
+      <p class="expected">The training-only scaler learns mean 2.0. The contaminated scaler learns mean 13.2.</p>
+      <details class="step-code">
+        <summary>Show step 2 code</summary>
+        <pre><code>train_values = [[1], [2], [3]]
+test_values = [[30], [30]]
+honest = StandardScaler().fit(train_values)
+contaminated = StandardScaler().fit(train_values + test_values)
+print(&quot;Training-only mean:&quot;, honest.mean_[0])
+print(&quot;Contaminated mean:&quot;, contaminated.mean_[0])</code></pre>
+        <p><a href="22_three_leakage_types/demo_guide.html#step-2">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>3. Temporal leakage</h3>
+  <div class="pair">
+    <div><p>When the model will predict future rows, test on later rows. A shuffled split can train on dates after the ones in the test set.</p></div>
+    <div>
+      <p class="expected">The shuffled training set includes time points after some test points. In the ordered split, the latest training point is 7 and the earliest test point is 8.</p>
+      <details class="step-code">
+        <summary>Show step 3 code</summary>
+        <pre><code>time = np.arange(1, 11)
+random_train, random_test = train_test_split(time, test_size=3, random_state=0)
+ordered_train, ordered_test = time[:-3], time[-3:]
+print(&quot;Shuffled train:&quot;, sorted(random_train), &quot;test:&quot;, sorted(random_test))
+print(&quot;Ordered train max:&quot;, ordered_train.max(), &quot;test min:&quot;, ordered_test.min())</code></pre>
+        <p><a href="22_three_leakage_types/demo_guide.html#step-3">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+  <p class="transition">Ask whether a feature was available at prediction time, whether any held-out data informed fitting, and whether the test rows happened after the training rows.</p>
+  <p class="return"><a href="#slide-index">Slide index ↑</a></p>
+</section>
+<section class="slide" id="slide-23">
+  <h2><span class="slide-number">23</span> Demo D1.2 · Transformations, encoding, and leakage</h2>
+  <div class="lead"><p>Now combine the checks in one pass. Choose available features, split chronologically, fit on the earlier rows, and evaluate on the later rows.</p></div>
+  <div class="files"><a href="23_combined_demo/demo_guide.html">Demo guide</a><a href="23_combined_demo/starter.py">Starter code</a><a href="23_combined_demo/solution.py">Complete solution</a></div>
+  <details class="step-code"><summary>Setup code</summary><pre><code>import numpy as np
+import pandas as pd
+from sklearn.compose import ColumnTransformer
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import roc_auc_score
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import FunctionTransformer, OneHotEncoder, StandardScaler
+
+data = pd.DataFrame({
+    &quot;time&quot;: range(1, 13),
+    &quot;number&quot;: [1, 20, 2, 30, 3, 40, 4, 50, 5, 60, 6, 70],
+    &quot;group&quot;: [&quot;a&quot;, &quot;b&quot;, &quot;a&quot;, &quot;a&quot;, &quot;b&quot;, &quot;b&quot;, &quot;a&quot;, &quot;b&quot;, &quot;new&quot;, &quot;a&quot;, &quot;a&quot;, &quot;b&quot;],
+    &quot;label&quot;: [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+})
+data[&quot;after_outcome&quot;] = data[&quot;label&quot;]</code></pre></details>
+  <div class="pair headings" aria-hidden="true"><span>Say</span><span>Show and check</span></div>
+  
+<div class="demo-row">
+  <h3>1. Define the chronological split</h3>
+  <div class="pair">
+    <div><p>All rows in the first group precede the second. Only number and group are available when we predict.</p></div>
+    <div>
+      <p class="expected">Training covers time 1 to 8 and testing covers 9 to 12.</p>
+      <details class="step-code">
+        <summary>Show step 1 code</summary>
+        <pre><code>train, test = data[data[&quot;time&quot;] &lt;= 8], data[data[&quot;time&quot;] &gt; 8]
+features = [&quot;number&quot;, &quot;group&quot;]
+print(&quot;Training times:&quot;, train[&quot;time&quot;].tolist())
+print(&quot;Testing times:&quot;, test[&quot;time&quot;].tolist())
+print(&quot;Selected features:&quot;, features)</code></pre>
+        <p><a href="23_combined_demo/demo_guide.html#step-1">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>2. Log, scale, and encode</h3>
+  <div class="pair">
+    <div><p>The numeric pipeline compresses large numbers and scales using the training values. The categorical encoder handles a new group in the later rows.</p></div>
+    <div>
+      <p class="expected">The later rows transform into a matrix of shape (4, 3). The unseen group has zeros in its two indicator columns.</p>
+      <details class="step-code">
+        <summary>Show step 2 code</summary>
+        <pre><code>numbers = Pipeline([(&quot;log&quot;, FunctionTransformer(np.log1p)), (&quot;scale&quot;, StandardScaler())])
+preprocess = ColumnTransformer([
+    (&quot;number&quot;, numbers, [&quot;number&quot;]),
+    (&quot;group&quot;, OneHotEncoder(handle_unknown=&quot;ignore&quot;, sparse_output=False), [&quot;group&quot;]),
+])
+pipeline = Pipeline([(&quot;preprocess&quot;, preprocess), (&quot;model&quot;, LogisticRegression())])
+pipeline.fit(train[features], train[&quot;label&quot;])
+transformed = pipeline.named_steps[&quot;preprocess&quot;].transform(test[features])
+print(&quot;Later matrix shape:&quot;, transformed.shape)
+print(&quot;Unseen group&#x27;s indicators:&quot;, transformed[0, 1:].tolist())</code></pre>
+        <p><a href="23_combined_demo/demo_guide.html#step-2">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>3. Text and image as numbers</h3>
+  <div class="pair">
+    <div><p>An array of word counts represents text. An image is already a grid of intensity values.</p></div>
+    <div>
+      <p class="expected">The word-count matrix has 2 rows and 3 columns. The image is a 2-by-2 intensity grid.</p>
+      <details class="step-code">
+        <summary>Show step 3 code</summary>
+        <pre><code>matrix = CountVectorizer().fit_transform([&quot;red blue&quot;, &quot;red green&quot;])
+pixels = np.array([[0, 255], [255, 0]])
+print(&quot;Word-count shape:&quot;, matrix.shape)
+print(&quot;Image pixels:\n&quot;, pixels)</code></pre>
+        <p><a href="23_combined_demo/demo_guide.html#step-3">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="demo-row">
+  <h3>4. Evaluate and revisit the leakage traps</h3>
+  <div class="pair">
+    <div><p>Print the score and check it against what the model could know. Even a perfect score on four simple rows gives very little evidence. The after-outcome column would just reveal the answer.</p></div>
+    <div>
+      <p class="expected">The holdout score is printed along with the prohibited column&#x27;s exact match to the labels. The training-only fit and ordered split are visible above.</p>
+      <details class="step-code">
+        <summary>Show step 4 code</summary>
+        <pre><code>probabilities = pipeline.predict_proba(test[features])[:, 1]
+print(&quot;Test AUC on four rows:&quot;, round(roc_auc_score(test[&quot;label&quot;], probabilities), 2))
+print(&quot;After-outcome column copies label:&quot;, data[&quot;after_outcome&quot;].equals(data[&quot;label&quot;]))</code></pre>
+        <p><a href="23_combined_demo/demo_guide.html#step-4">Open this step in the demo guide</a></p>
+      </details>
+    </div>
+  </div>
+</div>
+  <p class="transition">Close by asking learners to name three checks. Look for inputs available at prediction time, preprocessing fitted on training rows, and testing on later rows when predicting the future. Then hand off to Lab L1.2.</p>
+  <p class="return"><a href="#slide-index">Slide index ↑</a></p>
+</section>
+</main>
+</body>
+</html>

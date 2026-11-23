@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI, ML, deep learning, and data science | Day 1 demo</title>
+  <link rel="stylesheet" href="../trainer.css">
+</head>
+<body>
+
+<main id="top">
+  <a href="../Day1_Trainer_Transcript.html#slide-5">← Trainer transcript</a>
+  <header>
+    <p class="eyebrow">Day 1 · Slide 5</p>
+    <h1>AI, ML, deep learning, and data science</h1>
+    <div class="files"><a href="starter.py">Starter code</a><a href="solution.py">Complete solution</a></div>
+    <p>From this demo’s folder, run the solution once, or use the numbered sections to show one idea at a time. The code under Setup runs first.</p>
+    <pre><code>python solution.py</code></pre>
+  </header>
+  <details>
+    <summary>Setup code</summary>
+    <pre><code>import pandas as pd
+from sklearn.linear_model import LinearRegression
+from sklearn.neural_network import MLPClassifier
+
+numbers = [1, 2, 3, 4]
+x = [[1], [2], [3], [4]]
+y = [3, 5, 7, 9]
+bits = [[0, 0], [0, 1], [1, 0], [1, 1]]
+different = [0, 1, 1, 0]</code></pre>
+  </details>
+  
+<section class="guide-step" id="step-1">
+  <h2>1. Written rule</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>I supplied the rule. The computer applies it to each input.</p>
+      <h3>Look for</h3>
+      <p>The values at least 3 produce True.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>print([value &gt;= 3 for value in numbers])</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-2">
+  <h2>2. Learned rule</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Here I supply input-output examples. The model learns a line from them.</p>
+      <h3>Look for</h3>
+      <p>The predicted output for input 5 is 11.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>line = LinearRegression().fit(x, y)
+print(&quot;Prediction for 5:&quot;, round(line.predict([[5]])[0], 2))</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-3">
+  <h2>3. Neural network</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>This small network has two hidden layers. It learns that only the pairs with different bits have label 1.</p>
+      <h3>Look for</h3>
+      <p>The model reproduces the four training labels. These are training predictions for illustration.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>net = MLPClassifier(hidden_layer_sizes=(8, 8), solver=&quot;lbfgs&quot;,
+                    random_state=0, max_iter=1000).fit(bits, different)
+print(&quot;Hidden layers:&quot;, net.hidden_layer_sizes)
+print(&quot;Training predictions:&quot;, net.predict(bits).tolist())</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-4">
+  <h2>4. Data science without a model</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Summarising values is already useful data work.</p>
+      <h3>Look for</h3>
+      <p>There are four values and their mean is 2.5.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>values = pd.Series(numbers)
+print(&quot;Count:&quot;, values.count(), &quot;Mean:&quot;, values.mean())</code></pre>
+    </div>
+  </div>
+</section>
+  <p class="return"><a href="#top">Back to top</a></p>
+</main>
+</body>
+</html>

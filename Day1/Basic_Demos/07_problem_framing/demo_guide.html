@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Observation, features, target, horizon, and metric | Day 1 demo</title>
+  <link rel="stylesheet" href="../trainer.css">
+</head>
+<body>
+
+<main id="top">
+  <a href="../Day1_Trainer_Transcript.html#slide-7">← Trainer transcript</a>
+  <header>
+    <p class="eyebrow">Day 1 · Slide 7</p>
+    <h1>Observation, features, target, horizon, and metric</h1>
+    <div class="files"><a href="starter.py">Starter code</a><a href="solution.py">Complete solution</a></div>
+    <p>From this demo’s folder, run the solution once, or use the numbered sections to show one idea at a time. The code under Setup runs first.</p>
+    <pre><code>python solution.py</code></pre>
+  </header>
+  <details>
+    <summary>Setup code</summary>
+    <pre><code>import pandas as pd
+from sklearn.metrics import mean_absolute_error
+
+series = pd.Series([10, 13, 12, 16, 15], name=&quot;reading&quot;)</code></pre>
+  </details>
+  
+<section class="guide-step" id="step-1">
+  <h2>1. Build one row per time point</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>One row is a time point. The current and previous readings are available by that point.</p>
+      <h3>Look for</h3>
+      <p>At time 1, the current reading is 13 and the previous reading is 10.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>rows = series.to_frame().assign(previous=series.shift(1))
+print(rows)</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-2">
+  <h2>2. Define a one-step target</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>The prediction horizon is one step. We can build the label from the next reading while preparing historical examples.</p>
+      <h3>Look for</h3>
+      <p>At time 1, the target is 12. The final row has no observed target yet.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>rows[&quot;next_reading&quot;] = series.shift(-1)
+print(rows)
+labelled = rows.dropna(subset=[&quot;previous&quot;, &quot;next_reading&quot;])</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-3">
+  <h2>3. Score a baseline</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Suppose we predict that the next reading equals the current one. Mean absolute error measures the typical size of the miss in the original units.</p>
+      <h3>Look for</h3>
+      <p>Across these three rows, the mean absolute error is 2.0.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>error = mean_absolute_error(labelled[&quot;next_reading&quot;], labelled[&quot;reading&quot;])
+print(&quot;Baseline MAE:&quot;, error)</code></pre>
+    </div>
+  </div>
+</section>
+  <p class="return"><a href="#top">Back to top</a></p>
+</main>
+</body>
+</html>

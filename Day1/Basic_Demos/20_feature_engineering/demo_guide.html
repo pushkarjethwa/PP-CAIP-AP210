@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Create useful features and select among them | Day 1 demo</title>
+  <link rel="stylesheet" href="../trainer.css">
+</head>
+<body>
+
+<main id="top">
+  <a href="../Day1_Trainer_Transcript.html#slide-20">← Trainer transcript</a>
+  <header>
+    <p class="eyebrow">Day 1 · Slide 20</p>
+    <h1>Create useful features and select among them</h1>
+    <div class="files"><a href="starter.py">Starter code</a><a href="solution.py">Complete solution</a></div>
+    <p>From this demo’s folder, run the solution once, or use the numbered sections to show one idea at a time. The code under Setup runs first.</p>
+    <pre><code>python solution.py</code></pre>
+  </header>
+  <details>
+    <summary>Setup code</summary>
+    <pre><code>import numpy as np
+import pandas as pd
+from sklearn.feature_selection import RFE, mutual_info_regression
+from sklearn.linear_model import Lasso, LinearRegression
+from sklearn.tree import DecisionTreeRegressor
+
+values = pd.DataFrame({&quot;amount&quot;: [1200, 2400], &quot;monthly_income&quot;: [100, 200],
+                       &quot;existing_payment&quot;: [10, 40], &quot;new_payment&quot;: [20, 60]})
+series = pd.Series([4, 8, 6, 10], name=&quot;value&quot;)
+points = pd.DataFrame({&quot;id&quot;: [&quot;a&quot;, &quot;a&quot;, &quot;b&quot;], &quot;units&quot;: [2, 3, 4],
+                       &quot;price&quot;: [5, 5, 2]})
+rng = np.random.default_rng(42)
+signal = np.linspace(-2, 2, 81)
+noise = rng.normal(size=len(signal))
+X = pd.DataFrame({&quot;signal&quot;: signal, &quot;noise&quot;: noise})
+y = 5 * signal + 0.05 * noise</code></pre>
+  </details>
+  
+<section class="guide-step" id="step-1">
+  <h2>1. Domain ratios and disposable income</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Compute LTI with annual income. Compute DBR and remaining income using the same monthly units as the payments.</p>
+      <h3>Look for</h3>
+      <p>Both LTI values are 1.0, DBR values are 0.3 and 0.5, and disposable amounts are 70 and 100.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>payments = values[&quot;existing_payment&quot;] + values[&quot;new_payment&quot;]
+monthly = values[&quot;monthly_income&quot;]
+ratios = values.assign(lti=values[&quot;amount&quot;] / (12 * monthly),
+                       dbr=payments / monthly, disposable=monthly - payments)
+print(ratios[[&quot;lti&quot;, &quot;dbr&quot;, &quot;disposable&quot;]])</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-2">
+  <h2>2. Lag, rolling average, and recency</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Use previous rows for a lag or trailing average. Recency counts how long ago the last available event happened.</p>
+      <h3>Look for</h3>
+      <p>The final row&#x27;s lag is 6 and its previous-two average is 7. The most recent event was 2 days before the cutoff.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>previous = series.shift(1)
+print(pd.DataFrame({&quot;current&quot;: series, &quot;lag&quot;: previous,
+                    &quot;previous_two_mean&quot;: previous.rolling(2).mean()}))
+cutoff = pd.Timestamp(&quot;2025-01-05&quot;)
+events = pd.to_datetime([&quot;2025-01-01&quot;, &quot;2025-01-03&quot;, &quot;2025-01-07&quot;])
+last_known = events[events &lt;= cutoff].max()
+print(&quot;Recency in days:&quot;, (cutoff - last_known).days)</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-3">
+  <h2>3. Interactions and aggregation</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Multiplying two columns creates a new feature. Grouping turns multiple rows into one summary per ID.</p>
+      <h3>Look for</h3>
+      <p>ID a has 2 rows with total 25. ID b has 1 row with total 8.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>features = points.assign(total=points[&quot;units&quot;] * points[&quot;price&quot;])
+print(features.groupby(&quot;id&quot;).agg(count=(&quot;total&quot;, &quot;size&quot;),
+                                sum_total=(&quot;total&quot;, &quot;sum&quot;)))</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-4">
+  <h2>4. Filter with correlation and mutual information</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Correlation measures linear association. Mutual information can find a relationship even when a positive and negative slope cancel in correlation.</p>
+      <h3>Look for</h3>
+      <p>The signal&#x27;s correlation with its square is near zero. Mutual information identifies that relationship.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>curve = pd.Series(signal ** 2)
+print(&quot;Correlation:\n&quot;, X.corrwith(curve).round(3))
+mi = mutual_info_regression(X, curve, random_state=0)
+print(&quot;Mutual information:\n&quot;, pd.Series(mi, index=X.columns).round(3))</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-5">
+  <h2>5. Wrapper selection with RFE</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Recursive feature elimination fits a model, removes lower-ranked inputs, and repeats until the requested number is left.</p>
+      <h3>Look for</h3>
+      <p>The wrapper selects signal.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>selector = RFE(LinearRegression(), n_features_to_select=1).fit(X, y)
+print(&quot;RFE selects:&quot;, X.columns[selector.support_].tolist())</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-6">
+  <h2>6. Embedded selection with Lasso and a tree</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>Lasso can shrink a coefficient to zero during fitting. A tree also learns which features it used to reduce error. We can use those importances to rank features.</p>
+      <h3>Look for</h3>
+      <p>Lasso sets the noise coefficient to zero. The small tree uses signal.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>lasso = Lasso(alpha=0.15).fit(X, y)
+tree = DecisionTreeRegressor(max_depth=2, random_state=0).fit(X, y)
+print(&quot;Lasso coefficients:&quot;, dict(zip(X.columns, lasso.coef_.round(3).tolist())))
+print(&quot;Tree importances:&quot;, dict(zip(X.columns, tree.feature_importances_.round(3).tolist())))</code></pre>
+    </div>
+  </div>
+</section>
+  <p class="return"><a href="#top">Back to top</a></p>
+</main>
+</body>
+</html>

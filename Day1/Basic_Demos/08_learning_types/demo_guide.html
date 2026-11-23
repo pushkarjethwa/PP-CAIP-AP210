@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Supervised, unsupervised, reinforcement, and other learning types | Day 1 demo</title>
+  <link rel="stylesheet" href="../trainer.css">
+</head>
+<body>
+
+<main id="top">
+  <a href="../Day1_Trainer_Transcript.html#slide-8">← Trainer transcript</a>
+  <header>
+    <p class="eyebrow">Day 1 · Slide 8</p>
+    <h1>Supervised, unsupervised, reinforcement, and other learning types</h1>
+    <div class="files"><a href="starter.py">Starter code</a><a href="solution.py">Complete solution</a></div>
+    <p>From this demo’s folder, run the solution once, or use the numbered sections to show one idea at a time. The code under Setup runs first.</p>
+    <pre><code>python solution.py</code></pre>
+  </header>
+  <details>
+    <summary>Setup code</summary>
+    <pre><code>from collections import Counter
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
+from sklearn.ensemble import IsolationForest
+from sklearn.linear_model import LinearRegression
+from sklearn.semi_supervised import LabelSpreading
+
+x = [[0], [0.2], [0.4], [5], [5.2], [5.4]]</code></pre>
+  </details>
+  
+<section class="guide-step" id="step-1">
+  <h2>1. Supervised</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>The example outputs are already supplied as labels.</p>
+      <h3>Look for</h3>
+      <p>The learned line predicts 6 for input 3.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>model = LinearRegression().fit([[1], [2], [4]], [2, 4, 8])
+print(&quot;Prediction for 3:&quot;, round(model.predict([[3]])[0], 2))</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-2">
+  <h2>2. Unsupervised clustering</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>We only supply the positions. The model groups points by proximity.</p>
+      <h3>Look for</h3>
+      <p>The first three points share one group and the final three share another. The ID numbers are arbitrary.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>groups = KMeans(n_clusters=2, n_init=10, random_state=0).fit_predict(x)
+print(&quot;Group IDs:&quot;, groups.tolist())</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-3">
+  <h2>3. Unsupervised dimension reduction</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>PCA finds a direction that preserves as much variation as possible in fewer columns.</p>
+      <h3>Look for</h3>
+      <p>Three rows with two columns become three rows with one component.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>component = PCA(n_components=1).fit_transform([[1, 2], [2, 4], [3, 6]])
+print(&quot;Reduced shape:&quot;, component.shape)</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-4">
+  <h2>4. Unsupervised anomaly detection</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>An isolation forest flags values that are easier to separate from the rest.</p>
+      <h3>Look for</h3>
+      <p>The final value, 20, is flagged with -1.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>points = [[1], [1.1], [1.2], [1.3], [20]]
+flags = IsolationForest(contamination=0.2, random_state=0).fit_predict(points)
+print(&quot;Anomaly flags:&quot;, flags.tolist(), &quot;(-1 means unusual)&quot;)</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-5">
+  <h2>5. Reinforcement learning</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>This one-state example learns the value of each action from rewards. The simplest policy picks the action with the larger estimated value.</p>
+      <h3>Look for</h3>
+      <p>The running estimates favour action B after four practice actions.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>q = {&quot;A&quot;: 0.0, &quot;B&quot;: 0.0}
+for action, reward in [(&quot;A&quot;, 1), (&quot;B&quot;, 3), (&quot;A&quot;, 1), (&quot;B&quot;, 3)]:
+    q[action] += 0.5 * (reward - q[action])
+print(&quot;Action values:&quot;, q, &quot;Chosen action:&quot;, max(q, key=q.get))</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-6">
+  <h2>6. Semi-supervised</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>A model receives a few labelled points and uses their proximity to help assign labels to the remaining points.</p>
+      <h3>Look for</h3>
+      <p>The model spreads label 0 around the first point and label 1 around the final point.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>partly_labelled = [0, -1, -1, -1, -1, 1]
+spread = LabelSpreading().fit(x, partly_labelled)
+print(&quot;Inferred labels:&quot;, spread.transduction_.tolist())</code></pre>
+    </div>
+  </div>
+</section>
+<section class="guide-step" id="step-7">
+  <h2>7. Self-supervised</h2>
+  <div class="pair">
+    <div>
+      <h3>Say</h3>
+      <p>We make the targets from the data itself. In a next-token task, each following token becomes the answer for the preceding token.</p>
+      <h3>Look for</h3>
+      <p>The generated examples show B most often follows A.</p>
+    </div>
+    <div>
+      <h3>Run</h3>
+      <pre><code>tokens = &quot;A B A B A C&quot;.split()
+pairs = list(zip(tokens, tokens[1:]))
+after_a = Counter(target for source, target in pairs if source == &quot;A&quot;)
+print(&quot;Generated pairs:&quot;, pairs)
+print(&quot;Most likely next token after A:&quot;, after_a.most_common(1)[0][0])</code></pre>
+    </div>
+  </div>
+</section>
+  <p class="return"><a href="#top">Back to top</a></p>
+</main>
+</body>
+</html>
