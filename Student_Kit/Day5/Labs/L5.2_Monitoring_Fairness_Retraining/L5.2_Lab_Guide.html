@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lab L5.2 · Production monitoring, responsible AI and champion–challenger retraining</title><style>:root{--bg:#f6f7f9;--panel:#fff;--ink:#1b2430;--muted:#5b6675;--line:#e3e7ee;--brand:#0b5e6b;--brand2:#c8963e;
+--code-bg:#0f1720;--code-ink:#e6edf3;--l1:#2f6fdb;--l2:#c8963e;--l3:#1f8f5f;--why:#eef6f7;--exp:#eef8f1;--think:#fbf5ea;--say:#eef2fb;--exam:#f4effa}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1117;--panel:#141a22;--ink:#e6edf3;--muted:#9aa6b2;--line:#263040;
+--brand:#4fb3c2;--why:#12262a;--exp:#122319;--think:#2a2214;--say:#151d2d;--exam:#211a2c;--code-bg:#0a0f15}}
+:root[data-theme="dark"]{--bg:#0d1117;--panel:#141a22;--ink:#e6edf3;--muted:#9aa6b2;--line:#263040;--brand:#4fb3c2;--why:#12262a;
+--exp:#122319;--think:#2a2214;--say:#151d2d;--exam:#211a2c;--code-bg:#0a0f15}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+header.top{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:10px 20px;
+background:var(--brand);color:#fff;font-size:14px;letter-spacing:.2px}
+.brand .logo{color:var(--brand2);margin-right:6px}.brand .sep{opacity:.5;margin:0 10px}
+.theme{background:transparent;border:1px solid rgba(255,255,255,.5);color:#fff;border-radius:6px;padding:2px 10px;cursor:pointer;font-size:16px}
+.layout{display:grid;grid-template-columns:260px minmax(0,1fr);max-width:1320px;margin:0 auto}
+nav.toc{position:sticky;top:46px;align-self:start;max-height:calc(100vh - 46px);overflow:auto;padding:24px 12px 24px 20px;font-size:13.5px}
+nav.toc a{display:block;color:var(--muted);text-decoration:none;padding:4px 8px;border-left:2px solid transparent;border-radius:0 4px 4px 0}
+nav.toc a:hover,nav.toc a.active{color:var(--brand);border-left-color:var(--brand);background:var(--panel)}
+.toc-title{font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:1px;color:var(--muted);margin:0 8px 8px}
+main{padding:24px 28px 80px;min-width:0}
+section{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px 26px;margin:0 0 18px}
+section.hero{background:linear-gradient(135deg,var(--brand),#083f48);color:#fff;border:0}
+section.hero.demo{background:linear-gradient(135deg,#3b2f6b,#1f1a3d)}
+.hero h1{margin:.2em 0 .3em;font-size:30px;line-height:1.2}.hero .lead{opacity:.92;font-size:17px;margin:0 0 16px}
+.kicker{text-transform:uppercase;letter-spacing:1.5px;font-size:12px;color:var(--brand2);font-weight:700}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.meta div{background:rgba(255,255,255,.1);border-radius:8px;padding:8px 12px}.meta .k{display:block;font-size:11px;text-transform:uppercase;opacity:.75;letter-spacing:1px}
+.meta .v{font-weight:600;font-size:14px}
+.diff i{display:inline-block;width:9px;height:9px;margin-right:2px;border-radius:2px;background:rgba(255,255,255,.25)}.diff i.on{background:var(--brand2)}
+h2{font-size:22px;margin:0 0 12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}h3{font-size:16px;margin:18px 0 8px;color:var(--brand)}
+.num{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--brand);color:#fff;font-size:15px;flex:none}
+.mins{margin-left:auto;font-size:12px;font-weight:600;color:var(--muted);background:var(--bg);padding:2px 10px;border-radius:20px}
+.why,.expect,.think,.say,.callout,.scenario{border-radius:8px;padding:12px 16px;margin:12px 0}
+.why{background:var(--why);border-left:4px solid var(--brand)}.expect{background:var(--exp);border-left:4px solid var(--l3)}
+.think{background:var(--think);border-left:4px solid var(--brand2)}.say{background:var(--say);border-left:4px solid #5b6bd6}
+.callout{background:var(--bg);border:1px dashed var(--line)}.callout.exam{background:var(--exam);border:0;border-left:4px solid #8a5cc7}
+.scenario{background:var(--bg)}
+.why>b,.expect>b,.think>b,.say>b,.callout>b{display:block;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.why p:last-child,.expect p:last-child,.think p:last-child,.say p:last-child{margin-bottom:0}
+ol.tasks li{margin:4px 0}
+.levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.lvl{border-radius:10px;padding:12px 16px;border:1px solid var(--line);border-top:5px solid}.lvl.l1{border-top-color:var(--l1)}.lvl.l2{border-top-color:var(--l2)}.lvl.l3{border-top-color:var(--l3)}
+.lvl p{margin:.4em 0 0;font-size:14px}.note{color:var(--muted);font-size:14px}
+details{border:1px solid var(--line);border-radius:8px;margin:10px 0;background:var(--bg)}
+details summary{cursor:pointer;padding:8px 14px;font-weight:600}details[open] summary{border-bottom:1px solid var(--line)}
+details>*:not(summary){margin:10px 14px}
+.code{position:relative;margin:10px 0}
+pre{background:var(--code-bg);color:var(--code-ink);padding:14px 16px;border-radius:8px;overflow:auto;font:13.5px/1.5 Consolas,"Cascadia Code",Menlo,monospace;margin:0}
+code{font-family:Consolas,"Cascadia Code",Menlo,monospace;font-size:.92em}
+:not(pre)>code{background:var(--bg);border:1px solid var(--line);padding:1px 5px;border-radius:4px}
+.copy{position:absolute;top:8px;right:8px;background:#ffffff1a;color:#e6edf3;border:1px solid #ffffff33;border-radius:5px;font-size:12px;padding:2px 10px;cursor:pointer}
+.copy:hover{background:#ffffff33}.copy.ok{background:var(--l3);border-color:var(--l3)}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:8px 0}th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+th{background:var(--bg)}table.files td:first-child{white-space:nowrap}
+.tok-k{color:#ff7b72}.tok-s{color:#a5d6ff}.tok-c{color:#8b949e;font-style:italic}.tok-n{color:#79c0ff}.tok-f{color:#d2a8ff}
+@media (max-width:900px){.layout{grid-template-columns:1fr}nav.toc{display:none}main{padding:16px}section{padding:16px}.hero h1{font-size:24px}}
+@media print{nav.toc,header.top,.copy{display:none}.layout{display:block}details{display:block}details>*{display:block!important}section{break-inside:avoid-page}}
+</style></head>
+<body class="lab-page">
+<header class="top"><div class="brand"><span class="logo">◆</span> Horizon Gulf Bank · Project MIZAN<span class="sep">|</span>CAIP AIP-210 · Certified AI Practitioner</div>
+<button class="theme" onclick="toggleTheme()" aria-label="Toggle theme">◐</button></header>
+<div class="layout"><nav class="toc"><div class="toc-title">On this page</div><a href="#overview">Overview</a>
+<a href="#levels">How to use the 3 levels</a>
+<a href="#packages">Starter package &amp; what you produce</a>
+<a href="#setup">Setup</a>
+<a href="#step1">1. Load the champion and build production features with warm-up</a>
+<a href="#step2">2. Data-quality and schema monitor</a>
+<a href="#step3">3. Data drift (PSI) and prediction drift</a>
+<a href="#step4">4. Performance decay and concept-drift diagnosis</a>
+<a href="#step5">5. Responsible AI: fairness of the credit policy and robustness of the fraud model</a>
+<a href="#step6">6. Retrain a challenger, compare, decide, and write the report</a>
+<a href="#stretch">Stretch challenges</a>
+<a href="#trouble">Troubleshooting</a></nav>
+<main><section class="hero lab"><div class="kicker">Day 5 · Independent Lab L5.2</div>
+<h1>Production monitoring, responsible AI and champion–challenger retraining</h1><p class="lead">Run the full MLOps maintenance cycle on two months of drifted production traffic: data quality, PSI drift, weekly performance decay, fairness and robustness checks, a retrained challenger and a promotion decision.</p>
+<div class="meta"><div><span class="k">Duration</span><span class="v">90 min</span></div><div><span class="k">Difficulty</span><span class="v"><span class="diff" title="9/10"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i></span> 9/10</span></div><div><span class="k">Dataset(s)</span><span class="v">card_transactions_prod_2025Q4.csv.gz (402k) · card_transactions.csv.gz (history) · checkpoints from L3.1, L5.1</span></div><div><span class="k">Builds on</span><span class="v">Lab L5.1 (mizan_fraud package, MLflow registry) · Lab L3.1 (credit model for fairness) · Demo D5.2</span></div><div><span class="k">Produces</span><span class="v">checkpoints/monitoring_report_2025Q4.html · new MLflow model version (challenger / champion)</span></div></div></section>
+<section id="overview"><h2>Objective &amp; scenario alignment</h2>
+<div class="scenario"><p><strong>Horizon Gulf Bank (HGB)</strong> is a fictional UAE retail bank with 250,000 customers. Its Board approved <strong>Project MIZAN</strong> — an AI decisioning platform covering credit, fraud, collateral valuation, cash logistics, customer retention and document automation. You are a junior ML practitioner in the MIZAN squad.</p>
+<p>It is 1 December 2025. MIZAN fraud v1.0.0 has been live for two months; chargeback labels for October and November have now arrived. The Model Risk Committee meets tomorrow and wants a <strong>monitoring report</strong>: is the model still fit for purpose, is it fair, is it robust, and if not, what replaces it?</p>
+<p><strong>Progressive architecture:</strong> monitors the exact package and registry you built in L5.1, and the credit policy from L3.1.</p></div><h3>By the end of this lab you will be able to</h3><ul>
+<li>Compute production features with the shared module and a history warm-up</li>
+<li>Build a data-quality/schema monitor with OK/WARN/FAIL status</li>
+<li>Measure data drift per feature with PSI, and prediction drift via alert rates</li>
+<li>Measure weekly performance decay and diagnose concept drift by segment</li>
+<li>Run fairness (disparate impact, equal opportunity) and robustness/evasion checks</li>
+<li>Retrain a challenger, compare champion vs challenger on a later period, and record the decision in the registry</li>
+</ul>
+<div class="callout exam"><b>AIP-210 exam link</b><p>AIP-210 <em>Maintaining ML</em>: monitoring, data-quality/schema monitoring, data drift vs concept drift, security (adversarial inputs, data poisoning, privacy), responsible-AI/governance, retraining &amp; model maintenance.</p></div></section>
+<section id="levels"><h2>How to use the three levels</h2><div class="levels">
+<div class="lvl l1"><b>Level 1 · From scratch</b><p>Work from <i>this guide</i> in <code>L5.2_Level1_From_Scratch.ipynb</code>. Every step tells you <i>what</i> to build and <i>why</i>; you write all the code. Open a hint only when stuck for &gt;5 min.</p></div>
+<div class="lvl l2"><b>Level 2 · Guided starter — ★ recommended for this cohort</b><p>Open <code>L5.2_Level2_Guided_Starter.ipynb</code>. The scaffolding is written; you complete the numbered <code>✏️ BLANK</code>s. Each blank explains what to write, where, and why.</p></div>
+<div class="lvl l3"><b>Level 3 · Complete solution</b><p>Released by your trainer <i>after</i> the lab, as part of the end-of-day release. Extract it into your Student_Kit folder and <code>L5.2_Level3_Solution.ipynb</code> appears here. Then use the <i>Think like a practitioner</i> prompts to change it and break it on purpose.</p></div>
+</div><p class="note"><b>Default: Level 2.</b> Start in the guided starter. Finished early or already confident? Try the next step at Level 1. Stuck? Open the 💡 hint, compare with your neighbour, then ask your trainer. All three levels produce the same artefacts, so you can switch level at any step.</p></section>
+<section id="packages"><h2>Starter package &amp; what you produce</h2>
+<h3>Starter package (what you begin with)</h3><table class="files"><thead><tr><th>File / artefact</th><th>Purpose</th></tr></thead><tbody><tr><td><code>checkpoints/mizan_fraud/</code></td><td>Package from L5.1</td></tr><tr><td><code>checkpoints/mlflow/mlflow.db</code></td><td>Registry from L5.1</td></tr><tr><td><code>checkpoints/card_features.parquet</code></td><td>Training reference (L3.3)</td></tr><tr><td><code>checkpoints/credit_model.joblib, credit_policy.json</code></td><td>From L3.1</td></tr><tr><td><code>L5.2_Level1_From_Scratch.ipynb</code></td><td>Level 1</td></tr><tr><td><code>L5.2_Level2_Guided_Starter.ipynb</code></td><td>Level 2</td></tr></tbody></table>
+<h3>What you finish with</h3><table class="files"><thead><tr><th>File / artefact</th><th>Purpose</th></tr></thead><tbody><tr><td><code>L5.2_Level3_Solution.ipynb</code></td><td>Complete solution</td></tr><tr><td><code>checkpoints/monitoring_report_2025Q4.html</code></td><td>Committee-ready monitoring report</td></tr><tr><td><code>MLflow: mizan-fraud v2</code></td><td>Challenger registered; alias set according to the decision</td></tr></tbody></table>
+<div class="callout"><b>Fell behind?</b> <p>Needs <strong>your own</strong> Lab L5.1 outputs (<code>checkpoints/mizan_fraud/</code> and the MLflow registry <code>checkpoints/mlflow/</code>, which L5.1 creates on your machine) plus L3.1's credit artefacts (shipped). If <code>checkpoints/mlflow/mlflow.db</code> is missing, finish L5.1 first. If you're short of time, ask your trainer for the L5.1 solution notebook.</p></div></section>
+<section id="setup"><h2>Setup</h2>
+<p>Run the standard course setup cell first (it locates <code>data/</code> and <code>checkpoints/</code> from anywhere inside the course folder):</p>
+<div class="code"><button class="copy" onclick="copyCode(this)">Copy</button><pre><code class="lang-python"># ── Project MIZAN course setup ─ run this cell first ──────────────────────────
+from pathlib import Path
+import warnings, time
+warnings.filterwarnings(&quot;ignore&quot;)
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Locate the course root (the folder that contains data/generate_data.py) from wherever this notebook lives
+ROOT = next(p for p in [Path.cwd(), *Path.cwd().parents] if (p / &quot;data&quot; / &quot;generate_data.py&quot;).exists())
+DATA = ROOT / &quot;data&quot;          # raw synthetic datasets (read-only)
+CKPT = ROOT / &quot;checkpoints&quot;   # hand-off artefacts between labs (lets you start any lab fresh)
+CKPT.mkdir(exist_ok=True)
+pd.set_option(&quot;display.max_columns&quot;, 60); pd.set_option(&quot;display.width&quot;, 160)
+plt.rcParams.update({&quot;figure.figsize&quot;: (9, 4.5), &quot;axes.grid&quot;: True, &quot;grid.alpha&quot;: .3})
+RNG = 42
+print(&quot;Course root:&quot;, ROOT)</code></pre></div></section>
+<section id="step1" class="step"><h2><span class="num">1</span>Load the champion and build production features with warm-up
+<span class="mins">10 min</span></h2>
+<div class="why"><b>Why this matters</b><p>Production features must come from the <strong>same module</strong> as training and need each card’s <strong>history</strong> (velocity windows, ‘first time in country’). We prepend Apr–Sep history, build features, and keep the production rows. Labels (<code>is_fraud</code>) are now available for Oct–Nov.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Import <code>mizan_fraud.features</code> and load the champion model + model card from the package.</li><li>Load history and production raw files; build features on their concatenation; keep production rows as <code>pf</code>; add <code>week</code>.</li><li>Load the training reference features (<code>split == 'train'</code>) as <code>ref</code>.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>402k production rows over ≈ 9 weeks.</p></div>
+
+
+
+</section>
+<section id="step2" class="step"><h2><span class="num">2</span>Data-quality and schema monitor
+<span class="mins">12 min</span></h2>
+<div class="why"><b>Why this matters</b><p>Schema problems are the most common production incident and the easiest to catch. We derive <strong>expectations from training</strong> — allowed categories, null rates, value ranges — and test production against them with a traffic-light status.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Write <code>expectations(ref)</code> → per feature: allowed categories (categoricals), null rate, 0.1%/99.9% quantiles (numerics).</li><li>Write <code>dq_check(pf, exp)</code> → table with <code>check</code>, <code>observed</code>, <code>status</code> (OK / WARN / FAIL): unseen categories = FAIL; null rate +2 pts = WARN, +5 pts = FAIL; &gt;1% of values outside the reference range = WARN.</li><li>Show only non-OK rows.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>Three FAILs: unseen <code>Digital_Wallet</code> channel, unseen <code>UNKNOWN</code> merchant category, and <code>merchant_risk_score</code> null rate +7 pts (upstream enrichment outage).</p></div>
+
+
+<div class="think"><b>Think like a practitioner</b><p>The model handles unseen categories (encoded −1) without crashing. Why is a FAIL still the right status?</p></div>
+</section>
+<section id="step3" class="step"><h2><span class="num">3</span>Data drift (PSI) and prediction drift
+<span class="mins">12 min</span></h2>
+<div class="why"><b>Why this matters</b><p>PSI quantifies how far each feature’s distribution has moved. <strong>Prediction drift</strong> — the alert rate — is visible immediately, weeks before labels. Together they are the <em>leading indicators</em>.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Implement <code>psi(expected, actual, bins=10)</code> with quantile bins from the reference and ε-clipping.</li><li>PSI for every numeric feature: reference vs October and vs November. Flag 0.1 (warn) and 0.25 (act).</li><li>Score production with the champion; plot the weekly alert rate against the 0.5% design rate.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>Almost every feature is stable (PSI &lt; 0.05). The exception is <code>card_txn_index</code> (WARN, ≈ 0.2): it counts each card’s history, so it <strong>grows with time by construction</strong> — a non-stationary feature that should be replaced (e.g. by transactions per month of tenure). The weekly alert rate stays near the fraud rate, so prediction drift alone would <em>not</em> raise an alarm.</p></div>
+<details class="hint"><summary>💡 Hint</summary><p><code>np.unique</code> on the quantile edges avoids empty bins for features with many identical values (flags, counts).</p></details>
+
+
+</section>
+<section id="step4" class="step"><h2><span class="num">4</span>Performance decay and concept-drift diagnosis
+<span class="mins">14 min</span></h2>
+<div class="why"><b>Why this matters</b><p>Now the lagging truth. With labels we measure <strong>recall at the operational threshold</strong> week by week and compare it with the September test value on the model card. Then we slice by channel and 3DS status to find <em>where</em> the model fails — the signature of <strong>concept drift</strong>.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Weekly table: frauds, recall at <code>THR</code> (alerted frauds / frauds), precision at <code>THR</code>, PR-AUC. Add the model-card reference recall line.</li><li>Slice November recall by <code>channel</code> and by <code>is_3ds_authenticated</code> for e-commerce.</li><li>Write a 3-line diagnosis in markdown.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>Weekly recall at the threshold ≈ 0.58–0.74 vs ≈ 0.88 on the September test — a drop well beyond the 10-point trigger. November recall on <strong>Digital_Wallet</strong> fraud ≈ 4% and on <strong>3DS-authenticated</strong> e-commerce fraud ≈ 50% (vs ≈ 85% non-3DS): the new scam typology. Classic concept drift.</p></div>
+
+
+<div class="think"><b>Think like a practitioner</b><p>Would <em>re-tuning the threshold</em> fix this? Why or why not? (No — the scam scores low; lowering the threshold floods Ops with false alerts.)</p></div>
+</section>
+<section id="step5" class="step"><h2><span class="num">5</span>Responsible AI: fairness of the credit policy and robustness of the fraud model
+<span class="mins">14 min</span></h2>
+<div class="why"><b>Why this matters</b><p>Governance is part of maintenance. For <strong>credit</strong> (L3.1) we test whether approval outcomes differ by gender or nationality group — attributes the model never saw but could reach through proxies. The <strong>disparate-impact ratio</strong> (lowest ÷ highest approval rate; &lt; 0.8 is a red flag) and <strong>equal opportunity</strong> (approval rate among borrowers who actually repaid) are standard metrics. For <strong>fraud</strong> we run an <strong>evasion probe</strong>: do fraudsters slip through if they split amounts or reuse a known device?</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Load <code>credit_model.joblib</code>, <code>credit_policy.json</code> and the L1.2 test split. Approve if PD &lt; cut-off.</li><li>Table by <code>gender</code> and by <code>nationality_group</code>: approval rate, approval rate among repayers (equal opportunity), default rate among approved. Compute the disparate-impact ratio for each attribute.</li><li>Evasion probe: take alerted fraud in November, (a) halve <code>amount_aed</code>-derived features, (b) set <code>is_new_device = 0</code>; re-score and report the share still alerted.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>Gender DI = 1.00; nationality DI ≈ 0.94 (Emirati ≈ 95.6% vs African ≈ 90.2% approval) — inside the 4/5 rule, and default rates among approved applicants differ in the same direction (≈ 3.2% vs 4.9%), consistent with genuine risk differences via salary/employer. Evasion: ≈ 94% of caught fraud stays alerted when amounts are halved, ≈ 89% when a known device is faked — velocity features make the model fairly robust.</p></div>
+
+
+<div class="think"><b>Think like a practitioner</b><p>The nationality DI ratio is below 0.8 but default rates among approved applicants are similar across groups. Is the model unfair, or is it reflecting real risk differences? What would you recommend?</p></div>
+</section>
+<section id="step6" class="step"><h2><span class="num">6</span>Retrain a challenger, compare, decide, and write the report
+<span class="mins">18 min</span></h2>
+<div class="why"><b>Why this matters</b><p>Retraining on recent labelled data teaches the model the new scam pattern. A fair <strong>champion–challenger</strong> test trains the challenger on data up to October and compares both models on <strong>November only</strong> — data neither has seen. The decision and its evidence go to the registry and into the committee report.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Challenger training set: training-reference fraud + legit sample <strong>plus all October production rows</strong> (undersampled the same way). Same algorithm and hyperparameters as the champion.</li><li>Evaluate champion vs challenger on November: recall@0.5% budget, PR-AUC, recall on Digital_Wallet and 3DS-authenticated e-commerce fraud.</li><li>Promote if the challenger improves November PR-AUC by ≥ 0.02 with no slice worse by &gt; 5 pts: register it as a new MLflow version and move the <code>champion</code> alias; else tag it <code>challenger</code>.</li><li>Assemble <code>monitoring_report_2025Q4.html</code> with the DQ issues, drift, weekly performance, fairness tables, probes and decision.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>Challenger PR-AUC ≈ 0.76 vs 0.69 (+0.065) with no slice worse → <strong>PROMOTE</strong>; registry v2 takes the <code>champion</code> alias; the HTML report is written. But Digital_Wallet recall only rises from ≈ 4% to ≈ 15%: retraining helps, yet the scam typology needs <strong>new features</strong> (payee age, first-time beneficiary, call-centre signals) — say so in the report.</p></div>
+
+
+<div class="think"><b>Think like a practitioner</b><p>The challenger learned October’s scam pattern from October labels. What is the risk of <strong>data poisoning</strong> in this loop, and which control would you add? (label provenance, chargeback-only labels, anomaly checks on new training data, human sign-off)</p></div>
+</section>
+<section id="stretch"><h2>Stretch challenges</h2><ol>
+<li>Automate it: wrap steps 2–5 into <code>monitor(prod_df) -&gt; dict</code> and schedule it (cron / Airflow) to write a dated report weekly.</li>
+<li>Add <strong>feature attribution drift</strong>: compare permutation importances on reference vs November — which features did the model stop relying on?</li>
+<li>Privacy: show that the batch-score file contains only pseudonymous IDs; propose a retention period and an access-control rule.</li>
+</ol></section>
+<section id="trouble"><h2>Troubleshooting</h2><ul>
+<li><strong><code>RESOURCE_DOES_NOT_EXIST: mizan-fraud</code></strong> → run L5.1 first (it creates the registered model).</li>
+<li><strong>Feature build is slow</strong> → 1.9M rows takes ≈ 20 s; it’s the warm-up history.</li>
+<li><strong>Different DI ratios than the reference</strong> → expected if you changed L3.1’s cut-off.</li>
+</ul></section></main></div><script>function copyCode(btn){const t=btn.parentElement.querySelector('code').innerText;
+const done=()=>{btn.textContent='Copied ✓';btn.classList.add('ok');setTimeout(()=>{btn.textContent='Copy';btn.classList.remove('ok')},1400)};
+if(navigator.clipboard){navigator.clipboard.writeText(t).then(done).catch(()=>fallback(t,done))}else fallback(t,done)}
+function fallback(t,done){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(e){}a.remove();done()}
+function toggleTheme(){const r=document.documentElement;const cur=r.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+const nxt=cur==='dark'?'light':'dark';r.setAttribute('data-theme',nxt);try{localStorage.setItem('mizan-theme',nxt)}catch(e){}}
+(function(){try{const t=localStorage.getItem('mizan-theme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}
+// light-weight python highlighter
+const KW=/\b(import|from|as|def|return|for|in|if|elif|else|while|with|try|except|finally|class|lambda|and|or|not|is|None|True|False|print|assert|yield|raise|pass|break|continue|global)\b/g;
+// placeholders use private-use characters so the keyword/number passes can never match inside them
+const enc=n=>String(n).split('').map(d=>String.fromCharCode(0xE000+ +d)).join('');
+const dec=t=>+t.split('').map(c=>c.charCodeAt(0)-0xE000).join('');
+document.querySelectorAll('pre code.lang-python').forEach(el=>{let s=el.innerHTML;const store=[];
+const keep=cls=>m=>{store.push('<span class="'+cls+'">'+m+'</span>');return ''+enc(store.length-1)+''};
+s=s.replace(/(&quot;.*?&quot;|&#x27;.*?&#x27;|"[^"\n]*"|'[^'\n]*')/g,keep('tok-s'));
+s=s.replace(/(#[^\n]*)/g,keep('tok-c'));
+s=s.replace(KW,'<span class="tok-k">$1</span>').replace(/\b(\d+\.?\d*)\b/g,'<span class="tok-n">$1</span>');
+s=s.replace(/([-]+)/g,(m,t)=>store[dec(t)]);el.innerHTML=s});
+const links=[...document.querySelectorAll('nav.toc a')];const secs=links.map(a=>document.querySelector(a.getAttribute('href')));
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.classList.remove('active'));
+const i=secs.indexOf(e.target);if(i>=0)links[i].classList.add('active')}})},{rootMargin:'-20% 0px -70% 0px'});secs.forEach(s=>s&&io.observe(s))})();
+</script></body></html>

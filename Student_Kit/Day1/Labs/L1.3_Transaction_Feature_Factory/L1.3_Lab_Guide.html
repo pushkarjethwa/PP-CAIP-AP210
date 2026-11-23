@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lab L1.3 · Transaction feature factory — 1.5M card transactions into customer features (and images into numbers)</title><style>:root{--bg:#f6f7f9;--panel:#fff;--ink:#1b2430;--muted:#5b6675;--line:#e3e7ee;--brand:#0b5e6b;--brand2:#c8963e;
+--code-bg:#0f1720;--code-ink:#e6edf3;--l1:#2f6fdb;--l2:#c8963e;--l3:#1f8f5f;--why:#eef6f7;--exp:#eef8f1;--think:#fbf5ea;--say:#eef2fb;--exam:#f4effa}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1117;--panel:#141a22;--ink:#e6edf3;--muted:#9aa6b2;--line:#263040;
+--brand:#4fb3c2;--why:#12262a;--exp:#122319;--think:#2a2214;--say:#151d2d;--exam:#211a2c;--code-bg:#0a0f15}}
+:root[data-theme="dark"]{--bg:#0d1117;--panel:#141a22;--ink:#e6edf3;--muted:#9aa6b2;--line:#263040;--brand:#4fb3c2;--why:#12262a;
+--exp:#122319;--think:#2a2214;--say:#151d2d;--exam:#211a2c;--code-bg:#0a0f15}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+header.top{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:10px 20px;
+background:var(--brand);color:#fff;font-size:14px;letter-spacing:.2px}
+.brand .logo{color:var(--brand2);margin-right:6px}.brand .sep{opacity:.5;margin:0 10px}
+.theme{background:transparent;border:1px solid rgba(255,255,255,.5);color:#fff;border-radius:6px;padding:2px 10px;cursor:pointer;font-size:16px}
+.layout{display:grid;grid-template-columns:260px minmax(0,1fr);max-width:1320px;margin:0 auto}
+nav.toc{position:sticky;top:46px;align-self:start;max-height:calc(100vh - 46px);overflow:auto;padding:24px 12px 24px 20px;font-size:13.5px}
+nav.toc a{display:block;color:var(--muted);text-decoration:none;padding:4px 8px;border-left:2px solid transparent;border-radius:0 4px 4px 0}
+nav.toc a:hover,nav.toc a.active{color:var(--brand);border-left-color:var(--brand);background:var(--panel)}
+.toc-title{font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:1px;color:var(--muted);margin:0 8px 8px}
+main{padding:24px 28px 80px;min-width:0}
+section{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px 26px;margin:0 0 18px}
+section.hero{background:linear-gradient(135deg,var(--brand),#083f48);color:#fff;border:0}
+section.hero.demo{background:linear-gradient(135deg,#3b2f6b,#1f1a3d)}
+.hero h1{margin:.2em 0 .3em;font-size:30px;line-height:1.2}.hero .lead{opacity:.92;font-size:17px;margin:0 0 16px}
+.kicker{text-transform:uppercase;letter-spacing:1.5px;font-size:12px;color:var(--brand2);font-weight:700}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.meta div{background:rgba(255,255,255,.1);border-radius:8px;padding:8px 12px}.meta .k{display:block;font-size:11px;text-transform:uppercase;opacity:.75;letter-spacing:1px}
+.meta .v{font-weight:600;font-size:14px}
+.diff i{display:inline-block;width:9px;height:9px;margin-right:2px;border-radius:2px;background:rgba(255,255,255,.25)}.diff i.on{background:var(--brand2)}
+h2{font-size:22px;margin:0 0 12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}h3{font-size:16px;margin:18px 0 8px;color:var(--brand)}
+.num{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--brand);color:#fff;font-size:15px;flex:none}
+.mins{margin-left:auto;font-size:12px;font-weight:600;color:var(--muted);background:var(--bg);padding:2px 10px;border-radius:20px}
+.why,.expect,.think,.say,.callout,.scenario{border-radius:8px;padding:12px 16px;margin:12px 0}
+.why{background:var(--why);border-left:4px solid var(--brand)}.expect{background:var(--exp);border-left:4px solid var(--l3)}
+.think{background:var(--think);border-left:4px solid var(--brand2)}.say{background:var(--say);border-left:4px solid #5b6bd6}
+.callout{background:var(--bg);border:1px dashed var(--line)}.callout.exam{background:var(--exam);border:0;border-left:4px solid #8a5cc7}
+.scenario{background:var(--bg)}
+.why>b,.expect>b,.think>b,.say>b,.callout>b{display:block;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.why p:last-child,.expect p:last-child,.think p:last-child,.say p:last-child{margin-bottom:0}
+ol.tasks li{margin:4px 0}
+.levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.lvl{border-radius:10px;padding:12px 16px;border:1px solid var(--line);border-top:5px solid}.lvl.l1{border-top-color:var(--l1)}.lvl.l2{border-top-color:var(--l2)}.lvl.l3{border-top-color:var(--l3)}
+.lvl p{margin:.4em 0 0;font-size:14px}.note{color:var(--muted);font-size:14px}
+details{border:1px solid var(--line);border-radius:8px;margin:10px 0;background:var(--bg)}
+details summary{cursor:pointer;padding:8px 14px;font-weight:600}details[open] summary{border-bottom:1px solid var(--line)}
+details>*:not(summary){margin:10px 14px}
+.code{position:relative;margin:10px 0}
+pre{background:var(--code-bg);color:var(--code-ink);padding:14px 16px;border-radius:8px;overflow:auto;font:13.5px/1.5 Consolas,"Cascadia Code",Menlo,monospace;margin:0}
+code{font-family:Consolas,"Cascadia Code",Menlo,monospace;font-size:.92em}
+:not(pre)>code{background:var(--bg);border:1px solid var(--line);padding:1px 5px;border-radius:4px}
+.copy{position:absolute;top:8px;right:8px;background:#ffffff1a;color:#e6edf3;border:1px solid #ffffff33;border-radius:5px;font-size:12px;padding:2px 10px;cursor:pointer}
+.copy:hover{background:#ffffff33}.copy.ok{background:var(--l3);border-color:var(--l3)}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:8px 0}th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+th{background:var(--bg)}table.files td:first-child{white-space:nowrap}
+.tok-k{color:#ff7b72}.tok-s{color:#a5d6ff}.tok-c{color:#8b949e;font-style:italic}.tok-n{color:#79c0ff}.tok-f{color:#d2a8ff}
+@media (max-width:900px){.layout{grid-template-columns:1fr}nav.toc{display:none}main{padding:16px}section{padding:16px}.hero h1{font-size:24px}}
+@media print{nav.toc,header.top,.copy{display:none}.layout{display:block}details{display:block}details>*{display:block!important}section{break-inside:avoid-page}}
+</style></head>
+<body class="lab-page">
+<header class="top"><div class="brand"><span class="logo">◆</span> Horizon Gulf Bank · Project MIZAN<span class="sep">|</span>CAIP AIP-210 · Certified AI Practitioner</div>
+<button class="theme" onclick="toggleTheme()" aria-label="Toggle theme">◐</button></header>
+<div class="layout"><nav class="toc"><div class="toc-title">On this page</div><a href="#overview">Overview</a>
+<a href="#levels">How to use the 3 levels</a>
+<a href="#packages">Starter package &amp; what you produce</a>
+<a href="#setup">Setup</a>
+<a href="#step1">1. Load 1.5M rows the memory-smart way</a>
+<a href="#step2">2. Aggregate events into one row per customer</a>
+<a href="#step3">3. Spend mix and trend features</a>
+<a href="#step4">4. Join to the customer master — missing means what?</a>
+<a href="#step5">5. Feature selection with a random probe</a>
+<a href="#step6">6. Unstructured data → structured features</a>
+<a href="#step7">7. Persist the feature table and its contract</a>
+<a href="#stretch">Stretch challenges</a>
+<a href="#trouble">Troubleshooting</a></nav>
+<main><section class="hero lab"><div class="kicker">Day 1 · Independent Lab L1.3</div>
+<h1>Transaction feature factory — 1.5M card transactions into customer features (and images into numbers)</h1><p class="lead">Load 1.5M transactions memory-efficiently, aggregate them into a 250k-row customer feature table, pick the features that carry signal for income estimation, and turn unstructured document images into structured features.</p>
+<div class="meta"><div><span class="k">Duration</span><span class="v">50 min · timetabled Day 2, 15:40 · steps 1–5 & 7 (step 6 optional)</span></div><div><span class="k">Difficulty</span><span class="v"><span class="diff" title="7/10"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i><i class=""></i></span> 7/10</span></div><div><span class="k">Dataset(s)</span><span class="v">card_transactions.csv.gz (1.5M rows) · checkpoints/customers_clean.parquet (L1.1) · kyc_documents_64.npz (15k images)</span></div><div><span class="k">Builds on</span><span class="v">Lab L1.1 (clean customer master) · Demo D1.2 (transformations & leakage)</span></div><div><span class="k">Produces</span><span class="v">checkpoints/customer_txn_features.parquet · checkpoints/txn_feature_spec.json · checkpoints/card_transactions.parquet</span></div></div></section>
+<section id="overview"><h2>Objective &amp; scenario alignment</h2>
+<div class="scenario"><p><strong>Horizon Gulf Bank (HGB)</strong> is a fictional UAE retail bank with 250,000 customers. Its Board approved <strong>Project MIZAN</strong> — an AI decisioning platform covering credit, fraud, collateral valuation, cash logistics, customer retention and document automation. You are a junior ML practitioner in the MIZAN squad.</p>
+<p>The Credit Risk team wants an <strong>income estimation</strong> model for customers whose salary is <em>not</em> paid into HGB (tomorrow's Lab L2.3). Card behaviour is the richest signal the bank holds about those customers, but it lives in 1.5 million transaction rows, not in one row per customer. Your job: build the <strong>customer-level transaction feature table</strong>, decide which features are worth keeping, and show the KYC team how unstructured images can be described by numbers.</p>
+<p><strong>Progressive architecture:</strong> joins onto your <code>customers_clean.parquet</code> (L1.1); the feature table feeds income estimation (L2.3) and churn modelling (L3.4, L4.3, L5.3).</p></div><h3>By the end of this lab you will be able to</h3><ul>
+<li>Load a large CSV with <code>usecols</code>, <code>category</code> and <code>float32</code> dtypes and measure the memory saving</li>
+<li>Aggregate event-level data to one row per customer (RFM, behaviour shares, spend mix, trend)</li>
+<li>Join safely to a master table (row counts, missing-means-zero vs missing-means-unknown)</li>
+<li>Select features with variance, correlation pruning and mutual information against a <strong>random probe</strong></li>
+<li>Convert unstructured data (images) into structured features and measure how much they explain</li>
+</ul>
+<div class="callout exam"><b>AIP-210 exam link</b><p>AIP-210 <em>Preparing data for ML</em>: feature engineering &amp; selection fundamentals, structured vs unstructured data, transformations, missing values, data leakage.</p></div></section>
+<section id="levels"><h2>How to use the three levels</h2><div class="levels">
+<div class="lvl l1"><b>Level 1 · From scratch</b><p>Work from <i>this guide</i> in <code>L1.3_Level1_From_Scratch.ipynb</code>. Every step tells you <i>what</i> to build and <i>why</i>; you write all the code. Open a hint only when stuck for &gt;5 min.</p></div>
+<div class="lvl l2"><b>Level 2 · Guided starter — ★ recommended for this cohort</b><p>Open <code>L1.3_Level2_Guided_Starter.ipynb</code>. The scaffolding is written; you complete the numbered <code>✏️ BLANK</code>s. Each blank explains what to write, where, and why.</p></div>
+<div class="lvl l3"><b>Level 3 · Complete solution</b><p>Released by your trainer <i>after</i> the lab, as part of the end-of-day release. Extract it into your Student_Kit folder and <code>L1.3_Level3_Solution.ipynb</code> appears here. Then use the <i>Think like a practitioner</i> prompts to change it and break it on purpose.</p></div>
+</div><p class="note"><b>Default: Level 2.</b> Start in the guided starter. Finished early or already confident? Try the next step at Level 1. Stuck? Open the 💡 hint, compare with your neighbour, then ask your trainer. All three levels produce the same artefacts, so you can switch level at any step.</p></section>
+<section id="packages"><h2>Starter package &amp; what you produce</h2>
+<h3>Starter package (what you begin with)</h3><table class="files"><thead><tr><th>File / artefact</th><th>Purpose</th></tr></thead><tbody><tr><td><code>data/card_transactions.csv.gz</code></td><td>1.5M transactions (Apr–Sep 2025)</td></tr><tr><td><code>checkpoints/customers_clean.parquet</code></td><td>From L1.1 (shipped)</td></tr><tr><td><code>data/kyc_documents_64.npz</code></td><td>15k document images</td></tr><tr><td><code>L1.3_Level1_From_Scratch.ipynb</code></td><td>Level 1</td></tr><tr><td><code>L1.3_Level2_Guided_Starter.ipynb</code></td><td>Level 2</td></tr></tbody></table>
+<h3>What you finish with</h3><table class="files"><thead><tr><th>File / artefact</th><th>Purpose</th></tr></thead><tbody><tr><td><code>L1.3_Level3_Solution.ipynb</code></td><td>Complete solution</td></tr><tr><td><code>checkpoints/customer_txn_features.parquet</code></td><td>250k customers × transaction features</td></tr><tr><td><code>checkpoints/txn_feature_spec.json</code></td><td>Selected features + selection evidence</td></tr><tr><td><code>checkpoints/card_transactions.parquet</code></td><td>Typed, compressed copy of the raw file</td></tr></tbody></table>
+<div class="callout"><b>Fell behind?</b> <p>Needs <code>checkpoints/customers_clean.parquet</code> from Lab L1.1 (shipped). Re-create it by running <code>L1.1_Level3_Solution.ipynb</code>.</p>
+<p><strong>Timetable:</strong> this lab runs on <strong>Day 2 at 15:40 (50 min)</strong>, right before Lab L2.3, which trains on the feature table you build here. In class do steps 1–5 and 7; step 6 (images → features) is optional. Never skip step 7: it saves the checkpoint.</p></div></section>
+<section id="setup"><h2>Setup</h2>
+<p>Run the standard course setup cell first (it locates <code>data/</code> and <code>checkpoints/</code> from anywhere inside the course folder):</p>
+<div class="code"><button class="copy" onclick="copyCode(this)">Copy</button><pre><code class="lang-python"># ── Project MIZAN course setup ─ run this cell first ──────────────────────────
+from pathlib import Path
+import warnings, time
+warnings.filterwarnings(&quot;ignore&quot;)
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Locate the course root (the folder that contains data/generate_data.py) from wherever this notebook lives
+ROOT = next(p for p in [Path.cwd(), *Path.cwd().parents] if (p / &quot;data&quot; / &quot;generate_data.py&quot;).exists())
+DATA = ROOT / &quot;data&quot;          # raw synthetic datasets (read-only)
+CKPT = ROOT / &quot;checkpoints&quot;   # hand-off artefacts between labs (lets you start any lab fresh)
+CKPT.mkdir(exist_ok=True)
+pd.set_option(&quot;display.max_columns&quot;, 60); pd.set_option(&quot;display.width&quot;, 160)
+plt.rcParams.update({&quot;figure.figsize&quot;: (9, 4.5), &quot;axes.grid&quot;: True, &quot;grid.alpha&quot;: .3})
+RNG = 42
+print(&quot;Course root:&quot;, ROOT)</code></pre></div></section>
+<section id="step1" class="step"><h2><span class="num">1</span>Load 1.5M rows the memory-smart way
+<span class="mins">8 min</span></h2>
+<div class="why"><b>Why this matters</b><p>Pandas stores every repeated string (customer id, merchant category, channel) as a separate Python object. On 1.5M rows that is hundreds of MB. Reading <strong>only the columns you need</strong>, storing repeated strings as <code>category</code> and amounts as <code>float32</code> usually cuts memory by 70–90% — the difference between a notebook that runs on a laptop and one that crashes. Saving to <strong>Parquet</strong> is columnar and compressed, and — unlike CSV — remembers the dtypes, so nobody has to re-specify them.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Read the file naively; record load time and <code>memory_usage(deep=True)</code> in MB; delete it.</li><li>Read again with <code>usecols</code> + a <code>dtype</code> map (<code>category</code> for ids and labels, <code>float32</code> for amount, <code>int8</code> for the flag) and <code>parse_dates</code>.</li><li>Print both timings and memory figures; save to <code>CKPT/card_transactions.parquet</code>, reload it and compare file sizes and dtypes.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>Naive ≈ 320 MB; smart ≈ 33 MB (≈ 89% less). Parquet is ≈ 19 MB on disk versus 44 MB for the gzipped CSV, and the <code>category</code>/<code>float32</code> dtypes survive the round-trip. 1,506,430 rows from 58,822 card customers.</p></div>
+
+
+<div class="think"><b>Think like a practitioner</b><p>Why is <code>customer_id</code> a good <code>category</code> candidate but <code>txn_id</code> is not?</p></div>
+</section>
+<section id="step2" class="step"><h2><span class="num">2</span>Aggregate events into one row per customer
+<span class="mins">12 min</span></h2>
+<div class="why"><b>Why this matters</b><p>Models need one row per <strong>entity</strong> (customer), but behaviour arrives as <strong>events</strong> (transactions). Aggregation is the core feature-engineering move: <em>recency, frequency, monetary</em> (RFM) plus behaviour <strong>shares</strong> (night, international, e-commerce) and <strong>diversity</strong> (distinct categories/countries). Confirmed fraud is excluded — it is the fraudster's behaviour, not the customer's. Everything is computed <strong>as of 1 Oct 2025</strong> so no future information leaks in.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Drop fraud rows. Add <code>log_amt</code>, <code>is_intl</code> (country ≠ AE), <code>is_night</code> (00–05h), <code>is_ecom</code> (channel E-Commerce).</li><li>Group by <code>customer_id</code> (<code>observed=True</code>) with named aggregation: count, total, median, mean/std of <code>log_amt</code>, the three shares, distinct MCCs and countries, first and last timestamp.</li><li>Add <code>amt_p90</code> (90th percentile), <code>recency_days</code> = days from the last transaction to <code>AS_OF</code>, and <code>txn_per_month</code> over the active span.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>58,798 rows × 13 columns. Median 19 transactions per customer; <code>intl_share</code> ≈ 0.12; median <code>recency_days</code> 6. <code>log_amt_std</code> has ≈ 1,500 NaNs — customers with a single transaction have no spread.</p></div>
+<details class="hint"><summary>💡 Hint</summary><p><code>agg.describe().T</code> is the fastest sanity check: any negative recency or share &gt; 1 means a bug.</p></details>
+
+
+</section>
+<section id="step3" class="step"><h2><span class="num">3</span>Spend mix and trend features
+<span class="mins">10 min</span></h2>
+<div class="why"><b>Why this matters</b><p><em>Where</em> someone spends says a lot about them: a high share on luxury goods, travel and electronics versus groceries and fuel is a classic affluence signal. A <strong>pivot table</strong> turns the long category column into one share column per category. A <strong>trend</strong> feature (last 60 days versus the first 60 days) captures customers who are winding down — useful for churn.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Pivot spend by <code>customer_id × merchant_category</code> (sum, fill 0), divide each row by its total → <code>mix_&lt;category&gt;</code> shares.</li><li>Compute spend in the first 60 days (Apr–May) and the last 60 days (Aug–Sep); <code>spend_trend = log((recent+1)/(early+1))</code>.</li><li>Join both onto <code>agg</code> and show the five customers with the highest <code>mix_Luxury_Goods</code> — first for everyone, then only for customers with ≥ 10 transactions.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>58,798 × 28 features; mix rows sum to 1. The first table is all customers with <strong>one</strong> transaction (share = 100%) — shares computed from tiny counts are noise. With ≥ 10 transactions the top luxury shares are ≈ 50–70%.</p></div>
+
+
+<div class="think"><b>Think like a practitioner</b><p><code>spend_trend</code> uses only data before <code>AS_OF</code>. If you computed it using October data, which future model would be leaking? And how would you stop one-transaction customers from producing extreme shares (hint: shrink towards the population average)?</p></div>
+</section>
+<section id="step4" class="step"><h2><span class="num">4</span>Join to the customer master — missing means what?
+<span class="mins">8 min</span></h2>
+<div class="why"><b>Why this matters</b><p>Only ~59k of 250k customers hold an active card. After a <strong>left join</strong> the other 190k have no transaction features. For <em>counts and totals</em> missing truly means <strong>zero</strong>; for <em>averages and shares</em> it means <strong>unknown</strong> — filling it with 0 would claim these customers spend AED 1 on average. We fill each group correctly and add a <code>has_card_activity</code> flag so a model can tell the two apart.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Left-join <code>feat</code> onto <code>customers_clean[['customer_id']]</code>; assert the row count is unchanged and ids are unique.</li><li>Create <code>has_card_activity</code>. Fill counts, totals, mix shares and <code>n_*</code> with 0; fill averages/shares with the card-holder median; set <code>recency_days</code> to 999 for non-users.</li><li>Print the share of customers with card activity and confirm there are no NaNs left.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>≈ 23.5% of customers have card activity; 0 NaNs; 250,000 rows.</p></div>
+
+
+<div class="think"><b>Think like a practitioner</b><p>A model learns that <code>has_card_activity = 0</code> customers churn more. Is that a data artefact or a real business signal? How would you check?</p></div>
+</section>
+<section id="step5" class="step"><h2><span class="num">5</span>Feature selection with a random probe
+<span class="mins">12 min</span></h2>
+<div class="why"><b>Why this matters</b><p>More features ≠ better model. Three cheap filters remove most junk: <strong>variance</strong> (constant columns carry nothing), <strong>correlation pruning</strong> (near-duplicates add noise and instability) and <strong>mutual information</strong> (any — not only linear — dependence on the target). The trick professionals use is a <strong>random probe</strong>: a column of pure noise. Any feature that scores below the probe is indistinguishable from noise. The target here is the <em>verified</em> salary (salary paid into HGB).</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Training population: card-active customers with <code>salary_transfer == 1</code> and <code>salary_missing == 0</code>; target <code>y = log(monthly_salary_aed)</code>.</li><li>Add <code>probe_noise</code> (standard normal). Drop zero-variance columns with <code>VarianceThreshold</code>.</li><li>Find feature pairs with |Pearson r| &gt; 0.9 and drop the second of each pair.</li><li>Compute <code>mutual_info_regression</code> on a 20k sample; keep features scoring above the probe. Plot the ranking.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>≈ 34.6k training customers. <code>txn_per_month</code> is pruned (near-duplicate of <code>txn_count</code>). 8 of 27 features beat the probe: <code>log_amt_mean</code>, <code>amt_median</code>, <code>amt_p90</code>, <code>spend_total</code> lead, followed by cash-withdrawal share, <code>n_mcc</code>, e-commerce share and money-transfer share. <strong>Surprise:</strong> luxury and travel shares score <em>at or below noise</em> — the ‘affluence’ intuition from step 3 is not supported by this data. Evidence beats intuition.</p></div>
+
+
+<div class="think"><b>Think like a practitioner</b><p>Mutual information is computed one feature at a time. Name a case where two individually weak features are strong together.</p></div>
+</section>
+<section id="step6" class="step"><h2><span class="num">6</span>Unstructured data → structured features
+<span class="mins">8 min</span></h2>
+<div class="why"><b>Why this matters</b><p>Images, text and audio are <strong>unstructured</strong>: there are no columns. The classical route is to <em>engineer</em> numeric descriptors — ink density, edge strength, where the ink sits on the page — and feed those to a normal model. On Day 4 a CNN will learn its own features from raw pixels; today's numbers are the baseline it has to beat.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Load the 15k KYC images; compute per image: mean ink, ink std, horizontal and vertical edge energy, ink in the top/bottom/left/right halves, number of ‘text rows’ (rows whose ink exceeds the image mean).</li><li>Fit a quick multinomial <code>LogisticRegression</code> on 80% / test on 20% and print accuracy against the 20% majority baseline.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>Hand-made features reach ≈ 67% accuracy — far above the 20% baseline but well below the ≈ 97% the Day 4 CNN achieves by learning its own features.</p></div>
+
+
+<div class="think"><b>Think like a practitioner</b><p>Which engineered feature would break if the scanner started producing darker images? What does that teach you about monitoring?</p></div>
+</section>
+<section id="step7" class="step"><h2><span class="num">7</span>Persist the feature table and its contract
+<span class="mins">2 min</span></h2>
+<div class="why"><b>Why this matters</b><p>Tomorrow's lab must use <em>exactly</em> these features with <em>exactly</em> these fill rules. We save the table plus a small JSON <strong>feature spec</strong> recording the as-of date, the selection evidence and the kept list — the seed of a feature store.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Save <code>X</code> to <code>CKPT/customer_txn_features.parquet</code>.</li><li>Write <code>txn_feature_spec.json</code> with <code>as_of</code>, <code>selected</code>, <code>dropped_correlated</code> and the MI scores.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>Feature table (250,000 × 30) and spec with 8 selected features saved.</p></div>
+
+
+
+</section>
+<section id="stretch"><h2>Stretch challenges</h2><ol>
+<li>Replace mutual information with <strong>L1 (Lasso) selection</strong> — <code>SelectFromModel(LassoCV())</code>. Which features do both methods keep?</li>
+<li>Add <strong>velocity</strong> features at customer level: the share of transactions within 10 minutes of the previous one.</li>
+<li>Read the CSV in <strong>chunks</strong> (<code>chunksize=250_000</code>) and aggregate incrementally — the technique for files that do not fit in memory at all.</li>
+</ol></section>
+<section id="trouble"><h2>Troubleshooting</h2><ul>
+<li><strong>MemoryError on the naive read</strong> → skip the naive read; the smart read is what matters.</li>
+<li><strong><code>groupby</code> very slow or huge</strong> → you forgot <code>observed=True</code> with categorical keys.</li>
+<li><strong>Merge row count changed</strong> → <code>customer_id</code> dtype differs (category vs str); cast the index with <code>.astype(str)</code>.</li>
+</ul></section></main></div><script>function copyCode(btn){const t=btn.parentElement.querySelector('code').innerText;
+const done=()=>{btn.textContent='Copied ✓';btn.classList.add('ok');setTimeout(()=>{btn.textContent='Copy';btn.classList.remove('ok')},1400)};
+if(navigator.clipboard){navigator.clipboard.writeText(t).then(done).catch(()=>fallback(t,done))}else fallback(t,done)}
+function fallback(t,done){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(e){}a.remove();done()}
+function toggleTheme(){const r=document.documentElement;const cur=r.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+const nxt=cur==='dark'?'light':'dark';r.setAttribute('data-theme',nxt);try{localStorage.setItem('mizan-theme',nxt)}catch(e){}}
+(function(){try{const t=localStorage.getItem('mizan-theme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}
+// light-weight python highlighter
+const KW=/\b(import|from|as|def|return|for|in|if|elif|else|while|with|try|except|finally|class|lambda|and|or|not|is|None|True|False|print|assert|yield|raise|pass|break|continue|global)\b/g;
+// placeholders use private-use characters so the keyword/number passes can never match inside them
+const enc=n=>String(n).split('').map(d=>String.fromCharCode(0xE000+ +d)).join('');
+const dec=t=>+t.split('').map(c=>c.charCodeAt(0)-0xE000).join('');
+document.querySelectorAll('pre code.lang-python').forEach(el=>{let s=el.innerHTML;const store=[];
+const keep=cls=>m=>{store.push('<span class="'+cls+'">'+m+'</span>');return ''+enc(store.length-1)+''};
+s=s.replace(/(&quot;.*?&quot;|&#x27;.*?&#x27;|"[^"\n]*"|'[^'\n]*')/g,keep('tok-s'));
+s=s.replace(/(#[^\n]*)/g,keep('tok-c'));
+s=s.replace(KW,'<span class="tok-k">$1</span>').replace(/\b(\d+\.?\d*)\b/g,'<span class="tok-n">$1</span>');
+s=s.replace(/([-]+)/g,(m,t)=>store[dec(t)]);el.innerHTML=s});
+const links=[...document.querySelectorAll('nav.toc a')];const secs=links.map(a=>document.querySelector(a.getAttribute('href')));
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.classList.remove('active'));
+const i=secs.indexOf(e.target);if(i>=0)links[i].classList.add('active')}})},{rootMargin:'-20% 0px -70% 0px'});secs.forEach(s=>s&&io.observe(s))})();
+</script></body></html>

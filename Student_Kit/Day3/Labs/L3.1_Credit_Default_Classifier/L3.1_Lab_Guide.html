@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lab L3.1 · Credit default classifier — logistic regression, k-NN, calibration and a cost-optimal cut-off</title><style>:root{--bg:#f6f7f9;--panel:#fff;--ink:#1b2430;--muted:#5b6675;--line:#e3e7ee;--brand:#0b5e6b;--brand2:#c8963e;
+--code-bg:#0f1720;--code-ink:#e6edf3;--l1:#2f6fdb;--l2:#c8963e;--l3:#1f8f5f;--why:#eef6f7;--exp:#eef8f1;--think:#fbf5ea;--say:#eef2fb;--exam:#f4effa}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1117;--panel:#141a22;--ink:#e6edf3;--muted:#9aa6b2;--line:#263040;
+--brand:#4fb3c2;--why:#12262a;--exp:#122319;--think:#2a2214;--say:#151d2d;--exam:#211a2c;--code-bg:#0a0f15}}
+:root[data-theme="dark"]{--bg:#0d1117;--panel:#141a22;--ink:#e6edf3;--muted:#9aa6b2;--line:#263040;--brand:#4fb3c2;--why:#12262a;
+--exp:#122319;--think:#2a2214;--say:#151d2d;--exam:#211a2c;--code-bg:#0a0f15}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+header.top{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:10px 20px;
+background:var(--brand);color:#fff;font-size:14px;letter-spacing:.2px}
+.brand .logo{color:var(--brand2);margin-right:6px}.brand .sep{opacity:.5;margin:0 10px}
+.theme{background:transparent;border:1px solid rgba(255,255,255,.5);color:#fff;border-radius:6px;padding:2px 10px;cursor:pointer;font-size:16px}
+.layout{display:grid;grid-template-columns:260px minmax(0,1fr);max-width:1320px;margin:0 auto}
+nav.toc{position:sticky;top:46px;align-self:start;max-height:calc(100vh - 46px);overflow:auto;padding:24px 12px 24px 20px;font-size:13.5px}
+nav.toc a{display:block;color:var(--muted);text-decoration:none;padding:4px 8px;border-left:2px solid transparent;border-radius:0 4px 4px 0}
+nav.toc a:hover,nav.toc a.active{color:var(--brand);border-left-color:var(--brand);background:var(--panel)}
+.toc-title{font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:1px;color:var(--muted);margin:0 8px 8px}
+main{padding:24px 28px 80px;min-width:0}
+section{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px 26px;margin:0 0 18px}
+section.hero{background:linear-gradient(135deg,var(--brand),#083f48);color:#fff;border:0}
+section.hero.demo{background:linear-gradient(135deg,#3b2f6b,#1f1a3d)}
+.hero h1{margin:.2em 0 .3em;font-size:30px;line-height:1.2}.hero .lead{opacity:.92;font-size:17px;margin:0 0 16px}
+.kicker{text-transform:uppercase;letter-spacing:1.5px;font-size:12px;color:var(--brand2);font-weight:700}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.meta div{background:rgba(255,255,255,.1);border-radius:8px;padding:8px 12px}.meta .k{display:block;font-size:11px;text-transform:uppercase;opacity:.75;letter-spacing:1px}
+.meta .v{font-weight:600;font-size:14px}
+.diff i{display:inline-block;width:9px;height:9px;margin-right:2px;border-radius:2px;background:rgba(255,255,255,.25)}.diff i.on{background:var(--brand2)}
+h2{font-size:22px;margin:0 0 12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}h3{font-size:16px;margin:18px 0 8px;color:var(--brand)}
+.num{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--brand);color:#fff;font-size:15px;flex:none}
+.mins{margin-left:auto;font-size:12px;font-weight:600;color:var(--muted);background:var(--bg);padding:2px 10px;border-radius:20px}
+.why,.expect,.think,.say,.callout,.scenario{border-radius:8px;padding:12px 16px;margin:12px 0}
+.why{background:var(--why);border-left:4px solid var(--brand)}.expect{background:var(--exp);border-left:4px solid var(--l3)}
+.think{background:var(--think);border-left:4px solid var(--brand2)}.say{background:var(--say);border-left:4px solid #5b6bd6}
+.callout{background:var(--bg);border:1px dashed var(--line)}.callout.exam{background:var(--exam);border:0;border-left:4px solid #8a5cc7}
+.scenario{background:var(--bg)}
+.why>b,.expect>b,.think>b,.say>b,.callout>b{display:block;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.why p:last-child,.expect p:last-child,.think p:last-child,.say p:last-child{margin-bottom:0}
+ol.tasks li{margin:4px 0}
+.levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.lvl{border-radius:10px;padding:12px 16px;border:1px solid var(--line);border-top:5px solid}.lvl.l1{border-top-color:var(--l1)}.lvl.l2{border-top-color:var(--l2)}.lvl.l3{border-top-color:var(--l3)}
+.lvl p{margin:.4em 0 0;font-size:14px}.note{color:var(--muted);font-size:14px}
+details{border:1px solid var(--line);border-radius:8px;margin:10px 0;background:var(--bg)}
+details summary{cursor:pointer;padding:8px 14px;font-weight:600}details[open] summary{border-bottom:1px solid var(--line)}
+details>*:not(summary){margin:10px 14px}
+.code{position:relative;margin:10px 0}
+pre{background:var(--code-bg);color:var(--code-ink);padding:14px 16px;border-radius:8px;overflow:auto;font:13.5px/1.5 Consolas,"Cascadia Code",Menlo,monospace;margin:0}
+code{font-family:Consolas,"Cascadia Code",Menlo,monospace;font-size:.92em}
+:not(pre)>code{background:var(--bg);border:1px solid var(--line);padding:1px 5px;border-radius:4px}
+.copy{position:absolute;top:8px;right:8px;background:#ffffff1a;color:#e6edf3;border:1px solid #ffffff33;border-radius:5px;font-size:12px;padding:2px 10px;cursor:pointer}
+.copy:hover{background:#ffffff33}.copy.ok{background:var(--l3);border-color:var(--l3)}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:8px 0}th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+th{background:var(--bg)}table.files td:first-child{white-space:nowrap}
+.tok-k{color:#ff7b72}.tok-s{color:#a5d6ff}.tok-c{color:#8b949e;font-style:italic}.tok-n{color:#79c0ff}.tok-f{color:#d2a8ff}
+@media (max-width:900px){.layout{grid-template-columns:1fr}nav.toc{display:none}main{padding:16px}section{padding:16px}.hero h1{font-size:24px}}
+@media print{nav.toc,header.top,.copy{display:none}.layout{display:block}details{display:block}details>*{display:block!important}section{break-inside:avoid-page}}
+</style></head>
+<body class="lab-page">
+<header class="top"><div class="brand"><span class="logo">◆</span> Horizon Gulf Bank · Project MIZAN<span class="sep">|</span>CAIP AIP-210 · Certified AI Practitioner</div>
+<button class="theme" onclick="toggleTheme()" aria-label="Toggle theme">◐</button></header>
+<div class="layout"><nav class="toc"><div class="toc-title">On this page</div><a href="#overview">Overview</a>
+<a href="#levels">How to use the 3 levels</a>
+<a href="#packages">Starter package &amp; what you produce</a>
+<a href="#setup">Setup</a>
+<a href="#step1">1. Load the credit contract</a>
+<a href="#step2">2. Logistic regression and odds ratios</a>
+<a href="#step3">3. k-NN: the scaling experiment and tuning k</a>
+<a href="#step4">4. Imbalance: class weights vs calibration</a>
+<a href="#step5">5. Cost-optimal cut-off with an approval-rate constraint</a>
+<a href="#step6">6. Multi-class risk grade (A–E)</a>
+<a href="#step7">7. Out-of-time test and policy hand-off</a>
+<a href="#stretch">Stretch challenges</a>
+<a href="#trouble">Troubleshooting</a></nav>
+<main><section class="hero lab"><div class="kicker">Day 3 · Independent Lab L3.1</div>
+<h1>Credit default classifier — logistic regression, k-NN, calibration and a cost-optimal cut-off</h1><p class="lead">Turn the Day 1 credit contract into a decision-ready PD model, compare it with k-NN, set the cut-off from loss economics and add a multi-class risk grade.</p>
+<div class="meta"><div><span class="k">Duration</span><span class="v">80 min</span></div><div><span class="k">Difficulty</span><span class="v"><span class="diff" title="7/10"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i><i class=""></i></span> 7/10</span></div><div><span class="k">Dataset(s)</span><span class="v">checkpoints/loan_features.parquet (300k loans) — from Lab L1.2</span></div><div><span class="k">Builds on</span><span class="v">Lab L1.2 (features, pipeline, OOT split) · Demo D3.1</span></div><div><span class="k">Produces</span><span class="v">checkpoints/credit_model.joblib · checkpoints/credit_policy.json</span></div></div></section>
+<section id="overview"><h2>Objective &amp; scenario alignment</h2>
+<div class="scenario"><p><strong>Horizon Gulf Bank (HGB)</strong> is a fictional UAE retail bank with 250,000 customers. Its Board approved <strong>Project MIZAN</strong> — an AI decisioning platform covering credit, fraud, collateral valuation, cash logistics, customer retention and document automation. You are a junior ML practitioner in the MIZAN squad.</p>
+<p>The Retail Credit Committee meets on Thursday. They need: a PD model better than the L1.2 baseline, evidence that its probabilities are <strong>calibrated</strong> (they feed IFRS 9 provisions), a recommended <strong>approval cut-off</strong> with its AED impact, and a five-grade risk scale for pricing.</p>
+<p><strong>Progressive architecture:</strong> consumes L1.2’s artefacts; its saved policy is registered on Day 5.</p></div><h3>By the end of this lab you will be able to</h3><ul>
+<li>Fit and interpret logistic regression via odds ratios</li>
+<li>Show why k-NN <em>needs</em> feature scaling, and tune k</li>
+<li>Compare unweighted vs class-weighted models on PR-AUC and calibration</li>
+<li>Optimise the threshold on a per-loan cost matrix, with an approval-rate constraint</li>
+<li>Train and evaluate a <strong>multi-class</strong> risk-grade model (macro vs weighted F1)</li>
+<li>Evaluate once on the out-of-time test set and persist the policy</li>
+</ul>
+<div class="callout exam"><b>AIP-210 exam link</b><p>AIP-210 <em>Logistic regression &amp; k-NN</em>: decision thresholds, distance-based classification, <strong>feature scaling for distance models</strong>, multi-class, confusion matrix/precision/recall/F1, ROC/AUC, class imbalance, tuning.</p></div></section>
+<section id="levels"><h2>How to use the three levels</h2><div class="levels">
+<div class="lvl l1"><b>Level 1 · From scratch</b><p>Work from <i>this guide</i> in <code>L3.1_Level1_From_Scratch.ipynb</code>. Every step tells you <i>what</i> to build and <i>why</i>; you write all the code. Open a hint only when stuck for &gt;5 min.</p></div>
+<div class="lvl l2"><b>Level 2 · Guided starter — ★ recommended for this cohort</b><p>Open <code>L3.1_Level2_Guided_Starter.ipynb</code>. The scaffolding is written; you complete the numbered <code>✏️ BLANK</code>s. Each blank explains what to write, where, and why.</p></div>
+<div class="lvl l3"><b>Level 3 · Complete solution</b><p>Released by your trainer <i>after</i> the lab, as part of the end-of-day release. Extract it into your Student_Kit folder and <code>L3.1_Level3_Solution.ipynb</code> appears here. Then use the <i>Think like a practitioner</i> prompts to change it and break it on purpose.</p></div>
+</div><p class="note"><b>Default: Level 2.</b> Start in the guided starter. Finished early or already confident? Try the next step at Level 1. Stuck? Open the 💡 hint, compare with your neighbour, then ask your trainer. All three levels produce the same artefacts, so you can switch level at any step.</p></section>
+<section id="packages"><h2>Starter package &amp; what you produce</h2>
+<h3>Starter package (what you begin with)</h3><table class="files"><thead><tr><th>File / artefact</th><th>Purpose</th></tr></thead><tbody><tr><td><code>checkpoints/loan_features.parquet</code></td><td>From L1.2 (shipped in <code>checkpoints/</code> if you skipped it)</td></tr><tr><td><code>checkpoints/loan_preprocessor.joblib</code></td><td>Fitted on train</td></tr><tr><td><code>checkpoints/loan_feature_spec.json</code></td><td>Column roles</td></tr><tr><td><code>L3.1_Level1_From_Scratch.ipynb</code></td><td>Level 1</td></tr><tr><td><code>L3.1_Level2_Guided_Starter.ipynb</code></td><td>Level 2</td></tr></tbody></table>
+<h3>What you finish with</h3><table class="files"><thead><tr><th>File / artefact</th><th>Purpose</th></tr></thead><tbody><tr><td><code>L3.1_Level3_Solution.ipynb</code></td><td>Complete solution</td></tr><tr><td><code>checkpoints/credit_model.joblib</code></td><td>Final logistic pipeline</td></tr><tr><td><code>checkpoints/credit_policy.json</code></td><td>Threshold, approval rate, OOT metrics</td></tr></tbody></table>
+<div class="callout"><b>Fell behind?</b> <p>Needs the three <code>checkpoints/loan_*</code> files from Lab L1.2. They ship with the course; if deleted, run <code>L1.2_Level3_Solution.ipynb</code> (≈ 20 s).</p></div></section>
+<section id="setup"><h2>Setup</h2>
+<p>Run the standard course setup cell first (it locates <code>data/</code> and <code>checkpoints/</code> from anywhere inside the course folder):</p>
+<div class="code"><button class="copy" onclick="copyCode(this)">Copy</button><pre><code class="lang-python"># ── Project MIZAN course setup ─ run this cell first ──────────────────────────
+from pathlib import Path
+import warnings, time
+warnings.filterwarnings(&quot;ignore&quot;)
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Locate the course root (the folder that contains data/generate_data.py) from wherever this notebook lives
+ROOT = next(p for p in [Path.cwd(), *Path.cwd().parents] if (p / &quot;data&quot; / &quot;generate_data.py&quot;).exists())
+DATA = ROOT / &quot;data&quot;          # raw synthetic datasets (read-only)
+CKPT = ROOT / &quot;checkpoints&quot;   # hand-off artefacts between labs (lets you start any lab fresh)
+CKPT.mkdir(exist_ok=True)
+pd.set_option(&quot;display.max_columns&quot;, 60); pd.set_option(&quot;display.width&quot;, 160)
+plt.rcParams.update({&quot;figure.figsize&quot;: (9, 4.5), &quot;axes.grid&quot;: True, &quot;grid.alpha&quot;: .3})
+RNG = 42
+print(&quot;Course root:&quot;, ROOT)</code></pre></div></section>
+<section id="step1" class="step"><h2><span class="num">1</span>Load the credit contract
+<span class="mins">5 min</span></h2>
+<div class="why"><b>Why this matters</b><p>Reusing the <em>fitted</em> artefacts guarantees the features are exactly what Model Risk reviewed on Day 1. We clone the preprocessor whenever we train a new model so each model owns an identical, independently fitted copy.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Load <code>loan_features.parquet</code>, the spec JSON and the preprocessor.</li><li>Create <code>train</code>, <code>valid</code>, <code>test</code> from the <code>split</code> column and print their sizes.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>≈ 208k / 46k / 46k rows; honest baseline AUC ≈ 0.83.</p></div>
+
+
+
+</section>
+<section id="step2" class="step"><h2><span class="num">2</span>Logistic regression and odds ratios
+<span class="mins">12 min</span></h2>
+<div class="why"><b>Why this matters</b><p>A credit committee wants to know <em>why</em> the model scores someone high. Logistic coefficients are log-odds; <strong>exp(coef)</strong> is the <strong>odds ratio</strong> per one-standard-deviation change of a scaled feature — directly explainable and the basis of adverse-action reasons.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Fit <code>Pipeline(prep=clone(preprocessor), clf=LogisticRegression(max_iter=2000))</code> on train.</li><li>Write <code>scores(y, p)</code> → ROC-AUC, PR-AUC (<code>average_precision_score</code>), Brier score.</li><li>Show the 8 features with the largest and 5 with the smallest odds ratios.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>ROC-AUC ≈ 0.83, PR-AUC ≈ 0.33. DBR (≈ 1.6×), prior delinquencies (≈ 1.5×), weaker employer category and missing bureau file raise the odds; a higher bureau score (≈ 0.45×) and Government employment lower them.</p></div>
+
+
+<div class="think"><b>Think like a practitioner</b><p>An odds ratio of 1.6 on <code>num_prior_delinquencies_24m</code> — explain it to a branch manager in one sentence.</p></div>
+</section>
+<section id="step3" class="step"><h2><span class="num">3</span>k-NN: the scaling experiment and tuning k
+<span class="mins">15 min</span></h2>
+<div class="why"><b>Why this matters</b><p>k-NN classifies by majority vote of the nearest neighbours — distance on raw AED salaries swamps every other feature. Scaling is not optional. k-NN is also a <strong>lazy learner</strong>: no training cost, but prediction cost grows with data, so we use samples.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Take a 40k training sample and 10k validation sample. Using 6 raw numeric columns (median-imputed), compare k-NN (k=51) <em>without</em> and <em>with</em> <code>StandardScaler</code>.</li><li>With the full preprocessor, tune k ∈ {5, 15, 51, 101, 201} by validation ROC-AUC; plot it.</li><li>Time <code>predict_proba</code> for the best k and add it to <code>board</code>.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>Unscaled ≈ 0.60–0.65 vs scaled ≈ 0.75+. AUC rises with k up to ~100–200. k-NN trails logistic and is much slower to score.</p></div>
+<details class="hint"><summary>💡 Hint</summary><p>Distance-based models: the feature with the largest numeric range dominates Euclidean distance.</p></details>
+
+<div class="think"><b>Think like a practitioner</b><p>When would k-NN genuinely be the right tool in a bank? (case-based reasoning: <em>show the 10 most similar past applicants</em> to an underwriter)</p></div>
+</section>
+<section id="step4" class="step"><h2><span class="num">4</span>Imbalance: class weights vs calibration
+<span class="mins">10 min</span></h2>
+<div class="why"><b>Why this matters</b><p>With ~7% defaulters the model can be lazy about the minority class. <code>class_weight='balanced'</code> forces attention to defaulters — but distorts the probabilities. A <strong>reliability (calibration) curve</strong> shows whether a predicted 10% PD really defaults 10% of the time.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Fit a <code>class_weight='balanced'</code> logistic model; add its scores to <code>board</code>.</li><li>Plot calibration curves (<code>calibration_curve</code>, 10 quantile bins) for both models against the diagonal.</li><li>Decide which model is fit for IFRS 9 PDs and write it down.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>Same ROC-AUC; the unweighted model hugs the diagonal (low Brier) while the balanced model sits far below it — over-predicting PD.</p></div>
+
+
+<div class="think"><b>Think like a practitioner</b><p>Could you keep the balanced model and <em>fix</em> its calibration? (yes — <code>CalibratedClassifierCV</code> with isotonic/Platt on a held-out set)</p></div>
+</section>
+<section id="step5" class="step"><h2><span class="num">5</span>Cost-optimal cut-off with an approval-rate constraint
+<span class="mins">13 min</span></h2>
+<div class="why"><b>Why this matters</b><p>Credit policy is a business decision. Using <strong>per-loan</strong> economics — a missed default costs its actual loss; a wrongly rejected good loan costs forgone margin — we find the cost-minimising PD cut-off, then check it against the commercial constraint of ≥ 80% approvals.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Write <code>policy_cost(p, df, t)</code> returning total cost in AED for threshold <code>t</code> (reject if PD ≥ t).</li><li>Sweep t ∈ [0.01, 0.5]; plot cost and approval rate on twin axes.</li><li>Find <code>t_cost</code> (unconstrained) and <code>t_policy</code> (cheapest t with approval ≥ 80%). Report precision, recall, F1 at each.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>Cost-optimal t ≈ 0.24 with ≈ 92% approvals, so the ≥ 80% constraint is <em>not binding</em> here (both rows identical). The naive 0.5 cut-off costs ≈ AED 15m more and catches only ≈ 12% of defaulters vs ≈ 39%.</p></div>
+
+
+<div class="think"><b>Think like a practitioner</b><p>The F1-optimal threshold and the cost-optimal threshold differ. Why should a bank trust the cost one? When is F1 still useful?</p></div>
+</section>
+<section id="step6" class="step"><h2><span class="num">6</span>Multi-class risk grade (A–E)
+<span class="mins">12 min</span></h2>
+<div class="why"><b>Why this matters</b><p>Pricing uses <strong>grades</strong>, not a binary flag. A multinomial logistic model predicts five ordered classes. With imbalanced classes, <strong>macro-F1</strong> (every grade equal) and <strong>weighted-F1</strong> (by frequency) tell different stories.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Train <code>LogisticRegression(max_iter=3000)</code> on <code>risk_grade</code> using a 80k training sample and the cloned preprocessor.</li><li>Print the classification report and plot the 5×5 confusion matrix (normalised by true class).</li><li>Compute the share of errors that are <strong>one grade away</strong> (adjacent).</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>Accuracy ≈ 67% (macro-F1 ≈ 0.59 &lt; weighted-F1 ≈ 0.67), but ≈ 97% of predictions are within one grade; middle grades C–D are hardest.</p></div>
+
+
+<div class="think"><b>Think like a practitioner</b><p>Grades are ordered, but multinomial logistic ignores the order. Name a modelling approach that respects it (ordinal regression, or regress PD then bucket).</p></div>
+</section>
+<section id="step7" class="step"><h2><span class="num">7</span>Out-of-time test and policy hand-off
+<span class="mins">8 min</span></h2>
+<div class="why"><b>Why this matters</b><p>All choices so far used validation data. The <strong>test</strong> split (mid-2024 → 2025) is touched <strong>once</strong> to estimate real-world performance. The policy JSON is the artefact the Credit Committee approves and Day 5 registers.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Score <code>test</code> with the unweighted logistic model; report scores and cost/approval at <code>t_policy</code>.</li><li>Save the model and <code>credit_policy.json</code> (threshold, approval rate, OOT metrics, best_k for reference).</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>OOT ROC-AUC within ≈ 0.01 of validation — the model generalises over time.</p></div>
+
+
+<div class="think"><b>Think like a practitioner</b><p>Six months from now OOT AUC has fallen to 0.76. List three things you would check before retraining.</p></div>
+</section>
+<section id="stretch"><h2>Stretch challenges</h2><ol>
+<li>Wrap the balanced model in <code>CalibratedClassifierCV(method='isotonic', cv=3)</code> and compare Brier scores.</li>
+<li>Fit <code>LogisticRegression(penalty='l1', solver='saga', C=…)</code> and tune <code>C</code> with <code>GridSearchCV(scoring='average_precision')</code>.</li>
+<li>Fairness: compare approval rates at <code>t_policy</code> by <code>gender</code> and <code>nationality_group</code> (kept out of the model). Is there disparate impact? (Revisited on Day 5.)</li>
+</ol></section>
+<section id="trouble"><h2>Troubleshooting</h2><ul>
+<li><strong><code>FileNotFoundError: loan_features.parquet</code></strong> → check that <code>checkpoints/loan_features.parquet</code> exists (it ships with the kit).</li>
+<li><strong>k-NN very slow</strong> → keep the 40k sample; scoring all 46k validation rows takes ~10–40 s.</li>
+<li><strong><code>ConvergenceWarning</code></strong> → raise <code>max_iter</code>; features are already scaled.</li>
+</ul></section></main></div><script>function copyCode(btn){const t=btn.parentElement.querySelector('code').innerText;
+const done=()=>{btn.textContent='Copied ✓';btn.classList.add('ok');setTimeout(()=>{btn.textContent='Copy';btn.classList.remove('ok')},1400)};
+if(navigator.clipboard){navigator.clipboard.writeText(t).then(done).catch(()=>fallback(t,done))}else fallback(t,done)}
+function fallback(t,done){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(e){}a.remove();done()}
+function toggleTheme(){const r=document.documentElement;const cur=r.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+const nxt=cur==='dark'?'light':'dark';r.setAttribute('data-theme',nxt);try{localStorage.setItem('mizan-theme',nxt)}catch(e){}}
+(function(){try{const t=localStorage.getItem('mizan-theme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}
+// light-weight python highlighter
+const KW=/\b(import|from|as|def|return|for|in|if|elif|else|while|with|try|except|finally|class|lambda|and|or|not|is|None|True|False|print|assert|yield|raise|pass|break|continue|global)\b/g;
+// placeholders use private-use characters so the keyword/number passes can never match inside them
+const enc=n=>String(n).split('').map(d=>String.fromCharCode(0xE000+ +d)).join('');
+const dec=t=>+t.split('').map(c=>c.charCodeAt(0)-0xE000).join('');
+document.querySelectorAll('pre code.lang-python').forEach(el=>{let s=el.innerHTML;const store=[];
+const keep=cls=>m=>{store.push('<span class="'+cls+'">'+m+'</span>');return ''+enc(store.length-1)+''};
+s=s.replace(/(&quot;.*?&quot;|&#x27;.*?&#x27;|"[^"\n]*"|'[^'\n]*')/g,keep('tok-s'));
+s=s.replace(/(#[^\n]*)/g,keep('tok-c'));
+s=s.replace(KW,'<span class="tok-k">$1</span>').replace(/\b(\d+\.?\d*)\b/g,'<span class="tok-n">$1</span>');
+s=s.replace(/([-]+)/g,(m,t)=>store[dec(t)]);el.innerHTML=s});
+const links=[...document.querySelectorAll('nav.toc a')];const secs=links.map(a=>document.querySelector(a.getAttribute('href')));
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.classList.remove('active'));
+const i=secs.indexOf(e.target);if(i>=0)links[i].classList.add('active')}})},{rootMargin:'-20% 0px -70% 0px'});secs.forEach(s=>s&&io.observe(s))})();
+</script></body></html>

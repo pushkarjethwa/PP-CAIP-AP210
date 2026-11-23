@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lab L5.1 · Deploy the MIZAN fraud service — feature module, MLflow, model card, FastAPI and a CI gate</title><style>:root{--bg:#f6f7f9;--panel:#fff;--ink:#1b2430;--muted:#5b6675;--line:#e3e7ee;--brand:#0b5e6b;--brand2:#c8963e;
+--code-bg:#0f1720;--code-ink:#e6edf3;--l1:#2f6fdb;--l2:#c8963e;--l3:#1f8f5f;--why:#eef6f7;--exp:#eef8f1;--think:#fbf5ea;--say:#eef2fb;--exam:#f4effa}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1117;--panel:#141a22;--ink:#e6edf3;--muted:#9aa6b2;--line:#263040;
+--brand:#4fb3c2;--why:#12262a;--exp:#122319;--think:#2a2214;--say:#151d2d;--exam:#211a2c;--code-bg:#0a0f15}}
+:root[data-theme="dark"]{--bg:#0d1117;--panel:#141a22;--ink:#e6edf3;--muted:#9aa6b2;--line:#263040;--brand:#4fb3c2;--why:#12262a;
+--exp:#122319;--think:#2a2214;--say:#151d2d;--exam:#211a2c;--code-bg:#0a0f15}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+header.top{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:10px 20px;
+background:var(--brand);color:#fff;font-size:14px;letter-spacing:.2px}
+.brand .logo{color:var(--brand2);margin-right:6px}.brand .sep{opacity:.5;margin:0 10px}
+.theme{background:transparent;border:1px solid rgba(255,255,255,.5);color:#fff;border-radius:6px;padding:2px 10px;cursor:pointer;font-size:16px}
+.layout{display:grid;grid-template-columns:260px minmax(0,1fr);max-width:1320px;margin:0 auto}
+nav.toc{position:sticky;top:46px;align-self:start;max-height:calc(100vh - 46px);overflow:auto;padding:24px 12px 24px 20px;font-size:13.5px}
+nav.toc a{display:block;color:var(--muted);text-decoration:none;padding:4px 8px;border-left:2px solid transparent;border-radius:0 4px 4px 0}
+nav.toc a:hover,nav.toc a.active{color:var(--brand);border-left-color:var(--brand);background:var(--panel)}
+.toc-title{font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:1px;color:var(--muted);margin:0 8px 8px}
+main{padding:24px 28px 80px;min-width:0}
+section{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px 26px;margin:0 0 18px}
+section.hero{background:linear-gradient(135deg,var(--brand),#083f48);color:#fff;border:0}
+section.hero.demo{background:linear-gradient(135deg,#3b2f6b,#1f1a3d)}
+.hero h1{margin:.2em 0 .3em;font-size:30px;line-height:1.2}.hero .lead{opacity:.92;font-size:17px;margin:0 0 16px}
+.kicker{text-transform:uppercase;letter-spacing:1.5px;font-size:12px;color:var(--brand2);font-weight:700}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.meta div{background:rgba(255,255,255,.1);border-radius:8px;padding:8px 12px}.meta .k{display:block;font-size:11px;text-transform:uppercase;opacity:.75;letter-spacing:1px}
+.meta .v{font-weight:600;font-size:14px}
+.diff i{display:inline-block;width:9px;height:9px;margin-right:2px;border-radius:2px;background:rgba(255,255,255,.25)}.diff i.on{background:var(--brand2)}
+h2{font-size:22px;margin:0 0 12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}h3{font-size:16px;margin:18px 0 8px;color:var(--brand)}
+.num{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--brand);color:#fff;font-size:15px;flex:none}
+.mins{margin-left:auto;font-size:12px;font-weight:600;color:var(--muted);background:var(--bg);padding:2px 10px;border-radius:20px}
+.why,.expect,.think,.say,.callout,.scenario{border-radius:8px;padding:12px 16px;margin:12px 0}
+.why{background:var(--why);border-left:4px solid var(--brand)}.expect{background:var(--exp);border-left:4px solid var(--l3)}
+.think{background:var(--think);border-left:4px solid var(--brand2)}.say{background:var(--say);border-left:4px solid #5b6bd6}
+.callout{background:var(--bg);border:1px dashed var(--line)}.callout.exam{background:var(--exam);border:0;border-left:4px solid #8a5cc7}
+.scenario{background:var(--bg)}
+.why>b,.expect>b,.think>b,.say>b,.callout>b{display:block;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.why p:last-child,.expect p:last-child,.think p:last-child,.say p:last-child{margin-bottom:0}
+ol.tasks li{margin:4px 0}
+.levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.lvl{border-radius:10px;padding:12px 16px;border:1px solid var(--line);border-top:5px solid}.lvl.l1{border-top-color:var(--l1)}.lvl.l2{border-top-color:var(--l2)}.lvl.l3{border-top-color:var(--l3)}
+.lvl p{margin:.4em 0 0;font-size:14px}.note{color:var(--muted);font-size:14px}
+details{border:1px solid var(--line);border-radius:8px;margin:10px 0;background:var(--bg)}
+details summary{cursor:pointer;padding:8px 14px;font-weight:600}details[open] summary{border-bottom:1px solid var(--line)}
+details>*:not(summary){margin:10px 14px}
+.code{position:relative;margin:10px 0}
+pre{background:var(--code-bg);color:var(--code-ink);padding:14px 16px;border-radius:8px;overflow:auto;font:13.5px/1.5 Consolas,"Cascadia Code",Menlo,monospace;margin:0}
+code{font-family:Consolas,"Cascadia Code",Menlo,monospace;font-size:.92em}
+:not(pre)>code{background:var(--bg);border:1px solid var(--line);padding:1px 5px;border-radius:4px}
+.copy{position:absolute;top:8px;right:8px;background:#ffffff1a;color:#e6edf3;border:1px solid #ffffff33;border-radius:5px;font-size:12px;padding:2px 10px;cursor:pointer}
+.copy:hover{background:#ffffff33}.copy.ok{background:var(--l3);border-color:var(--l3)}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:8px 0}th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+th{background:var(--bg)}table.files td:first-child{white-space:nowrap}
+.tok-k{color:#ff7b72}.tok-s{color:#a5d6ff}.tok-c{color:#8b949e;font-style:italic}.tok-n{color:#79c0ff}.tok-f{color:#d2a8ff}
+@media (max-width:900px){.layout{grid-template-columns:1fr}nav.toc{display:none}main{padding:16px}section{padding:16px}.hero h1{font-size:24px}}
+@media print{nav.toc,header.top,.copy{display:none}.layout{display:block}details{display:block}details>*{display:block!important}section{break-inside:avoid-page}}
+</style></head>
+<body class="lab-page">
+<header class="top"><div class="brand"><span class="logo">◆</span> Horizon Gulf Bank · Project MIZAN<span class="sep">|</span>CAIP AIP-210 · Certified AI Practitioner</div>
+<button class="theme" onclick="toggleTheme()" aria-label="Toggle theme">◐</button></header>
+<div class="layout"><nav class="toc"><div class="toc-title">On this page</div><a href="#overview">Overview</a>
+<a href="#levels">How to use the 3 levels</a>
+<a href="#packages">Starter package &amp; what you produce</a>
+<a href="#setup">Setup</a>
+<a href="#step1">1. Move feature code into a module and prove parity</a>
+<a href="#step2">2. Track candidate models in MLflow</a>
+<a href="#step3">3. Refit, set the alert threshold, write the model card, register the champion</a>
+<a href="#step4">4. Serve it: FastAPI with Pydantic validation</a>
+<a href="#step5">5. Load test: latency and throughput</a>
+<a href="#step6">6. Nightly batch job on new raw data + CI release gate</a>
+<a href="#stretch">Stretch challenges</a>
+<a href="#trouble">Troubleshooting</a></nav>
+<main><section class="hero lab"><div class="kicker">Day 5 · Independent Lab L5.1</div>
+<h1>Deploy the MIZAN fraud service — feature module, MLflow, model card, FastAPI and a CI gate</h1><p class="lead">Package the Day 3 fraud model as a production-grade service: one feature module for training and serving, tracked experiments, a registered champion, a model card, a validated API, a load test and a release gate.</p>
+<div class="meta"><div><span class="k">Duration</span><span class="v">90 min</span></div><div><span class="k">Difficulty</span><span class="v"><span class="diff" title="8/10"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i></span> 8/10</span></div><div><span class="k">Dataset(s)</span><span class="v">data/card_transactions.csv.gz · checkpoints/card_features.parquet (L3.3)</span></div><div><span class="k">Builds on</span><span class="v">Lab L3.3 (features, RF) · Demo D5.1</span></div><div><span class="k">Produces</span><span class="v">checkpoints/mizan_fraud/ (package: features.py, app.py, model/) · checkpoints/mlflow/ · checkpoints/release_gate.json</span></div></div></section>
+<section id="overview"><h2>Objective &amp; scenario alignment</h2>
+<div class="scenario"><p><strong>Horizon Gulf Bank (HGB)</strong> is a fictional UAE retail bank with 250,000 customers. Its Board approved <strong>Project MIZAN</strong> — an AI decisioning platform covering credit, fraud, collateral valuation, cash logistics, customer retention and document automation. You are a junior ML practitioner in the MIZAN squad.</p>
+<p>The card-authorisation platform team will integrate MIZAN fraud scoring next sprint. They need: a versioned package, an API contract, a threshold that produces ≈ 0.5% alerts, latency evidence, a model card for Model Risk, and an automated gate in the release pipeline.</p>
+<p><strong>Progressive architecture:</strong> the package you build is what Lab L5.2 monitors in production.</p></div><h3>By the end of this lab you will be able to</h3><ul>
+<li>Remove training–serving skew by moving feature code into a module, and prove parity</li>
+<li>Understand why real-time features need history (feature store)</li>
+<li>Track candidate models in MLflow; select, refit and register a champion with an alias</li>
+<li>Write a model card (intended use, data, metrics, limitations, owners)</li>
+<li>Serve the model with FastAPI + Pydantic validation; test with <code>TestClient</code>; measure latency</li>
+<li>Run a batch-scoring job on new raw data and a CI quality gate</li>
+</ul>
+<div class="callout exam"><b>AIP-210 exam link</b><p>AIP-210 <em>Operationalising ML</em>: serialisation &amp; artefacts, batch vs real-time, models as services, integration into wider systems, MLOps automation, experiment tracking, versioning &amp; registries, CI/CD.</p></div></section>
+<section id="levels"><h2>How to use the three levels</h2><div class="levels">
+<div class="lvl l1"><b>Level 1 · From scratch</b><p>Work from <i>this guide</i> in <code>L5.1_Level1_From_Scratch.ipynb</code>. Every step tells you <i>what</i> to build and <i>why</i>; you write all the code. Open a hint only when stuck for &gt;5 min.</p></div>
+<div class="lvl l2"><b>Level 2 · Guided starter — ★ recommended for this cohort</b><p>Open <code>L5.1_Level2_Guided_Starter.ipynb</code>. The scaffolding is written; you complete the numbered <code>✏️ BLANK</code>s. Each blank explains what to write, where, and why.</p></div>
+<div class="lvl l3"><b>Level 3 · Complete solution</b><p>Released by your trainer <i>after</i> the lab, as part of the end-of-day release. Extract it into your Student_Kit folder and <code>L5.1_Level3_Solution.ipynb</code> appears here. Then use the <i>Think like a practitioner</i> prompts to change it and break it on purpose.</p></div>
+</div><p class="note"><b>Default: Level 2.</b> Start in the guided starter. Finished early or already confident? Try the next step at Level 1. Stuck? Open the 💡 hint, compare with your neighbour, then ask your trainer. All three levels produce the same artefacts, so you can switch level at any step.</p></section>
+<section id="packages"><h2>Starter package &amp; what you produce</h2>
+<h3>Starter package (what you begin with)</h3><table class="files"><thead><tr><th>File / artefact</th><th>Purpose</th></tr></thead><tbody><tr><td><code>checkpoints/card_features.parquet</code></td><td>From L3.3</td></tr><tr><td><code>data/card_transactions.csv.gz</code></td><td>Raw history</td></tr><tr><td><code>data/card_transactions_prod_2025Q4.csv.gz</code></td><td>First production week for the batch job</td></tr><tr><td><code>L5.1_Level1_From_Scratch.ipynb</code></td><td>Level 1</td></tr><tr><td><code>L5.1_Level2_Guided_Starter.ipynb</code></td><td>Level 2</td></tr></tbody></table>
+<h3>What you finish with</h3><table class="files"><thead><tr><th>File / artefact</th><th>Purpose</th></tr></thead><tbody><tr><td><code>L5.1_Level3_Solution.ipynb</code></td><td>Complete solution</td></tr><tr><td><code>checkpoints/mizan_fraud/features.py</code></td><td>Shared feature code</td></tr><tr><td><code>checkpoints/mizan_fraud/app.py</code></td><td>FastAPI service</td></tr><tr><td><code>checkpoints/mizan_fraud/model/</code></td><td>fraud_rf.joblib + model_card.json</td></tr><tr><td><code>checkpoints/mlflow/mlflow.db</code></td><td>Tracking + registry</td></tr><tr><td><code>checkpoints/release_gate.json</code></td><td>Gate evidence</td></tr></tbody></table>
+<div class="callout"><b>Fell behind?</b> <p>Needs <code>card_features.parquet</code> from L3.3 (shipped). The lab rebuilds everything else.</p></div></section>
+<section id="setup"><h2>Setup</h2><ul>
+<li><code>pip install mlflow fastapi httpx uvicorn</code></li>
+<li>Lab L3.3 checkpoints present (shipped).</li>
+</ul>
+<p>Run the standard course setup cell first (it locates <code>data/</code> and <code>checkpoints/</code> from anywhere inside the course folder):</p>
+<div class="code"><button class="copy" onclick="copyCode(this)">Copy</button><pre><code class="lang-python"># ── Project MIZAN course setup ─ run this cell first ──────────────────────────
+from pathlib import Path
+import warnings, time
+warnings.filterwarnings(&quot;ignore&quot;)
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Locate the course root (the folder that contains data/generate_data.py) from wherever this notebook lives
+ROOT = next(p for p in [Path.cwd(), *Path.cwd().parents] if (p / &quot;data&quot; / &quot;generate_data.py&quot;).exists())
+DATA = ROOT / &quot;data&quot;          # raw synthetic datasets (read-only)
+CKPT = ROOT / &quot;checkpoints&quot;   # hand-off artefacts between labs (lets you start any lab fresh)
+CKPT.mkdir(exist_ok=True)
+pd.set_option(&quot;display.max_columns&quot;, 60); pd.set_option(&quot;display.width&quot;, 160)
+plt.rcParams.update({&quot;figure.figsize&quot;: (9, 4.5), &quot;axes.grid&quot;: True, &quot;grid.alpha&quot;: .3})
+RNG = 42
+print(&quot;Course root:&quot;, ROOT)</code></pre></div></section>
+<section id="step1" class="step"><h2><span class="num">1</span>Move feature code into a module and prove parity
+<span class="mins">12 min</span></h2>
+<div class="why"><b>Why this matters</b><p>If training computes features in a notebook and serving re-implements them in Java, they <em>will</em> diverge — <strong>training–serving skew</strong>, a top cause of silent production failures. One module, imported by both, removes the risk. A <strong>parity test</strong> proves the module reproduces the training features exactly.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Create the package folder <code>checkpoints/mizan_fraud/</code> (+ <code>__init__.py</code>, <code>model/</code>) and write <code>features.py</code> containing <code>build_fraud_features</code>, <code>NUMF</code>, <code>CATF</code> with a <code>%%writefile</code> cell.</li><li>Import it; rebuild features from the raw file; compare with <code>card_features.parquet</code> on 50k random txn_ids (<code>np.allclose</code>, NaN-aware).</li><li>Now rebuild using <strong>only September</strong> raw data and measure how many <code>card_txn_index</code> / <code>secs_since_prev</code> values differ. Explain why.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>Parity <code>True</code>. With September-only data, most <code>card_txn_index</code> values and many <code>secs_since_prev</code> values differ — velocity features need each card’s <strong>history</strong>, which in production comes from a <strong>feature store</strong>.</p></div>
+
+
+<div class="think"><b>Think like a practitioner</b><p>The authorisation system sends one transaction at a time. Where do <code>txn_count_1h</code> and <code>amount_vs_card_mean</code> come from at that moment?</p></div>
+</section>
+<section id="step2" class="step"><h2><span class="num">2</span>Track candidate models in MLflow
+<span class="mins">15 min</span></h2>
+<div class="why"><b>Why this matters</b><p>Three people tuning the same model in three notebooks is chaos. <strong>Experiment tracking</strong> records every candidate’s parameters, metrics and artefacts in one queryable store. We train three random-forest candidates on train, evaluate on validation at the 0.5% budget, and log everything.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Point MLflow at <code>sqlite:///checkpoints/mlflow/mlflow.db</code>; create/get experiment <code>mizan-fraud</code> with artefacts under <code>checkpoints/mlflow/artifacts</code>.</li><li>Undersample train (all fraud + 250k legit). For 3 configs of (<code>n_estimators</code>, <code>min_samples_leaf</code>, <code>max_features</code>) fit an RF pipeline, compute <code>at_budget</code> on valid, and log params + metrics + training time in a run.</li><li>Query the runs into a DataFrame with <code>mlflow.search_runs</code> and pick the best by <code>PR_AUC</code>.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>Three runs logged; PR-AUC differences are small (≈ 0.94 ± 0.01) but training times differ a lot — a real trade-off to document.</p></div>
+<details class="hint"><summary>💡 Hint</summary><p>Run <code>mlflow ui --backend-store-uri sqlite:///checkpoints/mlflow/mlflow.db</code> in a terminal to browse runs in the browser.</p></details>
+
+
+</section>
+<section id="step3" class="step"><h2><span class="num">3</span>Refit, set the alert threshold, write the model card, register the champion
+<span class="mins">15 min</span></h2>
+<div class="why"><b>Why this matters</b><p>The chosen configuration is refit on train <strong>+ valid</strong> (more, and more recent, data). The <strong>alert threshold</strong> is set so that ≈ 0.5% of validation traffic alerts — the operational budget. A <strong>model card</strong> documents intended use, data, performance, limitations and owners; Model Risk will not approve a model without one. The registry alias <code>champion</code> is what deployment uses.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Compute <code>threshold</code> = the 99.5th percentile of the candidate’s validation scores.</li><li>Refit <code>best_cfg</code> on undersampled train+valid; evaluate <code>at_budget</code> on test.</li><li>Save <code>fraud_rf.joblib</code> and <code>model_card.json</code> into <code>mizan_fraud/model/</code>.</li><li>Log a final run with the artefacts, register it as <code>mizan-fraud</code>, and set alias <code>champion</code>.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>Threshold ≈ 0.3–0.6 (undersampled scores); test alert rate ≈ 0.4–0.6%; test recall@0.5% ≈ 0.9.</p></div>
+
+
+<div class="think"><b>Think like a practitioner</b><p>The card says ‘NOT for automatic card blocking’. Why does the intended-use statement matter legally and operationally?</p></div>
+</section>
+<section id="step4" class="step"><h2><span class="num">4</span>Serve it: FastAPI with Pydantic validation
+<span class="mins">15 min</span></h2>
+<div class="why"><b>Why this matters</b><p>The authorisation platform calls a <strong>contract</strong>, not a notebook. Pydantic enforces types and ranges and an allow-list of channels; malformed or hostile input never reaches the model. <code>/health</code> exposes the live version for observability.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Write <code>mizan_fraud/app.py</code> with <code>%%writefile</code>: Pydantic <code>Txn</code> schema, endpoints <code>/health</code>, <code>/score</code>, <code>/score_batch</code>.</li><li>With <code>TestClient</code>: call <code>/health</code>; score 3 real test transactions (one known fraud); send 2 invalid payloads (negative amount, unknown channel) and confirm HTTP 422.</li><li>Note the command to run it live: <code>uvicorn mizan_fraud.app:app --port 8000</code> from the <code>checkpoints</code> folder.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p><code>/health</code> shows v1.0.0; the fraud row gets a high score and <code>alert: true</code>; invalid payloads return 422 naming the bad field.</p></div>
+<details class="hint"><summary>💡 Hint</summary><p>Pydantic rejects <code>NaN</code> in JSON, so convert NaN to <code>None</code> (JSON null) — the model’s imputer handles it.</p></details>
+
+
+</section>
+<section id="step5" class="step"><h2><span class="num">5</span>Load test: latency and throughput
+<span class="mins">10 min</span></h2>
+<div class="why"><b>Why this matters</b><p>An authorisation SLA is typically <strong>p95 &lt; 50–100 ms end-to-end</strong>. We measure the service’s latency distribution on 300 single calls and the throughput of <code>/score_batch</code> on 5,000 transactions. Averages hide tail latency — always report percentiles.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Send 300 single <code>/score</code> requests; record wall-clock latency; report p50/p95/p99.</li><li>Send one <code>/score_batch</code> request with 5,000 transactions; report transactions/second.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>Single-call p95 in the tens of ms on a laptop (RF with <code>n_jobs=-1</code> per call adds overhead); batch throughput thousands of txns/s.</p></div>
+
+
+<div class="think"><b>Think like a practitioner</b><p>p95 is 60 ms and the SLA is 50 ms. List three fixes in order of effort.</p></div>
+</section>
+<section id="step6" class="step"><h2><span class="num">6</span>Nightly batch job on new raw data + CI release gate
+<span class="mins">13 min</span></h2>
+<div class="why"><b>Why this matters</b><p>Not everything is real-time: Fraud Ops also wants a <strong>nightly batch</strong> report on the previous day. The batch job must use the same feature module with <strong>history warm-up</strong>. Finally a <strong>release gate</strong> encodes our standards as code; its JSON output is the evidence attached to the change ticket.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Batch job: concatenate raw history (Aug–Sep) with the first production week (1–7 Oct), build features with the module, keep October rows, score them, count alerts per day.</li><li>Write <code>release_gate(model, card)</code> checking: test PR-AUC ≥ 0.85, test alert rate between 0.3% and 0.8%, p95 latency &lt; 150 ms, no ID/PII features, threshold in (0,1). Save <code>release_gate.json</code> and print DEPLOY/BLOCK.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>Daily alert rates wander between ≈ 0.3% and 0.6%. Compare <code>alerts</code> with <code>fraud</code>: on several days the model alerts far fewer transactions than there are frauds — an early hint of trouble (new Digital_Wallet channel, new scam typology). All gate checks pass → DEPLOY.</p></div>
+
+
+<div class="think"><b>Think like a practitioner</b><p>The gate passed, yet the batch job already shows an unusual alert rate. Is that a deployment problem or a monitoring problem? (→ Lab 5.2)</p></div>
+</section>
+<section id="stretch"><h2>Stretch challenges</h2><ol>
+<li>Containerise: write a <code>Dockerfile</code> (<code>python:3.12-slim</code>, copy <code>mizan_fraud/</code>, <code>pip install</code>, <code>CMD uvicorn …</code>). What goes in <code>.dockerignore</code>?</li>
+<li>Replace <code>TestClient</code> with a live <code>uvicorn</code> server and load-test with <code>httpx.AsyncClient</code> (50 concurrent requests).</li>
+<li>Add an <code>/explain</code> endpoint that returns the top 3 contributing features for a transaction (e.g. by perturbation).</li>
+</ol></section>
+<section id="trouble"><h2>Troubleshooting</h2><ul>
+<li><strong><code>UnsupportedModelRegistryStoreURIException</code></strong> → you installed <code>mlflow-skinny</code>; run <code>pip install mlflow</code> (needs SQLAlchemy).</li>
+<li><strong>422 on every request</strong> → a NaN slipped into the JSON; use the <code>payload()</code> helper.</li>
+<li><strong><code>ModuleNotFoundError: mizan_fraud</code></strong> → <code>sys.path.insert(0, str(CKPT))</code> must run first.</li>
+</ul></section></main></div><script>function copyCode(btn){const t=btn.parentElement.querySelector('code').innerText;
+const done=()=>{btn.textContent='Copied ✓';btn.classList.add('ok');setTimeout(()=>{btn.textContent='Copy';btn.classList.remove('ok')},1400)};
+if(navigator.clipboard){navigator.clipboard.writeText(t).then(done).catch(()=>fallback(t,done))}else fallback(t,done)}
+function fallback(t,done){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(e){}a.remove();done()}
+function toggleTheme(){const r=document.documentElement;const cur=r.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+const nxt=cur==='dark'?'light':'dark';r.setAttribute('data-theme',nxt);try{localStorage.setItem('mizan-theme',nxt)}catch(e){}}
+(function(){try{const t=localStorage.getItem('mizan-theme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}
+// light-weight python highlighter
+const KW=/\b(import|from|as|def|return|for|in|if|elif|else|while|with|try|except|finally|class|lambda|and|or|not|is|None|True|False|print|assert|yield|raise|pass|break|continue|global)\b/g;
+// placeholders use private-use characters so the keyword/number passes can never match inside them
+const enc=n=>String(n).split('').map(d=>String.fromCharCode(0xE000+ +d)).join('');
+const dec=t=>+t.split('').map(c=>c.charCodeAt(0)-0xE000).join('');
+document.querySelectorAll('pre code.lang-python').forEach(el=>{let s=el.innerHTML;const store=[];
+const keep=cls=>m=>{store.push('<span class="'+cls+'">'+m+'</span>');return ''+enc(store.length-1)+''};
+s=s.replace(/(&quot;.*?&quot;|&#x27;.*?&#x27;|"[^"\n]*"|'[^'\n]*')/g,keep('tok-s'));
+s=s.replace(/(#[^\n]*)/g,keep('tok-c'));
+s=s.replace(KW,'<span class="tok-k">$1</span>').replace(/\b(\d+\.?\d*)\b/g,'<span class="tok-n">$1</span>');
+s=s.replace(/([-]+)/g,(m,t)=>store[dec(t)]);el.innerHTML=s});
+const links=[...document.querySelectorAll('nav.toc a')];const secs=links.map(a=>document.querySelector(a.getAttribute('href')));
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.classList.remove('active'));
+const i=secs.indexOf(e.target);if(i>=0)links[i].classList.add('active')}})},{rootMargin:'-20% 0px -70% 0px'});secs.forEach(s=>s&&io.observe(s))})();
+</script></body></html>

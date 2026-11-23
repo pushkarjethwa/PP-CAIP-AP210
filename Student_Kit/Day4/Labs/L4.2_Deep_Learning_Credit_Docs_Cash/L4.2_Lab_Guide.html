@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lab L4.2 · Deep learning trio — MLP credit challenger, CNN document router and LSTM cash forecaster</title><style>:root{--bg:#f6f7f9;--panel:#fff;--ink:#1b2430;--muted:#5b6675;--line:#e3e7ee;--brand:#0b5e6b;--brand2:#c8963e;
+--code-bg:#0f1720;--code-ink:#e6edf3;--l1:#2f6fdb;--l2:#c8963e;--l3:#1f8f5f;--why:#eef6f7;--exp:#eef8f1;--think:#fbf5ea;--say:#eef2fb;--exam:#f4effa}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1117;--panel:#141a22;--ink:#e6edf3;--muted:#9aa6b2;--line:#263040;
+--brand:#4fb3c2;--why:#12262a;--exp:#122319;--think:#2a2214;--say:#151d2d;--exam:#211a2c;--code-bg:#0a0f15}}
+:root[data-theme="dark"]{--bg:#0d1117;--panel:#141a22;--ink:#e6edf3;--muted:#9aa6b2;--line:#263040;--brand:#4fb3c2;--why:#12262a;
+--exp:#122319;--think:#2a2214;--say:#151d2d;--exam:#211a2c;--code-bg:#0a0f15}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+header.top{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:10px 20px;
+background:var(--brand);color:#fff;font-size:14px;letter-spacing:.2px}
+.brand .logo{color:var(--brand2);margin-right:6px}.brand .sep{opacity:.5;margin:0 10px}
+.theme{background:transparent;border:1px solid rgba(255,255,255,.5);color:#fff;border-radius:6px;padding:2px 10px;cursor:pointer;font-size:16px}
+.layout{display:grid;grid-template-columns:260px minmax(0,1fr);max-width:1320px;margin:0 auto}
+nav.toc{position:sticky;top:46px;align-self:start;max-height:calc(100vh - 46px);overflow:auto;padding:24px 12px 24px 20px;font-size:13.5px}
+nav.toc a{display:block;color:var(--muted);text-decoration:none;padding:4px 8px;border-left:2px solid transparent;border-radius:0 4px 4px 0}
+nav.toc a:hover,nav.toc a.active{color:var(--brand);border-left-color:var(--brand);background:var(--panel)}
+.toc-title{font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:1px;color:var(--muted);margin:0 8px 8px}
+main{padding:24px 28px 80px;min-width:0}
+section{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px 26px;margin:0 0 18px}
+section.hero{background:linear-gradient(135deg,var(--brand),#083f48);color:#fff;border:0}
+section.hero.demo{background:linear-gradient(135deg,#3b2f6b,#1f1a3d)}
+.hero h1{margin:.2em 0 .3em;font-size:30px;line-height:1.2}.hero .lead{opacity:.92;font-size:17px;margin:0 0 16px}
+.kicker{text-transform:uppercase;letter-spacing:1.5px;font-size:12px;color:var(--brand2);font-weight:700}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.meta div{background:rgba(255,255,255,.1);border-radius:8px;padding:8px 12px}.meta .k{display:block;font-size:11px;text-transform:uppercase;opacity:.75;letter-spacing:1px}
+.meta .v{font-weight:600;font-size:14px}
+.diff i{display:inline-block;width:9px;height:9px;margin-right:2px;border-radius:2px;background:rgba(255,255,255,.25)}.diff i.on{background:var(--brand2)}
+h2{font-size:22px;margin:0 0 12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}h3{font-size:16px;margin:18px 0 8px;color:var(--brand)}
+.num{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--brand);color:#fff;font-size:15px;flex:none}
+.mins{margin-left:auto;font-size:12px;font-weight:600;color:var(--muted);background:var(--bg);padding:2px 10px;border-radius:20px}
+.why,.expect,.think,.say,.callout,.scenario{border-radius:8px;padding:12px 16px;margin:12px 0}
+.why{background:var(--why);border-left:4px solid var(--brand)}.expect{background:var(--exp);border-left:4px solid var(--l3)}
+.think{background:var(--think);border-left:4px solid var(--brand2)}.say{background:var(--say);border-left:4px solid #5b6bd6}
+.callout{background:var(--bg);border:1px dashed var(--line)}.callout.exam{background:var(--exam);border:0;border-left:4px solid #8a5cc7}
+.scenario{background:var(--bg)}
+.why>b,.expect>b,.think>b,.say>b,.callout>b{display:block;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.why p:last-child,.expect p:last-child,.think p:last-child,.say p:last-child{margin-bottom:0}
+ol.tasks li{margin:4px 0}
+.levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.lvl{border-radius:10px;padding:12px 16px;border:1px solid var(--line);border-top:5px solid}.lvl.l1{border-top-color:var(--l1)}.lvl.l2{border-top-color:var(--l2)}.lvl.l3{border-top-color:var(--l3)}
+.lvl p{margin:.4em 0 0;font-size:14px}.note{color:var(--muted);font-size:14px}
+details{border:1px solid var(--line);border-radius:8px;margin:10px 0;background:var(--bg)}
+details summary{cursor:pointer;padding:8px 14px;font-weight:600}details[open] summary{border-bottom:1px solid var(--line)}
+details>*:not(summary){margin:10px 14px}
+.code{position:relative;margin:10px 0}
+pre{background:var(--code-bg);color:var(--code-ink);padding:14px 16px;border-radius:8px;overflow:auto;font:13.5px/1.5 Consolas,"Cascadia Code",Menlo,monospace;margin:0}
+code{font-family:Consolas,"Cascadia Code",Menlo,monospace;font-size:.92em}
+:not(pre)>code{background:var(--bg);border:1px solid var(--line);padding:1px 5px;border-radius:4px}
+.copy{position:absolute;top:8px;right:8px;background:#ffffff1a;color:#e6edf3;border:1px solid #ffffff33;border-radius:5px;font-size:12px;padding:2px 10px;cursor:pointer}
+.copy:hover{background:#ffffff33}.copy.ok{background:var(--l3);border-color:var(--l3)}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:8px 0}th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+th{background:var(--bg)}table.files td:first-child{white-space:nowrap}
+.tok-k{color:#ff7b72}.tok-s{color:#a5d6ff}.tok-c{color:#8b949e;font-style:italic}.tok-n{color:#79c0ff}.tok-f{color:#d2a8ff}
+@media (max-width:900px){.layout{grid-template-columns:1fr}nav.toc{display:none}main{padding:16px}section{padding:16px}.hero h1{font-size:24px}}
+@media print{nav.toc,header.top,.copy{display:none}.layout{display:block}details{display:block}details>*{display:block!important}section{break-inside:avoid-page}}
+</style></head>
+<body class="lab-page">
+<header class="top"><div class="brand"><span class="logo">◆</span> Horizon Gulf Bank · Project MIZAN<span class="sep">|</span>CAIP AIP-210 · Certified AI Practitioner</div>
+<button class="theme" onclick="toggleTheme()" aria-label="Toggle theme">◐</button></header>
+<div class="layout"><nav class="toc"><div class="toc-title">On this page</div><a href="#overview">Overview</a>
+<a href="#levels">How to use the 3 levels</a>
+<a href="#packages">Starter package &amp; what you produce</a>
+<a href="#setup">Setup</a>
+<a href="#step1">1. Part A · Prepare the credit matrices and benchmark</a>
+<a href="#step2">2. Part A · MLP challenger with dropout and early stopping</a>
+<a href="#step3">3. Part B · Load images and build a dense-only baseline</a>
+<a href="#step4">4. Part B · CNN with augmentation</a>
+<a href="#step5">5. Part C · Sequences for next-day cash with known-in-advance features</a>
+<a href="#step6">6. Part C · Train the LSTM and compare</a>
+<a href="#stretch">Stretch challenges</a>
+<a href="#trouble">Troubleshooting</a></nav>
+<main><section class="hero lab"><div class="kicker">Day 4 · Independent Lab L4.2</div>
+<h1>Deep learning trio — MLP credit challenger, CNN document router and LSTM cash forecaster</h1><p class="lead">Three architectures, three data types, one honest question each: does deep learning beat the classical model we already have?</p>
+<div class="meta"><div><span class="k">Duration</span><span class="v">100 min</span></div><div><span class="k">Difficulty</span><span class="v"><span class="diff" title="8/10"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i></span> 8/10</span></div><div><span class="k">Dataset(s)</span><span class="v">checkpoints/loan_features.parquet (L1.2) · kyc_documents_64.npz (15k images) · checkpoints/atm_network_daily.parquet (L2.2)</span></div><div><span class="k">Builds on</span><span class="v">Labs L1.2, L2.2, L3.1 (benchmarks) · Demo D4.2</span></div><div><span class="k">Produces</span><span class="v">checkpoints/credit_mlp.keras · checkpoints/kyc_cnn.keras · checkpoints/atm_lstm.keras · checkpoints/dl_results.json</span></div></div></section>
+<section id="overview"><h2>Objective &amp; scenario alignment</h2>
+<div class="scenario"><p><strong>Horizon Gulf Bank (HGB)</strong> is a fictional UAE retail bank with 250,000 customers. Its Board approved <strong>Project MIZAN</strong> — an AI decisioning platform covering credit, fraud, collateral valuation, cash logistics, customer retention and document automation. You are a junior ML practitioner in the MIZAN squad.</p>
+<p><strong>Part A — Credit:</strong> Model Risk wants a neural <em>challenger</em> to the L3.1 logistic PD model. <strong>Part B — Operations:</strong> 15,000 scanned onboarding documents a month are routed by hand; a CNN could route them automatically. <strong>Part C — Treasury:</strong> can an LSTM beat the classical forecasting baselines for next-day network cash demand?</p>
+<p><strong>Progressive architecture:</strong> benchmarks come from L3.1 and L2.2; models are saved for Day 5.</p></div><h3>By the end of this lab you will be able to</h3><ul>
+<li>Design, compile and train an MLP with early stopping and dropout; compare against logistic regression</li>
+<li>Build a CNN with convolution, pooling and data augmentation; beat a dense-only baseline on images; read a confusion matrix</li>
+<li>Turn a time series into supervised sequences with known-in-advance calendar features; train an LSTM; compare with baselines</li>
+<li>Judge <em>when</em> deep learning is worth its complexity</li>
+</ul>
+<div class="callout exam"><b>AIP-210 exam link</b><p>AIP-210 <em>Building ANNs</em>: MLP, CNN (convolution, pooling, spatial features), RNN/LSTM (sequential data), loss functions, optimisers, epochs/batches, learning rate, overfitting controls (dropout, early stopping).</p></div></section>
+<section id="levels"><h2>How to use the three levels</h2><div class="levels">
+<div class="lvl l1"><b>Level 1 · From scratch</b><p>Work from <i>this guide</i> in <code>L4.2_Level1_From_Scratch.ipynb</code>. Every step tells you <i>what</i> to build and <i>why</i>; you write all the code. Open a hint only when stuck for &gt;5 min.</p></div>
+<div class="lvl l2"><b>Level 2 · Guided starter — ★ recommended for this cohort</b><p>Open <code>L4.2_Level2_Guided_Starter.ipynb</code>. The scaffolding is written; you complete the numbered <code>✏️ BLANK</code>s. Each blank explains what to write, where, and why.</p></div>
+<div class="lvl l3"><b>Level 3 · Complete solution</b><p>Released by your trainer <i>after</i> the lab, as part of the end-of-day release. Extract it into your Student_Kit folder and <code>L4.2_Level3_Solution.ipynb</code> appears here. Then use the <i>Think like a practitioner</i> prompts to change it and break it on purpose.</p></div>
+</div><p class="note"><b>Default: Level 2.</b> Start in the guided starter. Finished early or already confident? Try the next step at Level 1. Stuck? Open the 💡 hint, compare with your neighbour, then ask your trainer. All three levels produce the same artefacts, so you can switch level at any step.</p></section>
+<section id="packages"><h2>Starter package &amp; what you produce</h2>
+<h3>Starter package (what you begin with)</h3><table class="files"><thead><tr><th>File / artefact</th><th>Purpose</th></tr></thead><tbody><tr><td><code>checkpoints/loan_features.parquet</code></td><td><ul>
+<li>preprocessor &amp; spec (L1.2)</li>
+</ul></td></tr><tr><td><code>checkpoints/credit_policy.json</code></td><td>Logistic benchmark (L3.1)</td></tr><tr><td><code>data/kyc_documents_64.npz</code></td><td>Images X (15000×64×64), labels y, class names</td></tr><tr><td><code>checkpoints/atm_network_daily.parquet</code></td><td>From L2.2</td></tr><tr><td><code>L4.2_Level1_From_Scratch.ipynb</code></td><td>Level 1</td></tr><tr><td><code>L4.2_Level2_Guided_Starter.ipynb</code></td><td>Level 2</td></tr></tbody></table>
+<h3>What you finish with</h3><table class="files"><thead><tr><th>File / artefact</th><th>Purpose</th></tr></thead><tbody><tr><td><code>L4.2_Level3_Solution.ipynb</code></td><td>Complete solution</td></tr><tr><td><code>checkpoints/credit_mlp.keras</code></td><td>MLP challenger</td></tr><tr><td><code>checkpoints/kyc_cnn.keras</code></td><td>Document CNN</td></tr><tr><td><code>checkpoints/atm_lstm.keras</code></td><td>LSTM forecaster</td></tr><tr><td><code>checkpoints/dl_results.json</code></td><td>All metrics vs benchmarks</td></tr></tbody></table>
+<div class="callout"><b>Fell behind?</b> <p>Needs <code>loan_features.parquet</code>, <code>loan_preprocessor.joblib</code>, <code>loan_feature_spec.json</code>, <code>credit_policy.json</code> and <code>atm_network_daily.parquet</code> — all shipped in <code>checkpoints/</code>.</p></div></section>
+<section id="setup"><h2>Setup</h2><ul>
+<li>TensorFlow ≥ 2.15 (<code>pip install tensorflow</code>). CPU is enough: the whole lab trains in ≈ 5–8 minutes.</li>
+<li>Google Colab works too: upload the <code>data/</code> and <code>checkpoints/</code> folders.</li>
+</ul>
+<p>Run the standard course setup cell first (it locates <code>data/</code> and <code>checkpoints/</code> from anywhere inside the course folder):</p>
+<div class="code"><button class="copy" onclick="copyCode(this)">Copy</button><pre><code class="lang-python"># ── Project MIZAN course setup ─ run this cell first ──────────────────────────
+from pathlib import Path
+import warnings, time
+warnings.filterwarnings(&quot;ignore&quot;)
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Locate the course root (the folder that contains data/generate_data.py) from wherever this notebook lives
+ROOT = next(p for p in [Path.cwd(), *Path.cwd().parents] if (p / &quot;data&quot; / &quot;generate_data.py&quot;).exists())
+DATA = ROOT / &quot;data&quot;          # raw synthetic datasets (read-only)
+CKPT = ROOT / &quot;checkpoints&quot;   # hand-off artefacts between labs (lets you start any lab fresh)
+CKPT.mkdir(exist_ok=True)
+pd.set_option(&quot;display.max_columns&quot;, 60); pd.set_option(&quot;display.width&quot;, 160)
+plt.rcParams.update({&quot;figure.figsize&quot;: (9, 4.5), &quot;axes.grid&quot;: True, &quot;grid.alpha&quot;: .3})
+RNG = 42
+print(&quot;Course root:&quot;, ROOT)</code></pre></div></section>
+<section id="step1" class="step"><h2><span class="num">1</span>Part A · Prepare the credit matrices and benchmark
+<span class="mins">6 min</span></h2>
+<div class="why"><b>Why this matters</b><p>Neural networks need dense, scaled float32 arrays — exactly what the L1.2 preprocessor produces. The benchmark to beat is the L3.1 logistic model’s validation AUC.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Load the L1.2 artefacts. Transform train/valid/test to float32 arrays.</li><li>Load <code>credit_policy.json</code> and recompute the logistic validation AUC with <code>credit_model.joblib</code>.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p><code>(207705, 46)</code>; benchmark AUC ≈ 0.829.</p></div>
+
+
+
+</section>
+<section id="step2" class="step"><h2><span class="num">2</span>Part A · MLP challenger with dropout and early stopping
+<span class="mins">14 min</span></h2>
+<div class="why"><b>Why this matters</b><p>An MLP can learn feature interactions automatically. <strong>Dropout</strong> randomly silences neurons during training (regularisation); <strong>EarlyStopping</strong> watches validation AUC and restores the best epoch. We do <em>not</em> use class weights so that outputs stay calibrated PDs.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Build <code>Sequential</code>: Input → Dense(64, relu) → Dropout(0.2) → Dense(32, relu) → Dropout(0.2) → Dense(1, sigmoid).</li><li>Compile with Adam(1e-3), binary cross-entropy, AUC metric. Fit ≤ 25 epochs, batch 1024, EarlyStopping(monitor='val_auc', mode='max', patience=3, restore_best_weights=True).</li><li>Plot learning curves; report validation AUC, PR-AUC and the gap to the benchmark.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>Training stops after ≈ 10–20 epochs. MLP AUC ≈ 0.828 vs logistic 0.829 — a tie, with ≈ 5,000 parameters instead of 46.</p></div>
+
+
+<div class="think"><b>Think like a practitioner</b><p>The MLP matches but does not beat logistic regression, has ~5,000 parameters instead of ~46 and no odds ratios. Which would you put in front of a regulator? What would change your mind?</p></div>
+</section>
+<section id="step3" class="step"><h2><span class="num">3</span>Part B · Load images and build a dense-only baseline
+<span class="mins">10 min</span></h2>
+<div class="why"><b>Why this matters</b><p>To <em>prove</em> convolution helps, first train a network that ignores spatial structure: flatten the 64×64 pixels into 4,096 numbers and use Dense layers. Images are scaled to [0, 1] and split stratified 70/15/15.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Load <code>kyc_documents_64.npz</code>; scale to float32 in [0,1]; add a channel axis → (N, 64, 64, 1).</li><li>Stratified split into <code>Xi_tr/Xi_va/Xi_te</code>. Show one example per class.</li><li>Train a dense baseline: Flatten → Dense(128, relu) → Dense(5, softmax), sparse categorical cross-entropy, 8 epochs. Record test accuracy.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>(10500, 64, 64, 1) train images. The dense baseline reaches only ≈ 65–70% test accuracy with ≈ 525k parameters — documents appear at different positions, scales and angles, and a dense layer must re-learn each position separately.</p></div>
+
+
+
+</section>
+<section id="step4" class="step"><h2><span class="num">4</span>Part B · CNN with augmentation
+<span class="mins">16 min</span></h2>
+<div class="why"><b>Why this matters</b><p>Convolutions share small filters across the image — far fewer parameters, and <strong>translation-invariant</strong> features (a seal is a seal anywhere on the page). <strong>Pooling</strong> shrinks feature maps; <strong>GlobalAveragePooling</strong> replaces a huge flatten layer; <strong>augmentation</strong> (small rotations/shifts) mimics real scanning variation.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Build: augmentation (RandomRotation 0.03, RandomTranslation 0.05) → Conv2D(16,3,relu,same) → MaxPool → Conv2D(32) → MaxPool → Conv2D(64) → GlobalAveragePooling → Dense(64) → Dropout(0.3) → Dense(5, softmax).</li><li>Train ≤ 25 epochs (batch 64) with EarlyStopping on <code>val_accuracy</code> (patience 5).</li><li>Report test accuracy and parameter count vs the dense model; plot the normalised confusion matrix and 6 misclassified images.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>CNN test accuracy ≈ 96–98% with ≈ 28k parameters (≈ 19× fewer than the dense model) — convolution + pooling give translation-tolerant features. Remaining errors are small, smudged or heavily rotated scans, often statement ↔ invoice (both tabular).</p></div>
+
+
+<div class="think"><b>Think like a practitioner</b><p>For production routing you would <em>not</em> auto-route every document. How would you use the softmax confidence to send uncertain cases to a human?</p></div>
+</section>
+<section id="step5" class="step"><h2><span class="num">5</span>Part C · Sequences for next-day cash with known-in-advance features
+<span class="mins">12 min</span></h2>
+<div class="why"><b>Why this matters</b><p>An LSTM reads a window of past days. To be fair to SARIMAX (which knew the calendar), each timestep carries that day’s <strong>log withdrawal</strong> plus the <strong>next day’s</strong> calendar flags — the information Cash Ops genuinely has the evening before. We standardise with <strong>training</strong> statistics only.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Load <code>atm_network_daily.parquet</code> from 2022-01-01. Build a feature matrix: standardised log withdrawal + next-day payday/pre-Eid/holiday/weekend/Ramadan flags.</li><li>Create windows of 28 days → target = next day’s standardised log withdrawal. Split by target date: test from 2025-07-03 (as in L2.2).</li><li>Compute two baselines on the test days: seasonal naive (same weekday last week) and Ridge on the flattened windows.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>Tensor ≈ (1372, 28, 6); 121 test days. Seasonal naive WAPE ≈ 12% (it ignores the calendar); Ridge on windows with next-day flags ≈ 1.3%.</p></div>
+<details class="hint"><summary>💡 Hint</summary><p>Index <code>[:, -7, 0]</code> picks the log withdrawal 7 timesteps before the end of each window — one week before the target day.</p></details>
+
+
+</section>
+<section id="step6" class="step"><h2><span class="num">6</span>Part C · Train the LSTM and compare
+<span class="mins">14 min</span></h2>
+<div class="why"><b>Why this matters</b><p>The LSTM’s gates learn what to remember across the 28 days. With only ~1,250 training sequences it can over-fit, so we hold out the last 10% of training windows (chronologically) for early stopping.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Build <code>Sequential</code>: Input(28, 6) → LSTM(32) → Dense(16, relu) → Dense(1). Compile Adam(3e-3), MSE.</li><li>Fit ≤ 60 epochs, batch 32, <code>validation_split=0.1</code> (Keras takes the <em>last</em> 10% — chronological), EarlyStopping(patience=8, restore_best_weights=True).</li><li>Report test WAPE; plot actual vs LSTM vs Ridge for the test period; save all three models and <code>dl_results.json</code>.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>LSTM WAPE ≈ 1.4–2% — far better than seasonal naive, but <em>not</em> better than the Ridge window model (≈ 1.3%). With ~1,250 sequences and strong calendar features, the linear model is hard to beat.</p></div>
+
+
+<div class="think"><b>Think like a practitioner</b><p>Summarise Day 4 in one table: where did deep learning win decisively (images), tie (tabular credit, short time series)? Why does that pattern hold across the industry?</p></div>
+</section>
+<section id="stretch"><h2>Stretch challenges</h2><ol>
+<li>Replace the LSTM with a 1-D CNN (<code>Conv1D</code>) or a <code>GRU</code>. Which trains fastest for the same accuracy?</li>
+<li>Extend Part C to <strong>7-day-ahead</strong> (direct) forecasting by shifting the target and calendar by 7 — compare with L2.2’s results.</li>
+<li>Add <strong>Monte-Carlo dropout</strong> to the CNN (keep dropout on at inference, average 20 passes) to obtain an uncertainty score per document.</li>
+</ol></section>
+<section id="trouble"><h2>Troubleshooting</h2><ul>
+<li><strong>TensorFlow not installed / Python 3.13+</strong> → use Python 3.10–3.12 (<code>py -3.12 -m venv .venv</code>) or Google Colab.</li>
+<li><strong>Results differ slightly from the reference</strong> → GPU/CPU and thread non-determinism; differences of ±0.5% are expected.</li>
+<li><strong>CNN slow on CPU</strong> → reduce epochs to 6 or batch 64; each epoch is ≈ 10–20 s on a laptop.</li>
+</ul></section></main></div><script>function copyCode(btn){const t=btn.parentElement.querySelector('code').innerText;
+const done=()=>{btn.textContent='Copied ✓';btn.classList.add('ok');setTimeout(()=>{btn.textContent='Copy';btn.classList.remove('ok')},1400)};
+if(navigator.clipboard){navigator.clipboard.writeText(t).then(done).catch(()=>fallback(t,done))}else fallback(t,done)}
+function fallback(t,done){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(e){}a.remove();done()}
+function toggleTheme(){const r=document.documentElement;const cur=r.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+const nxt=cur==='dark'?'light':'dark';r.setAttribute('data-theme',nxt);try{localStorage.setItem('mizan-theme',nxt)}catch(e){}}
+(function(){try{const t=localStorage.getItem('mizan-theme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}
+// light-weight python highlighter
+const KW=/\b(import|from|as|def|return|for|in|if|elif|else|while|with|try|except|finally|class|lambda|and|or|not|is|None|True|False|print|assert|yield|raise|pass|break|continue|global)\b/g;
+// placeholders use private-use characters so the keyword/number passes can never match inside them
+const enc=n=>String(n).split('').map(d=>String.fromCharCode(0xE000+ +d)).join('');
+const dec=t=>+t.split('').map(c=>c.charCodeAt(0)-0xE000).join('');
+document.querySelectorAll('pre code.lang-python').forEach(el=>{let s=el.innerHTML;const store=[];
+const keep=cls=>m=>{store.push('<span class="'+cls+'">'+m+'</span>');return ''+enc(store.length-1)+''};
+s=s.replace(/(&quot;.*?&quot;|&#x27;.*?&#x27;|"[^"\n]*"|'[^'\n]*')/g,keep('tok-s'));
+s=s.replace(/(#[^\n]*)/g,keep('tok-c'));
+s=s.replace(KW,'<span class="tok-k">$1</span>').replace(/\b(\d+\.?\d*)\b/g,'<span class="tok-n">$1</span>');
+s=s.replace(/([-]+)/g,(m,t)=>store[dec(t)]);el.innerHTML=s});
+const links=[...document.querySelectorAll('nav.toc a')];const secs=links.map(a=>document.querySelector(a.getAttribute('href')));
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.classList.remove('active'));
+const i=secs.indexOf(e.target);if(i>=0)links[i].classList.add('active')}})},{rootMargin:'-20% 0px -70% 0px'});secs.forEach(s=>s&&io.observe(s))})();
+</script></body></html>

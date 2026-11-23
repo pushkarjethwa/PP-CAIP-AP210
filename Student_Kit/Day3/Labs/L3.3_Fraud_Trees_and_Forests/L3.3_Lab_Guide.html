@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lab L3.3 · Card-fraud detection on 1.5M transactions — velocity features, decision trees and random forests</title><style>:root{--bg:#f6f7f9;--panel:#fff;--ink:#1b2430;--muted:#5b6675;--line:#e3e7ee;--brand:#0b5e6b;--brand2:#c8963e;
+--code-bg:#0f1720;--code-ink:#e6edf3;--l1:#2f6fdb;--l2:#c8963e;--l3:#1f8f5f;--why:#eef6f7;--exp:#eef8f1;--think:#fbf5ea;--say:#eef2fb;--exam:#f4effa}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1117;--panel:#141a22;--ink:#e6edf3;--muted:#9aa6b2;--line:#263040;
+--brand:#4fb3c2;--why:#12262a;--exp:#122319;--think:#2a2214;--say:#151d2d;--exam:#211a2c;--code-bg:#0a0f15}}
+:root[data-theme="dark"]{--bg:#0d1117;--panel:#141a22;--ink:#e6edf3;--muted:#9aa6b2;--line:#263040;--brand:#4fb3c2;--why:#12262a;
+--exp:#122319;--think:#2a2214;--say:#151d2d;--exam:#211a2c;--code-bg:#0a0f15}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+header.top{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:10px 20px;
+background:var(--brand);color:#fff;font-size:14px;letter-spacing:.2px}
+.brand .logo{color:var(--brand2);margin-right:6px}.brand .sep{opacity:.5;margin:0 10px}
+.theme{background:transparent;border:1px solid rgba(255,255,255,.5);color:#fff;border-radius:6px;padding:2px 10px;cursor:pointer;font-size:16px}
+.layout{display:grid;grid-template-columns:260px minmax(0,1fr);max-width:1320px;margin:0 auto}
+nav.toc{position:sticky;top:46px;align-self:start;max-height:calc(100vh - 46px);overflow:auto;padding:24px 12px 24px 20px;font-size:13.5px}
+nav.toc a{display:block;color:var(--muted);text-decoration:none;padding:4px 8px;border-left:2px solid transparent;border-radius:0 4px 4px 0}
+nav.toc a:hover,nav.toc a.active{color:var(--brand);border-left-color:var(--brand);background:var(--panel)}
+.toc-title{font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:1px;color:var(--muted);margin:0 8px 8px}
+main{padding:24px 28px 80px;min-width:0}
+section{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px 26px;margin:0 0 18px}
+section.hero{background:linear-gradient(135deg,var(--brand),#083f48);color:#fff;border:0}
+section.hero.demo{background:linear-gradient(135deg,#3b2f6b,#1f1a3d)}
+.hero h1{margin:.2em 0 .3em;font-size:30px;line-height:1.2}.hero .lead{opacity:.92;font-size:17px;margin:0 0 16px}
+.kicker{text-transform:uppercase;letter-spacing:1.5px;font-size:12px;color:var(--brand2);font-weight:700}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.meta div{background:rgba(255,255,255,.1);border-radius:8px;padding:8px 12px}.meta .k{display:block;font-size:11px;text-transform:uppercase;opacity:.75;letter-spacing:1px}
+.meta .v{font-weight:600;font-size:14px}
+.diff i{display:inline-block;width:9px;height:9px;margin-right:2px;border-radius:2px;background:rgba(255,255,255,.25)}.diff i.on{background:var(--brand2)}
+h2{font-size:22px;margin:0 0 12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}h3{font-size:16px;margin:18px 0 8px;color:var(--brand)}
+.num{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--brand);color:#fff;font-size:15px;flex:none}
+.mins{margin-left:auto;font-size:12px;font-weight:600;color:var(--muted);background:var(--bg);padding:2px 10px;border-radius:20px}
+.why,.expect,.think,.say,.callout,.scenario{border-radius:8px;padding:12px 16px;margin:12px 0}
+.why{background:var(--why);border-left:4px solid var(--brand)}.expect{background:var(--exp);border-left:4px solid var(--l3)}
+.think{background:var(--think);border-left:4px solid var(--brand2)}.say{background:var(--say);border-left:4px solid #5b6bd6}
+.callout{background:var(--bg);border:1px dashed var(--line)}.callout.exam{background:var(--exam);border:0;border-left:4px solid #8a5cc7}
+.scenario{background:var(--bg)}
+.why>b,.expect>b,.think>b,.say>b,.callout>b{display:block;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.why p:last-child,.expect p:last-child,.think p:last-child,.say p:last-child{margin-bottom:0}
+ol.tasks li{margin:4px 0}
+.levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.lvl{border-radius:10px;padding:12px 16px;border:1px solid var(--line);border-top:5px solid}.lvl.l1{border-top-color:var(--l1)}.lvl.l2{border-top-color:var(--l2)}.lvl.l3{border-top-color:var(--l3)}
+.lvl p{margin:.4em 0 0;font-size:14px}.note{color:var(--muted);font-size:14px}
+details{border:1px solid var(--line);border-radius:8px;margin:10px 0;background:var(--bg)}
+details summary{cursor:pointer;padding:8px 14px;font-weight:600}details[open] summary{border-bottom:1px solid var(--line)}
+details>*:not(summary){margin:10px 14px}
+.code{position:relative;margin:10px 0}
+pre{background:var(--code-bg);color:var(--code-ink);padding:14px 16px;border-radius:8px;overflow:auto;font:13.5px/1.5 Consolas,"Cascadia Code",Menlo,monospace;margin:0}
+code{font-family:Consolas,"Cascadia Code",Menlo,monospace;font-size:.92em}
+:not(pre)>code{background:var(--bg);border:1px solid var(--line);padding:1px 5px;border-radius:4px}
+.copy{position:absolute;top:8px;right:8px;background:#ffffff1a;color:#e6edf3;border:1px solid #ffffff33;border-radius:5px;font-size:12px;padding:2px 10px;cursor:pointer}
+.copy:hover{background:#ffffff33}.copy.ok{background:var(--l3);border-color:var(--l3)}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:8px 0}th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+th{background:var(--bg)}table.files td:first-child{white-space:nowrap}
+.tok-k{color:#ff7b72}.tok-s{color:#a5d6ff}.tok-c{color:#8b949e;font-style:italic}.tok-n{color:#79c0ff}.tok-f{color:#d2a8ff}
+@media (max-width:900px){.layout{grid-template-columns:1fr}nav.toc{display:none}main{padding:16px}section{padding:16px}.hero h1{font-size:24px}}
+@media print{nav.toc,header.top,.copy{display:none}.layout{display:block}details{display:block}details>*{display:block!important}section{break-inside:avoid-page}}
+</style></head>
+<body class="lab-page">
+<header class="top"><div class="brand"><span class="logo">◆</span> Horizon Gulf Bank · Project MIZAN<span class="sep">|</span>CAIP AIP-210 · Certified AI Practitioner</div>
+<button class="theme" onclick="toggleTheme()" aria-label="Toggle theme">◐</button></header>
+<div class="layout"><nav class="toc"><div class="toc-title">On this page</div><a href="#overview">Overview</a>
+<a href="#levels">How to use the 3 levels</a>
+<a href="#packages">Starter package &amp; what you produce</a>
+<a href="#setup">Setup</a>
+<a href="#step1">1. Load 1.5M transactions efficiently and split in time</a>
+<a href="#step2">2. Velocity features — the fraud analyst’s secret weapon</a>
+<a href="#step3">3. An interpretable decision tree — and its rules</a>
+<a href="#step4">4. Depth, leaf size and cost-complexity pruning</a>
+<a href="#step5">5. Random forest on an undersampled training set</a>
+<a href="#step6">6. Which features drive the forest? Impurity vs permutation importance</a>
+<a href="#step7">7. Test-month evaluation and hand-off</a>
+<a href="#stretch">Stretch challenges</a>
+<a href="#trouble">Troubleshooting</a></nav>
+<main><section class="hero lab"><div class="kicker">Day 3 · Independent Lab L3.3</div>
+<h1>Card-fraud detection on 1.5M transactions — velocity features, decision trees and random forests</h1><p class="lead">Engineer real-time-safe velocity features at scale, grow and prune interpretable trees, beat them with a random forest, and evaluate against the fraud team’s daily alert budget.</p>
+<div class="meta"><div><span class="k">Duration</span><span class="v">80 min</span></div><div><span class="k">Difficulty</span><span class="v"><span class="diff" title="8/10"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i></span> 8/10</span></div><div><span class="k">Dataset(s)</span><span class="v">card_transactions.csv.gz (1,506,430 transactions, 0.43% fraud, Apr–Sep 2025)</span></div><div><span class="k">Builds on</span><span class="v">Demo D3.2 (Gini, tree structure) · threshold economics from L3.1</span></div><div><span class="k">Produces</span><span class="v">checkpoints/card_features.parquet · checkpoints/fraud_rf.joblib · checkpoints/fraud_metrics.json</span></div></div></section>
+<section id="overview"><h2>Objective &amp; scenario alignment</h2>
+<div class="scenario"><p><strong>Horizon Gulf Bank (HGB)</strong> is a fictional UAE retail bank with 250,000 customers. Its Board approved <strong>Project MIZAN</strong> — an AI decisioning platform covering credit, fraud, collateral valuation, cash logistics, customer retention and document automation. You are a junior ML practitioner in the MIZAN squad.</p>
+<p>HGB’s rules engine ("block foreign e-commerce &gt; AED 5,000") catches too little fraud and annoys customers. The Fraud Operations team can manually review <strong>0.5% of transactions</strong> per day. Your model must rank transactions so that the reviewed 0.5% contains as much fraud — and as many dirhams of fraud — as possible, and its logic must be explainable to auditors.</p>
+<p><strong>Progressive architecture:</strong> your feature table feeds the SVM and neural-network labs (Day 4); your feature function is deployed and monitored on Day 5.</p></div><h3>By the end of this lab you will be able to</h3><ul>
+<li>Build per-card velocity features with <code>groupby</code> + time-based <code>rolling</code> on 1.5M rows, using only past information</li>
+<li>Use an out-of-time split (train Apr–Jul, validate Aug, test Sep)</li>
+<li>Read decision-tree rules; compare Gini vs entropy</li>
+<li>Control over-fitting with depth, leaf size and cost-complexity pruning</li>
+<li>Train a random forest on an undersampled set and understand the effect on probabilities</li>
+<li>Compare impurity vs permutation importance; evaluate precision/recall at a fixed alert budget</li>
+</ul>
+<div class="callout exam"><b>AIP-210 exam link</b><p>AIP-210 <em>Decision trees &amp; random forests</em>: roots/nodes/leaves, splitting, Gini/entropy, depth &amp; pruning, ensemble learning (bagging, feature sub-sampling), feature importance. Plus <em>classification evaluation under class imbalance</em>.</p></div></section>
+<section id="levels"><h2>How to use the three levels</h2><div class="levels">
+<div class="lvl l1"><b>Level 1 · From scratch</b><p>Work from <i>this guide</i> in <code>L3.3_Level1_From_Scratch.ipynb</code>. Every step tells you <i>what</i> to build and <i>why</i>; you write all the code. Open a hint only when stuck for &gt;5 min.</p></div>
+<div class="lvl l2"><b>Level 2 · Guided starter — ★ recommended for this cohort</b><p>Open <code>L3.3_Level2_Guided_Starter.ipynb</code>. The scaffolding is written; you complete the numbered <code>✏️ BLANK</code>s. Each blank explains what to write, where, and why.</p></div>
+<div class="lvl l3"><b>Level 3 · Complete solution</b><p>Released by your trainer <i>after</i> the lab, as part of the end-of-day release. Extract it into your Student_Kit folder and <code>L3.3_Level3_Solution.ipynb</code> appears here. Then use the <i>Think like a practitioner</i> prompts to change it and break it on purpose.</p></div>
+</div><p class="note"><b>Default: Level 2.</b> Start in the guided starter. Finished early or already confident? Try the next step at Level 1. Stuck? Open the 💡 hint, compare with your neighbour, then ask your trainer. All three levels produce the same artefacts, so you can switch level at any step.</p></section>
+<section id="packages"><h2>Starter package &amp; what you produce</h2>
+<h3>Starter package (what you begin with)</h3><table class="files"><thead><tr><th>File / artefact</th><th>Purpose</th></tr></thead><tbody><tr><td><code>data/card_transactions.csv.gz</code></td><td>Raw transactions (≈ 45 MB compressed)</td></tr><tr><td><code>L3.3_Level1_From_Scratch.ipynb</code></td><td>Level 1</td></tr><tr><td><code>L3.3_Level2_Guided_Starter.ipynb</code></td><td>Level 2</td></tr></tbody></table>
+<h3>What you finish with</h3><table class="files"><thead><tr><th>File / artefact</th><th>Purpose</th></tr></thead><tbody><tr><td><code>L3.3_Level3_Solution.ipynb</code></td><td>Complete solution</td></tr><tr><td><code>checkpoints/card_features.parquet</code></td><td>All transactions with engineered features + split</td></tr><tr><td><code>checkpoints/fraud_rf.joblib</code></td><td>Random-forest pipeline</td></tr><tr><td><code>checkpoints/fraud_metrics.json</code></td><td>Validation/test metrics at the alert budget</td></tr></tbody></table>
+<div class="callout"><b>Fell behind?</b> <p>This lab only needs the raw datasets in <code>data/</code> — you can start it at any time.</p></div></section>
+<section id="setup"><h2>Setup</h2><ul>
+<li>≈ 3 GB free RAM. On a low-spec laptop regenerate smaller data: <code>python data/generate_data.py --scale 0.3 --only cards</code>.</li>
+</ul>
+<p>Run the standard course setup cell first (it locates <code>data/</code> and <code>checkpoints/</code> from anywhere inside the course folder):</p>
+<div class="code"><button class="copy" onclick="copyCode(this)">Copy</button><pre><code class="lang-python"># ── Project MIZAN course setup ─ run this cell first ──────────────────────────
+from pathlib import Path
+import warnings, time
+warnings.filterwarnings(&quot;ignore&quot;)
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Locate the course root (the folder that contains data/generate_data.py) from wherever this notebook lives
+ROOT = next(p for p in [Path.cwd(), *Path.cwd().parents] if (p / &quot;data&quot; / &quot;generate_data.py&quot;).exists())
+DATA = ROOT / &quot;data&quot;          # raw synthetic datasets (read-only)
+CKPT = ROOT / &quot;checkpoints&quot;   # hand-off artefacts between labs (lets you start any lab fresh)
+CKPT.mkdir(exist_ok=True)
+pd.set_option(&quot;display.max_columns&quot;, 60); pd.set_option(&quot;display.width&quot;, 160)
+plt.rcParams.update({&quot;figure.figsize&quot;: (9, 4.5), &quot;axes.grid&quot;: True, &quot;grid.alpha&quot;: .3})
+RNG = 42
+print(&quot;Course root:&quot;, ROOT)</code></pre></div></section>
+<section id="step1" class="step"><h2><span class="num">1</span>Load 1.5M transactions efficiently and split in time
+<span class="mins">8 min</span></h2>
+<div class="why"><b>Why this matters</b><p>Fraud patterns evolve, so the honest split is <strong>out-of-time</strong>. Loading with explicit dtypes keeps memory manageable and makes <code>groupby</code> fast.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Load with <code>txn_ts</code> parsed; cast <code>merchant_category</code>, <code>channel</code>, <code>merchant_country</code>, <code>customer_home_emirate</code> to <code>category</code>.</li><li>Print rows, memory (MB), fraud rate, and fraud rate by channel.</li><li>Define the split dates: train &lt; 2025-08-01 ≤ valid &lt; 2025-09-01 ≤ test.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>1,506,430 rows; ≈ 0.43% fraud; E-Commerce and ATM have the highest fraud rates.</p></div>
+
+
+
+</section>
+<section id="step2" class="step"><h2><span class="num">2</span>Velocity features — the fraud analyst’s secret weapon
+<span class="mins">15 min</span></h2>
+<div class="why"><b>Why this matters</b><p>A single transaction looks normal; <strong>five in ten minutes on a new device abroad</strong> does not. Velocity features summarise each card’s recent behaviour. Every one must use only the current and <strong>earlier</strong> transactions of that card, otherwise it leaks the future and cannot be computed at authorisation time.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Write <code>build_fraud_features(tx)</code>: sort by card and time; add <code>secs_since_prev</code>, <code>txn_count_1h</code>, <code>txn_count_24h</code>, <code>amount_sum_24h</code> (time-based rolling per card), <code>amount_vs_card_mean</code> (vs the card’s <em>prior</em> mean), first-time-country and first-time-merchant-category flags, <code>card_txn_index</code>, <code>hour</code>, <code>is_night</code>, <code>is_international</code>, <code>amount_to_salary</code>, <code>log_amount</code>.</li><li>Apply it; time it. Add <code>split</code>.</li><li>Compare the median of 3 velocity features for fraud vs legitimate transactions.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>Built in ≈ 10–30 s. Fraud: median <code>secs_since_prev</code> ≈ 10 minutes vs ≈ 3 days for legit; 3 transactions in the last hour vs 1; amount ≈ 2× the card’s usual vs ≈ 0.45×.</p></div>
+<details class="hint"><summary>💡 Hint</summary><p><code>df.set_index('txn_ts').groupby('card_id').amount_aed.rolling('1h').count()</code> returns values in (card, time) order — the same order as your sorted frame, so <code>.to_numpy()</code> aligns.</p></details>
+
+<div class="think"><b>Think like a practitioner</b><p><code>is_new_country_for_card</code> is 1 for every card’s first transaction in our data window. Why is that a <em>cold-start</em> bias, and how would production avoid it?</p></div>
+</section>
+<section id="step3" class="step"><h2><span class="num">3</span>An interpretable decision tree — and its rules
+<span class="mins">12 min</span></h2>
+<div class="why"><b>Why this matters</b><p>Trees need no scaling and handle interactions natively. A depth-3 tree is a set of human-readable rules your auditors can review. Missing values for <em>not-applicable</em> fields (3DS on POS) are encoded as −1 so the tree can split on ‘not e-commerce’.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Build <code>prep</code> = ColumnTransformer(numeric: <code>SimpleImputer(fill_value=-1)</code>; categorical: <code>OrdinalEncoder</code> unknown→−1).</li><li>Fit a depth-3 <code>DecisionTreeClassifier</code> (Gini) on train; plot it and print <code>export_text</code> rules.</li><li>Write <code>pr_auc</code> and <code>at_budget(y, p, amount, budget=0.005)</code> (precision, recall and AED share caught in the top 0.5%). Evaluate on valid; repeat with <code>criterion='entropy'</code>.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>Root split on a velocity or 3DS/device feature; a depth-3 tree already captures ≈ 40–60% of fraud in the 0.5% budget. Gini and entropy give near-identical trees.</p></div>
+
+
+<div class="think"><b>Think like a practitioner</b><p>Translate the highest-fraud leaf into an English rule the Fraud Operations team could implement tomorrow.</p></div>
+</section>
+<section id="step4" class="step"><h2><span class="num">4</span>Depth, leaf size and cost-complexity pruning
+<span class="mins">12 min</span></h2>
+<div class="why"><b>Why this matters</b><p>An unlimited tree memorises 1M training rows — perfect on train, worse on August. We sweep <code>max_depth</code>, then use <strong>cost-complexity pruning</strong> (<code>ccp_alpha</code>), which removes branches whose impurity reduction does not justify their complexity.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>For depths {2, 4, 6, 8, 12, 16, None} record train and valid PR-AUC; plot both.</li><li>On a 150k stratified train sample compute <code>cost_complexity_pruning_path</code>; evaluate 8 alphas on valid PR-AUC and keep the best pruned tree.</li><li>Add the best depth-limited and best pruned trees to <code>board</code>.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>Train PR-AUC → 1.0 as depth grows; validation peaks around depth 8–12 then falls. Pruning yields a much smaller tree with comparable validation PR-AUC.</p></div>
+
+
+<div class="think"><b>Think like a practitioner</b><p>Which tree would you show an auditor, and which would you deploy? Can it be the same one?</p></div>
+</section>
+<section id="step5" class="step"><h2><span class="num">5</span>Random forest on an undersampled training set
+<span class="mins">15 min</span></h2>
+<div class="why"><b>Why this matters</b><p>A <strong>random forest</strong> averages many deep trees, each grown on a bootstrap sample with random feature subsets — reducing variance. With 0.4% fraud, keeping all fraud and ~25% of legitimate transactions speeds training 4× with little loss of ranking power. Undersampling inflates probabilities; ranking-based metrics (budget, PR-AUC) are unaffected, and we correct the probabilities explicitly.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Build <code>tr_u</code>: all training fraud + a 250k random sample of training legit.</li><li>Fit <code>RandomForestClassifier(n_estimators=300, min_samples_leaf=10, max_features='sqrt', n_jobs=-1)</code> inside a Pipeline with <code>prep</code>; time it.</li><li>Evaluate at budget on valid; add a <code>LogisticRegression</code> baseline on the same features for comparison.</li><li>Correct probabilities for the sampling ratio β: <code>p = β·p_s / (β·p_s − p_s + 1)</code> and compare mean predicted vs actual fraud rate.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>Random forest tops the board (PR-AUC ≈ 0.94, ≈ 89% of fraud inside the 0.5% budget). Logistic regression on the <em>same engineered features</em> is surprisingly close (≈ 0.93) — good features matter more than the algorithm. Corrected mean probability ≈ actual rate.</p></div>
+
+
+<div class="think"><b>Think like a practitioner</b><p>Bagging reduces variance. Which ensemble family reduces <em>bias</em> instead? (boosting — HistGradientBoosting/XGBoost)</p></div>
+</section>
+<section id="step6" class="step"><h2><span class="num">6</span>Which features drive the forest? Impurity vs permutation importance
+<span class="mins">10 min</span></h2>
+<div class="why"><b>Why this matters</b><p>Impurity importance is computed on training data and favours high-cardinality continuous features. <strong>Permutation importance</strong> measures how much <em>validation</em> PR-AUC drops when a feature is shuffled — slower but more trustworthy, and model-agnostic.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Plot the RF’s impurity importances.</li><li>Compute <code>permutation_importance</code> on a validation sample (all fraud + 40k legit), scoring <code>average_precision</code>, <code>n_repeats=3</code>.</li><li>Compare the two top-10 lists side by side.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>Both rank velocity features (<code>secs_since_prev</code>, <code>txn_count_1h</code>, <code>amount_vs_card_mean</code>) and device/3DS signals near the top; the orders differ in the tail.</p></div>
+
+
+<div class="think"><b>Think like a practitioner</b><p>Two features are highly correlated. What happens to <em>both</em> their permutation importances, and why?</p></div>
+</section>
+<section id="step7" class="step"><h2><span class="num">7</span>Test-month evaluation and hand-off
+<span class="mins">8 min</span></h2>
+<div class="why"><b>Why this matters</b><p>September is the untouched test month. We report the metrics the Fraud Ops head cares about, then save the feature table (Day 4 reads it), the forest and the metrics.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Score <code>te</code> with the forest; report <code>at_budget</code> on test and the number of alerts per day.</li><li>Save <code>tf</code> (ids, timestamps, FEATS, target, split, amount) to <code>CKPT/card_features.parquet</code>.</li><li>Save the RF pipeline and <code>fraud_metrics.json</code>.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>Recall and AED share stay ≈ 93–94% on September; precision@0.5% is lower (≈ 65%) because September has fewer frauds to fill the fixed budget. ≈ 40 alerts/day for the review team.</p></div>
+
+
+<div class="think"><b>Think like a practitioner</b><p>The fraud team asks to raise the budget to 1%. Without retraining, how do you estimate the extra fraud caught and the extra false alerts?</p></div>
+</section>
+<section id="stretch"><h2>Stretch challenges</h2><ol>
+<li>Replace the forest with <code>HistGradientBoostingClassifier</code> (boosting). Does it beat RF at the 0.5% budget? How long does it train on the <em>full</em> training set?</li>
+<li>Build a ‘rules vs model’ comparison: implement the legacy rule <em>foreign e-commerce &gt; AED 5,000</em> and compare its precision/recall.</li>
+<li>Add <code>merchant_id</code>-free <em>merchant-category fraud rate over the last 30 days</em> as a feature — carefully, without using future labels.</li>
+</ol></section>
+<section id="trouble"><h2>Troubleshooting</h2><ul>
+<li><strong>MemoryError</strong> → regenerate data at <code>--scale 0.3</code>, or drop the unlimited-depth tree from the sweep.</li>
+<li><strong>Rolling features misaligned</strong> → the frame must be sorted by <code>card_id, txn_ts</code> <em>before</em> <code>rolling</code>.</li>
+<li><strong>RF slow</strong> → reduce <code>n_estimators</code> to 150; <code>n_jobs=-1</code> uses all cores.</li>
+</ul></section></main></div><script>function copyCode(btn){const t=btn.parentElement.querySelector('code').innerText;
+const done=()=>{btn.textContent='Copied ✓';btn.classList.add('ok');setTimeout(()=>{btn.textContent='Copy';btn.classList.remove('ok')},1400)};
+if(navigator.clipboard){navigator.clipboard.writeText(t).then(done).catch(()=>fallback(t,done))}else fallback(t,done)}
+function fallback(t,done){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(e){}a.remove();done()}
+function toggleTheme(){const r=document.documentElement;const cur=r.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+const nxt=cur==='dark'?'light':'dark';r.setAttribute('data-theme',nxt);try{localStorage.setItem('mizan-theme',nxt)}catch(e){}}
+(function(){try{const t=localStorage.getItem('mizan-theme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}
+// light-weight python highlighter
+const KW=/\b(import|from|as|def|return|for|in|if|elif|else|while|with|try|except|finally|class|lambda|and|or|not|is|None|True|False|print|assert|yield|raise|pass|break|continue|global)\b/g;
+// placeholders use private-use characters so the keyword/number passes can never match inside them
+const enc=n=>String(n).split('').map(d=>String.fromCharCode(0xE000+ +d)).join('');
+const dec=t=>+t.split('').map(c=>c.charCodeAt(0)-0xE000).join('');
+document.querySelectorAll('pre code.lang-python').forEach(el=>{let s=el.innerHTML;const store=[];
+const keep=cls=>m=>{store.push('<span class="'+cls+'">'+m+'</span>');return ''+enc(store.length-1)+''};
+s=s.replace(/(&quot;.*?&quot;|&#x27;.*?&#x27;|"[^"\n]*"|'[^'\n]*')/g,keep('tok-s'));
+s=s.replace(/(#[^\n]*)/g,keep('tok-c'));
+s=s.replace(KW,'<span class="tok-k">$1</span>').replace(/\b(\d+\.?\d*)\b/g,'<span class="tok-n">$1</span>');
+s=s.replace(/([-]+)/g,(m,t)=>store[dec(t)]);el.innerHTML=s});
+const links=[...document.querySelectorAll('nav.toc a')];const secs=links.map(a=>document.querySelector(a.getAttribute('href')));
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.classList.remove('active'));
+const i=secs.indexOf(e.target);if(i>=0)links[i].classList.add('active')}})},{rootMargin:'-20% 0px -70% 0px'});secs.forEach(s=>s&&io.observe(s))})();
+</script></body></html>

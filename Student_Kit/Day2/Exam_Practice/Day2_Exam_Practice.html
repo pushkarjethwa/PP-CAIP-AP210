@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Day 2 exam practice</title><style>:root{--bg:#f6f7f9;--panel:#fff;--ink:#1b2430;--muted:#5b6675;--line:#e3e7ee;--brand:#0b5e6b;--brand2:#c8963e;
+--code-bg:#0f1720;--code-ink:#e6edf3;--l1:#2f6fdb;--l2:#c8963e;--l3:#1f8f5f;--why:#eef6f7;--exp:#eef8f1;--think:#fbf5ea;--say:#eef2fb;--exam:#f4effa}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1117;--panel:#141a22;--ink:#e6edf3;--muted:#9aa6b2;--line:#263040;
+--brand:#4fb3c2;--why:#12262a;--exp:#122319;--think:#2a2214;--say:#151d2d;--exam:#211a2c;--code-bg:#0a0f15}}
+:root[data-theme="dark"]{--bg:#0d1117;--panel:#141a22;--ink:#e6edf3;--muted:#9aa6b2;--line:#263040;--brand:#4fb3c2;--why:#12262a;
+--exp:#122319;--think:#2a2214;--say:#151d2d;--exam:#211a2c;--code-bg:#0a0f15}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+header.top{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:10px 20px;
+background:var(--brand);color:#fff;font-size:14px;letter-spacing:.2px}
+.brand .logo{color:var(--brand2);margin-right:6px}.brand .sep{opacity:.5;margin:0 10px}
+.theme{background:transparent;border:1px solid rgba(255,255,255,.5);color:#fff;border-radius:6px;padding:2px 10px;cursor:pointer;font-size:16px}
+.layout{display:grid;grid-template-columns:260px minmax(0,1fr);max-width:1320px;margin:0 auto}
+nav.toc{position:sticky;top:46px;align-self:start;max-height:calc(100vh - 46px);overflow:auto;padding:24px 12px 24px 20px;font-size:13.5px}
+nav.toc a{display:block;color:var(--muted);text-decoration:none;padding:4px 8px;border-left:2px solid transparent;border-radius:0 4px 4px 0}
+nav.toc a:hover,nav.toc a.active{color:var(--brand);border-left-color:var(--brand);background:var(--panel)}
+.toc-title{font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:1px;color:var(--muted);margin:0 8px 8px}
+main{padding:24px 28px 80px;min-width:0}
+section{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px 26px;margin:0 0 18px}
+section.hero{background:linear-gradient(135deg,var(--brand),#083f48);color:#fff;border:0}
+section.hero.demo{background:linear-gradient(135deg,#3b2f6b,#1f1a3d)}
+.hero h1{margin:.2em 0 .3em;font-size:30px;line-height:1.2}.hero .lead{opacity:.92;font-size:17px;margin:0 0 16px}
+.kicker{text-transform:uppercase;letter-spacing:1.5px;font-size:12px;color:var(--brand2);font-weight:700}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.meta div{background:rgba(255,255,255,.1);border-radius:8px;padding:8px 12px}.meta .k{display:block;font-size:11px;text-transform:uppercase;opacity:.75;letter-spacing:1px}
+.meta .v{font-weight:600;font-size:14px}
+.diff i{display:inline-block;width:9px;height:9px;margin-right:2px;border-radius:2px;background:rgba(255,255,255,.25)}.diff i.on{background:var(--brand2)}
+h2{font-size:22px;margin:0 0 12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}h3{font-size:16px;margin:18px 0 8px;color:var(--brand)}
+.num{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--brand);color:#fff;font-size:15px;flex:none}
+.mins{margin-left:auto;font-size:12px;font-weight:600;color:var(--muted);background:var(--bg);padding:2px 10px;border-radius:20px}
+.why,.expect,.think,.say,.callout,.scenario{border-radius:8px;padding:12px 16px;margin:12px 0}
+.why{background:var(--why);border-left:4px solid var(--brand)}.expect{background:var(--exp);border-left:4px solid var(--l3)}
+.think{background:var(--think);border-left:4px solid var(--brand2)}.say{background:var(--say);border-left:4px solid #5b6bd6}
+.callout{background:var(--bg);border:1px dashed var(--line)}.callout.exam{background:var(--exam);border:0;border-left:4px solid #8a5cc7}
+.scenario{background:var(--bg)}
+.why>b,.expect>b,.think>b,.say>b,.callout>b{display:block;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.why p:last-child,.expect p:last-child,.think p:last-child,.say p:last-child{margin-bottom:0}
+ol.tasks li{margin:4px 0}
+.levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.lvl{border-radius:10px;padding:12px 16px;border:1px solid var(--line);border-top:5px solid}.lvl.l1{border-top-color:var(--l1)}.lvl.l2{border-top-color:var(--l2)}.lvl.l3{border-top-color:var(--l3)}
+.lvl p{margin:.4em 0 0;font-size:14px}.note{color:var(--muted);font-size:14px}
+details{border:1px solid var(--line);border-radius:8px;margin:10px 0;background:var(--bg)}
+details summary{cursor:pointer;padding:8px 14px;font-weight:600}details[open] summary{border-bottom:1px solid var(--line)}
+details>*:not(summary){margin:10px 14px}
+.code{position:relative;margin:10px 0}
+pre{background:var(--code-bg);color:var(--code-ink);padding:14px 16px;border-radius:8px;overflow:auto;font:13.5px/1.5 Consolas,"Cascadia Code",Menlo,monospace;margin:0}
+code{font-family:Consolas,"Cascadia Code",Menlo,monospace;font-size:.92em}
+:not(pre)>code{background:var(--bg);border:1px solid var(--line);padding:1px 5px;border-radius:4px}
+.copy{position:absolute;top:8px;right:8px;background:#ffffff1a;color:#e6edf3;border:1px solid #ffffff33;border-radius:5px;font-size:12px;padding:2px 10px;cursor:pointer}
+.copy:hover{background:#ffffff33}.copy.ok{background:var(--l3);border-color:var(--l3)}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:8px 0}th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+th{background:var(--bg)}table.files td:first-child{white-space:nowrap}
+.tok-k{color:#ff7b72}.tok-s{color:#a5d6ff}.tok-c{color:#8b949e;font-style:italic}.tok-n{color:#79c0ff}.tok-f{color:#d2a8ff}
+@media (max-width:900px){.layout{grid-template-columns:1fr}nav.toc{display:none}main{padding:16px}section{padding:16px}.hero h1{font-size:24px}}
+@media print{nav.toc,header.top,.copy{display:none}.layout{display:block}details{display:block}details>*{display:block!important}section{break-inside:avoid-page}}
+</style></head>
+<body class="lab-page">
+<header class="top"><div class="brand"><span class="logo">◆</span> Horizon Gulf Bank · Project MIZAN<span class="sep">|</span>CAIP AIP-210 · Certified AI Practitioner</div>
+<button class="theme" onclick="toggleTheme()" aria-label="Toggle theme">◐</button></header>
+<div class="layout"><nav class="toc"><div class="toc-title">On this page</div><a href="#q1">Q1</a>
+<a href="#q2">Q2</a>
+<a href="#q3">Q3</a>
+<a href="#q4">Q4</a>
+<a href="#q5">Q5</a>
+<a href="#q6">Q6</a>
+<a href="#q7">Q7</a>
+<a href="#q8">Q8</a>
+<a href="#q9">Q9</a>
+<a href="#q10">Q10</a>
+<a href="#q11">Q11</a>
+<a href="#q12">Q12</a></nav>
+<main><section class="hero"><div class="kicker">Day 2 · AIP-210 exam practice</div><h1>Training, regression &amp; forecasting</h1>
+<p class="lead">12 scenario questions in the CertNexus style. Answer first, then open the explanation. Use as the end-of-day team quiz or for revision.</p></section>
+<section id='q1' class='step'><h2><span class='num'>1</span>You tune alpha on the test set and report the test score. The reported score is…</h2><ul style='list-style:none;padding-left:0'><li>A. Unbiased</li><li>B. Optimistically biased</li><li>C. Pessimistically biased</li><li>D. Identical to CV</li></ul><details class='hint'><summary>Show answer</summary><p><b>B</b> — The test set was used for a decision → it is no longer an independent estimate.</p></details></section>
+<section id='q2' class='step'><h2><span class='num'>2</span>Training error is low and validation error is high. The model is…</h2><ul style='list-style:none;padding-left:0'><li>A. Under-fitting</li><li>B. Over-fitting</li><li>C. Well calibrated</li><li>D. Converging slowly</li></ul><details class='hint'><summary>Show answer</summary><p><b>B</b> — High variance: memorises training data. Remedies: regularise, simplify, more data.</p></details></section>
+<section id='q3' class='step'><h2><span class='num'>3</span>Which regulariser can set coefficients exactly to zero?</h2><ul style='list-style:none;padding-left:0'><li>A. Ridge (L2)</li><li>B. Lasso (L1)</li><li>C. Dropout</li><li>D. Early stopping</li></ul><details class='hint'><summary>Show answer</summary><p><b>B</b> — L1 produces sparse solutions → built-in feature selection.</p></details></section>
+<section id='q4' class='step'><h2><span class='num'>4</span>Which CV scheme is appropriate for daily ATM withdrawals?</h2><ul style='list-style:none;padding-left:0'><li>A. Shuffled k-fold</li><li>B. Stratified k-fold</li><li>C. TimeSeriesSplit / walk-forward</li><li>D. Leave-one-out</li></ul><details class='hint'><summary>Show answer</summary><p><b>C</b> — Shuffling lets the model see the future; time-ordered splits avoid that.</p></details></section>
+<section id='q5' class='step'><h2><span class='num'>5</span>Gradient descent loss explodes after a few iterations. The most likely cause…</h2><ul style='list-style:none;padding-left:0'><li>A. Learning rate too small</li><li>B. Learning rate too large</li><li>C. Too many epochs</li><li>D. Too few features</li></ul><details class='hint'><summary>Show answer</summary><p><b>B</b> — Steps overshoot the minimum and diverge.</p></details></section>
+<section id='q6' class='step'><h2><span class='num'>6</span>Random search often matches grid search at a fraction of the cost because…</h2><ul style='list-style:none;padding-left:0'><li>A. It uses GPUs</li><li>B. Only a few hyperparameters matter, and random sampling covers each one's range better</li><li>C. It skips cross-validation</li><li>D. It always finds the global optimum</li></ul><details class='hint'><summary>Show answer</summary><p><b>B</b> — Bergstra &amp; Bengio: random samples explore important dimensions more densely.</p></details></section>
+<section id='q7' class='step'><h2><span class='num'>7</span>Nested cross-validation is used to…</h2><ul style='list-style:none;padding-left:0'><li>A. Speed up tuning</li><li>B. Estimate the performance of the whole tuning procedure without optimism</li><li>C. Tune two models at once</li><li>D. Handle missing values</li></ul><details class='hint'><summary>Show answer</summary><p><b>B</b> — Inner loop tunes, outer loop evaluates on data the search never saw.</p></details></section>
+<section id='q8' class='step'><h2><span class='num'>8</span>R² = 0.97 but MAPE = 35% on property valuations. A likely explanation…</h2><ul style='list-style:none;padding-left:0'><li>A. R² is dominated by large values; small properties have large relative errors</li><li>B. The model is perfect</li><li>C. MAPE is computed wrongly</li><li>D. Under-fitting</li></ul><details class='hint'><summary>Show answer</summary><p><b>A</b> — R² is driven by high-value properties; MAPE weights every property equally.</p></details></section>
+<section id='q9' class='step'><h2><span class='num'>9</span>A lag-1 feature is unusable for a 7-day-ahead forecast because…</h2><ul style='list-style:none;padding-left:0'><li>A. It is too noisy</li><li>B. It will not be known at forecast time</li><li>C. It is collinear</li><li>D. It violates stationarity</li></ul><details class='hint'><summary>Show answer</summary><p><b>B</b> — The freshest usable lag is the forecast horizon.</p></details></section>
+<section id='q10' class='step'><h2><span class='num'>10</span>SARIMAX differs from ARIMA because it adds…</h2><ul style='list-style:none;padding-left:0'><li>A. Neural layers</li><li>B. Seasonal terms and exogenous regressors</li><li>C. Tree ensembles</li><li>D. Classification output</li></ul><details class='hint'><summary>Show answer</summary><p><b>B</b> — S = seasonal, X = exogenous drivers such as calendar effects.</p></details></section>
+<section id='q11' class='step'><h2><span class='num'>11</span>The cash team cares more about running out than about idle cash. Best forecast output?</h2><ul style='list-style:none;padding-left:0'><li>A. Mean forecast</li><li>B. Upper-quantile (e.g. P90) forecast</li><li>C. Median only</li><li>D. R²</li></ul><details class='hint'><summary>Show answer</summary><p><b>B</b> — Asymmetric costs → quantile forecasts.</p></details></section>
+<section id='q12' class='step'><h2><span class='num'>12</span>An income model is trained on customers with salary transfer and applied to those without. The main risk is…</h2><ul style='list-style:none;padding-left:0'><li>A. Over-fitting</li><li>B. Selection bias / extrapolation to a different population</li><li>C. Class imbalance</li><li>D. Vanishing gradients</li></ul><details class='hint'><summary>Show answer</summary><p><b>B</b> — The scored population differs systematically from the training population.</p></details></section></main></div><script>function copyCode(btn){const t=btn.parentElement.querySelector('code').innerText;
+const done=()=>{btn.textContent='Copied ✓';btn.classList.add('ok');setTimeout(()=>{btn.textContent='Copy';btn.classList.remove('ok')},1400)};
+if(navigator.clipboard){navigator.clipboard.writeText(t).then(done).catch(()=>fallback(t,done))}else fallback(t,done)}
+function fallback(t,done){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(e){}a.remove();done()}
+function toggleTheme(){const r=document.documentElement;const cur=r.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+const nxt=cur==='dark'?'light':'dark';r.setAttribute('data-theme',nxt);try{localStorage.setItem('mizan-theme',nxt)}catch(e){}}
+(function(){try{const t=localStorage.getItem('mizan-theme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}
+// light-weight python highlighter
+const KW=/\b(import|from|as|def|return|for|in|if|elif|else|while|with|try|except|finally|class|lambda|and|or|not|is|None|True|False|print|assert|yield|raise|pass|break|continue|global)\b/g;
+// placeholders use private-use characters so the keyword/number passes can never match inside them
+const enc=n=>String(n).split('').map(d=>String.fromCharCode(0xE000+ +d)).join('');
+const dec=t=>+t.split('').map(c=>c.charCodeAt(0)-0xE000).join('');
+document.querySelectorAll('pre code.lang-python').forEach(el=>{let s=el.innerHTML;const store=[];
+const keep=cls=>m=>{store.push('<span class="'+cls+'">'+m+'</span>');return ''+enc(store.length-1)+''};
+s=s.replace(/(&quot;.*?&quot;|&#x27;.*?&#x27;|"[^"\n]*"|'[^'\n]*')/g,keep('tok-s'));
+s=s.replace(/(#[^\n]*)/g,keep('tok-c'));
+s=s.replace(KW,'<span class="tok-k">$1</span>').replace(/\b(\d+\.?\d*)\b/g,'<span class="tok-n">$1</span>');
+s=s.replace(/([-]+)/g,(m,t)=>store[dec(t)]);el.innerHTML=s});
+const links=[...document.querySelectorAll('nav.toc a')];const secs=links.map(a=>document.querySelector(a.getAttribute('href')));
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.classList.remove('active'));
+const i=secs.indexOf(e.target);if(i>=0)links[i].classList.add('active')}})},{rootMargin:'-20% 0px -70% 0px'});secs.forEach(s=>s&&io.observe(s))})();
+</script></body></html>

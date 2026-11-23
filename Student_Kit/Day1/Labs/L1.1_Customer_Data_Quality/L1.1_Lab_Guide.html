@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lab L1.1 · Customer master data-quality remediation</title><style>:root{--bg:#f6f7f9;--panel:#fff;--ink:#1b2430;--muted:#5b6675;--line:#e3e7ee;--brand:#0b5e6b;--brand2:#c8963e;
+--code-bg:#0f1720;--code-ink:#e6edf3;--l1:#2f6fdb;--l2:#c8963e;--l3:#1f8f5f;--why:#eef6f7;--exp:#eef8f1;--think:#fbf5ea;--say:#eef2fb;--exam:#f4effa}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1117;--panel:#141a22;--ink:#e6edf3;--muted:#9aa6b2;--line:#263040;
+--brand:#4fb3c2;--why:#12262a;--exp:#122319;--think:#2a2214;--say:#151d2d;--exam:#211a2c;--code-bg:#0a0f15}}
+:root[data-theme="dark"]{--bg:#0d1117;--panel:#141a22;--ink:#e6edf3;--muted:#9aa6b2;--line:#263040;--brand:#4fb3c2;--why:#12262a;
+--exp:#122319;--think:#2a2214;--say:#151d2d;--exam:#211a2c;--code-bg:#0a0f15}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+header.top{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:10px 20px;
+background:var(--brand);color:#fff;font-size:14px;letter-spacing:.2px}
+.brand .logo{color:var(--brand2);margin-right:6px}.brand .sep{opacity:.5;margin:0 10px}
+.theme{background:transparent;border:1px solid rgba(255,255,255,.5);color:#fff;border-radius:6px;padding:2px 10px;cursor:pointer;font-size:16px}
+.layout{display:grid;grid-template-columns:260px minmax(0,1fr);max-width:1320px;margin:0 auto}
+nav.toc{position:sticky;top:46px;align-self:start;max-height:calc(100vh - 46px);overflow:auto;padding:24px 12px 24px 20px;font-size:13.5px}
+nav.toc a{display:block;color:var(--muted);text-decoration:none;padding:4px 8px;border-left:2px solid transparent;border-radius:0 4px 4px 0}
+nav.toc a:hover,nav.toc a.active{color:var(--brand);border-left-color:var(--brand);background:var(--panel)}
+.toc-title{font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:1px;color:var(--muted);margin:0 8px 8px}
+main{padding:24px 28px 80px;min-width:0}
+section{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px 26px;margin:0 0 18px}
+section.hero{background:linear-gradient(135deg,var(--brand),#083f48);color:#fff;border:0}
+section.hero.demo{background:linear-gradient(135deg,#3b2f6b,#1f1a3d)}
+.hero h1{margin:.2em 0 .3em;font-size:30px;line-height:1.2}.hero .lead{opacity:.92;font-size:17px;margin:0 0 16px}
+.kicker{text-transform:uppercase;letter-spacing:1.5px;font-size:12px;color:var(--brand2);font-weight:700}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.meta div{background:rgba(255,255,255,.1);border-radius:8px;padding:8px 12px}.meta .k{display:block;font-size:11px;text-transform:uppercase;opacity:.75;letter-spacing:1px}
+.meta .v{font-weight:600;font-size:14px}
+.diff i{display:inline-block;width:9px;height:9px;margin-right:2px;border-radius:2px;background:rgba(255,255,255,.25)}.diff i.on{background:var(--brand2)}
+h2{font-size:22px;margin:0 0 12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}h3{font-size:16px;margin:18px 0 8px;color:var(--brand)}
+.num{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--brand);color:#fff;font-size:15px;flex:none}
+.mins{margin-left:auto;font-size:12px;font-weight:600;color:var(--muted);background:var(--bg);padding:2px 10px;border-radius:20px}
+.why,.expect,.think,.say,.callout,.scenario{border-radius:8px;padding:12px 16px;margin:12px 0}
+.why{background:var(--why);border-left:4px solid var(--brand)}.expect{background:var(--exp);border-left:4px solid var(--l3)}
+.think{background:var(--think);border-left:4px solid var(--brand2)}.say{background:var(--say);border-left:4px solid #5b6bd6}
+.callout{background:var(--bg);border:1px dashed var(--line)}.callout.exam{background:var(--exam);border:0;border-left:4px solid #8a5cc7}
+.scenario{background:var(--bg)}
+.why>b,.expect>b,.think>b,.say>b,.callout>b{display:block;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.why p:last-child,.expect p:last-child,.think p:last-child,.say p:last-child{margin-bottom:0}
+ol.tasks li{margin:4px 0}
+.levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.lvl{border-radius:10px;padding:12px 16px;border:1px solid var(--line);border-top:5px solid}.lvl.l1{border-top-color:var(--l1)}.lvl.l2{border-top-color:var(--l2)}.lvl.l3{border-top-color:var(--l3)}
+.lvl p{margin:.4em 0 0;font-size:14px}.note{color:var(--muted);font-size:14px}
+details{border:1px solid var(--line);border-radius:8px;margin:10px 0;background:var(--bg)}
+details summary{cursor:pointer;padding:8px 14px;font-weight:600}details[open] summary{border-bottom:1px solid var(--line)}
+details>*:not(summary){margin:10px 14px}
+.code{position:relative;margin:10px 0}
+pre{background:var(--code-bg);color:var(--code-ink);padding:14px 16px;border-radius:8px;overflow:auto;font:13.5px/1.5 Consolas,"Cascadia Code",Menlo,monospace;margin:0}
+code{font-family:Consolas,"Cascadia Code",Menlo,monospace;font-size:.92em}
+:not(pre)>code{background:var(--bg);border:1px solid var(--line);padding:1px 5px;border-radius:4px}
+.copy{position:absolute;top:8px;right:8px;background:#ffffff1a;color:#e6edf3;border:1px solid #ffffff33;border-radius:5px;font-size:12px;padding:2px 10px;cursor:pointer}
+.copy:hover{background:#ffffff33}.copy.ok{background:var(--l3);border-color:var(--l3)}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:8px 0}th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+th{background:var(--bg)}table.files td:first-child{white-space:nowrap}
+.tok-k{color:#ff7b72}.tok-s{color:#a5d6ff}.tok-c{color:#8b949e;font-style:italic}.tok-n{color:#79c0ff}.tok-f{color:#d2a8ff}
+@media (max-width:900px){.layout{grid-template-columns:1fr}nav.toc{display:none}main{padding:16px}section{padding:16px}.hero h1{font-size:24px}}
+@media print{nav.toc,header.top,.copy{display:none}.layout{display:block}details{display:block}details>*{display:block!important}section{break-inside:avoid-page}}
+</style></head>
+<body class="lab-page">
+<header class="top"><div class="brand"><span class="logo">◆</span> Horizon Gulf Bank · Project MIZAN<span class="sep">|</span>CAIP AIP-210 · Certified AI Practitioner</div>
+<button class="theme" onclick="toggleTheme()" aria-label="Toggle theme">◐</button></header>
+<div class="layout"><nav class="toc"><div class="toc-title">On this page</div><a href="#overview">Overview</a>
+<a href="#levels">How to use the 3 levels</a>
+<a href="#packages">Starter package &amp; what you produce</a>
+<a href="#setup">Setup</a>
+<a href="#step1">1. Load and profile the raw extract</a>
+<a href="#step2">2. Remove PII and post-outcome (leakage) columns</a>
+<a href="#step3">3. Standardise categorical values</a>
+<a href="#step4">4. Parse messy numerics and mixed-format dates</a>
+<a href="#step5">5. Validate ranges and remove entity-level duplicates</a>
+<a href="#step6">6. Impute missing values by mechanism</a>
+<a href="#step7">7. Type optimisation, validation gate and DQ report</a>
+<a href="#stretch">Stretch challenges</a>
+<a href="#trouble">Troubleshooting</a></nav>
+<main><section class="hero lab"><div class="kicker">Day 1 · Independent Lab L1.1</div>
+<h1>Customer master data-quality remediation</h1><p class="lead">Take a 257k-row dirty customer extract to a validated, PII-free, model-ready table with an auditable data-quality report.</p>
+<div class="meta"><div><span class="k">Duration</span><span class="v">90 min</span></div><div><span class="k">Difficulty</span><span class="v"><span class="diff" title="6/10"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></span> 6/10</span></div><div><span class="k">Dataset(s)</span><span class="v">customers_raw.csv (257,500 rows × 28 cols)</span></div><div><span class="k">Builds on</span><span class="v">Demo D1.1 (first look at the raw file)</span></div><div><span class="k">Produces</span><span class="v">checkpoints/customers_clean.parquet · checkpoints/dq_report.csv</span></div></div></section>
+<section id="overview"><h2>Objective &amp; scenario alignment</h2>
+<div class="scenario"><p><strong>Horizon Gulf Bank (HGB)</strong> is a fictional UAE retail bank with 250,000 customers. Its Board approved <strong>Project MIZAN</strong> — an AI decisioning platform covering credit, fraud, collateral valuation, cash logistics, customer retention and document automation. You are a junior ML practitioner in the MIZAN squad.</p>
+<p>The customer master is assembled nightly from three systems (core banking, CRM, cards). Analysts complain about duplicate customers, <em>DXB vs Dubai</em>, salaries stored as text and impossible ages. Every MIZAN model (churn, segmentation, fraud enrichment) will read <strong>your</strong> cleaned table, so it must be correct, documented and repeatable.</p>
+<p><strong>Progressive architecture:</strong> your <code>customers_clean.parquet</code> is the input to Lab L3.2 (segmentation) and enriches later labs.</p></div><h3>By the end of this lab you will be able to</h3><ul>
+<li>Profile a large dataset programmatically and quantify data-quality issues</li>
+<li>Remove PII and post-outcome (leakage) columns with a written justification</li>
+<li>Standardise categoricals, parse messy numerics and mixed-format dates</li>
+<li>De-duplicate at entity level, not just row level</li>
+<li>Choose missing-value strategies by <em>mechanism</em> (MCAR / MAR / MNAR) and add missing-indicators</li>
+<li>Implement a validation gate and produce a before/after DQ report</li>
+</ul>
+<div class="callout exam"><b>AIP-210 exam link</b><p>AIP-210 <em>Preparing data</em>: data-quality dimensions (completeness, validity, consistency, uniqueness), imputation strategies, handling outliers, PII. Know why <strong>MNAR</strong> missingness (e.g. no bureau file) should be <em>flagged</em>, not silently imputed.</p></div></section>
+<section id="levels"><h2>How to use the three levels</h2><div class="levels">
+<div class="lvl l1"><b>Level 1 · From scratch</b><p>Work from <i>this guide</i> in <code>L1.1_Level1_From_Scratch.ipynb</code>. Every step tells you <i>what</i> to build and <i>why</i>; you write all the code. Open a hint only when stuck for &gt;5 min.</p></div>
+<div class="lvl l2"><b>Level 2 · Guided starter — ★ recommended for this cohort</b><p>Open <code>L1.1_Level2_Guided_Starter.ipynb</code>. The scaffolding is written; you complete the numbered <code>✏️ BLANK</code>s. Each blank explains what to write, where, and why.</p></div>
+<div class="lvl l3"><b>Level 3 · Complete solution</b><p>Released by your trainer <i>after</i> the lab, as part of the end-of-day release. Extract it into your Student_Kit folder and <code>L1.1_Level3_Solution.ipynb</code> appears here. Then use the <i>Think like a practitioner</i> prompts to change it and break it on purpose.</p></div>
+</div><p class="note"><b>Default: Level 2.</b> Start in the guided starter. Finished early or already confident? Try the next step at Level 1. Stuck? Open the 💡 hint, compare with your neighbour, then ask your trainer. All three levels produce the same artefacts, so you can switch level at any step.</p></section>
+<section id="packages"><h2>Starter package &amp; what you produce</h2>
+<h3>Starter package (what you begin with)</h3><table class="files"><thead><tr><th>File / artefact</th><th>Purpose</th></tr></thead><tbody><tr><td><code>data/customers_raw.csv</code></td><td>Raw extract — never overwrite it</td></tr><tr><td><code>L1.1_Level1_From_Scratch.ipynb</code></td><td>Level 1 scaffold</td></tr><tr><td><code>L1.1_Level2_Guided_Starter.ipynb</code></td><td>Level 2 fill-in-the-blanks</td></tr></tbody></table>
+<h3>What you finish with</h3><table class="files"><thead><tr><th>File / artefact</th><th>Purpose</th></tr></thead><tbody><tr><td><code>L1.1_Level3_Solution.ipynb</code></td><td>Complete solution</td></tr><tr><td><code>checkpoints/customers_clean.parquet</code></td><td>250,000 unique customers, typed, validated</td></tr><tr><td><code>checkpoints/dq_report.csv</code></td><td>Before/after data-quality metrics</td></tr></tbody></table>
+<div class="callout"><b>Fell behind?</b> <p>This lab only needs the raw datasets in <code>data/</code> — you can start it at any time.</p></div></section>
+<section id="setup"><h2>Setup</h2><ul>
+<li>Demo D1.1 completed (or read its guide)</li>
+<li><code>pyarrow</code> installed (for parquet). Check with <code>import pyarrow</code>.</li>
+</ul>
+<p>Run the standard course setup cell first (it locates <code>data/</code> and <code>checkpoints/</code> from anywhere inside the course folder):</p>
+<div class="code"><button class="copy" onclick="copyCode(this)">Copy</button><pre><code class="lang-python"># ── Project MIZAN course setup ─ run this cell first ──────────────────────────
+from pathlib import Path
+import warnings, time
+warnings.filterwarnings(&quot;ignore&quot;)
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Locate the course root (the folder that contains data/generate_data.py) from wherever this notebook lives
+ROOT = next(p for p in [Path.cwd(), *Path.cwd().parents] if (p / &quot;data&quot; / &quot;generate_data.py&quot;).exists())
+DATA = ROOT / &quot;data&quot;          # raw synthetic datasets (read-only)
+CKPT = ROOT / &quot;checkpoints&quot;   # hand-off artefacts between labs (lets you start any lab fresh)
+CKPT.mkdir(exist_ok=True)
+pd.set_option(&quot;display.max_columns&quot;, 60); pd.set_option(&quot;display.width&quot;, 160)
+plt.rcParams.update({&quot;figure.figsize&quot;: (9, 4.5), &quot;axes.grid&quot;: True, &quot;grid.alpha&quot;: .3})
+RNG = 42
+print(&quot;Course root:&quot;, ROOT)</code></pre></div></section>
+<section id="step1" class="step"><h2><span class="num">1</span>Load and profile the raw extract
+<span class="mins">10 min</span></h2>
+<div class="why"><b>Why this matters</b><p>You cannot fix what you have not measured. A reusable <strong>profile function</strong> turns ‘the data looks messy’ into numbers you can track before and after cleaning — and later in production monitoring (Day 5).</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Load <code>customers_raw.csv</code> into <code>raw</code> (keep it untouched for the final comparison).</li><li>Write <code>profile(df)</code> returning one row per column: dtype, % missing, # unique, and 3 example values.</li><li>Print the shape, the number of fully duplicated rows, and the number of duplicated <code>customer_id</code>s.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p><code>(257500, 28)</code>, ~5,000 exact duplicates and ~7,500 duplicated IDs. <code>account_closed_date</code> is the most-missing column.</p></div>
+<details class="hint"><summary>💡 Hint</summary><p><code>df.isna().mean()</code> gives the fraction missing per column. <code>df.duplicated()</code> returns a boolean Series.</p></details>
+
+<div class="think"><b>Think like a practitioner</b><p>Why are there more duplicated IDs than duplicated rows? What does that tell you about the source systems?</p></div>
+</section>
+<section id="step2" class="step"><h2><span class="num">2</span>Remove PII and post-outcome (leakage) columns
+<span class="mins">10 min</span></h2>
+<div class="why"><b>Why this matters</b><p><strong>PII</strong> (email, mobile) has no predictive legitimacy and creates privacy risk (UAE PDPL, CBUAE consumer protection). <strong>Post-outcome</strong> columns are recorded <em>after</em> churn happens — keeping them would leak the answer. Prove it with numbers, then drop them.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Show the churn rate split by <code>retention_offer_made</code> and by whether <code>account_closed_date</code> is filled.</li><li>Create <code>df</code> = copy of <code>raw</code> without <code>email</code>, <code>mobile</code>, <code>account_closed_date</code>, <code>retention_offer_made</code>.</li><li>Record each dropped column and the reason in a dict <code>dropped</code> (you will export it in the report).</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p><code>account_closed_date</code> filled ⇒ churn = 1.0 (perfect leak); offer made ⇒ churn ≈ 0.7 vs ≈ 0.05. Shape becomes <code>(257500, 24)</code>.</p></div>
+
+
+<div class="think"><b>Think like a practitioner</b><p><code>customer_id</code> is also an identifier. Why do we keep it here but will never feed it to a model?</p></div>
+</section>
+<section id="step3" class="step"><h2><span class="num">3</span>Standardise categorical values
+<span class="mins">12 min</span></h2>
+<div class="why"><b>Why this matters</b><p><code>DXB</code>, <code>dubai</code> and <code>DUBAI</code> are one emirate. If we de-duplicate before standardising, near-duplicates survive. Mapping to a <strong>controlled vocabulary</strong> and asserting the result is how production pipelines stay consistent.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Build a function <code>std_emirate(s)</code> that trims, upper-cases, removes hyphens/spaces and maps codes (DXB, AUH, SHJ, AJM, RAK, FUJ, UAQ) to the 7 canonical names.</li><li>Map gender variants to <code>M</code>/<code>F</code>.</li><li><code>assert</code> that only the 7 emirates and 2 genders remain.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>Exactly 7 emirates; Dubai ≈ 40%, Abu Dhabi ≈ 28%. Both asserts pass silently.</p></div>
+<details class="hint"><summary>💡 Hint</summary><p><code>Series.str.replace(r'[-\s]', '', regex=True)</code> removes hyphens and whitespace in one call.</p></details>
+
+<div class="think"><b>Think like a practitioner</b><p>A new code <code>AAN</code> (Al Ain) arrives next month. What does your function return, and how would the assert protect you?</p></div>
+</section>
+<section id="step4" class="step"><h2><span class="num">4</span>Parse messy numerics and mixed-format dates
+<span class="mins">12 min</span></h2>
+<div class="why"><b>Why this matters</b><p>Source systems disagree on formats: <code>AED 12,500</code> vs <code>12500.0</code>; <code>2019-03-04</code> vs <code>04/03/2019</code> vs <code>Mar 04 2019</code>. Parsing must be <strong>explicit</strong> (UAE dates are day-first) and every failure must be counted, never silently dropped.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Convert <code>monthly_salary_aed</code> to float by stripping everything except digits and the decimal point; count values that fail to parse.</li><li>Parse <code>customer_since</code> with <code>pd.to_datetime(..., format='mixed', dayfirst=True)</code>; assert no new NaT values were introduced.</li><li>Where <code>tenure_months</code> is missing, recompute it from <code>customer_since</code> (reference date 2025-10-31).</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>0 salary parse failures; all dates parsed; <code>tenure_months</code> has no missing values.</p></div>
+<details class="hint"><summary>💡 Hint</summary><p>Compare the parsed dates for a row stored as <code>04/03/2019</code>: with <code>dayfirst=True</code> you get 2019-03-04.</p></details>
+
+<div class="think"><b>Think like a practitioner</b><p>Why compare against <code>raw</code> missing counts instead of just counting NaN after parsing?</p></div>
+</section>
+<section id="step5" class="step"><h2><span class="num">5</span>Validate ranges and remove entity-level duplicates
+<span class="mins">12 min</span></h2>
+<div class="why"><b>Why this matters</b><p>Validity rules encode business knowledge: customers are 18–100, balances are non-negative for this product set. Invalid ≠ delete — set to missing so the row’s other information survives. Then <strong>de-duplicate on the entity key</strong>, keeping the most complete record.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Set <code>age</code> outside 18–100 to NaN; set negative <code>avg_balance_aed</code> to NaN. Count each.</li><li>Drop exact duplicate rows.</li><li>For remaining duplicated <code>customer_id</code>s keep the row with the fewest missing values (<code>_n_missing</code> helper column, sort, <code>drop_duplicates</code>).</li><li>Assert 250,000 unique customers remain.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>~1,000 invalid ages, ~500 negative balances, ~5,000 exact duplicates removed, then 250,000 unique customers.</p></div>
+
+
+<div class="think"><b>Think like a practitioner</b><p>Near-duplicates differed in <code>digital_logins_30d</code> by 1. Which value is <em>true</em>? What would you ask the source-system owner?</p></div>
+</section>
+<section id="step6" class="step"><h2><span class="num">6</span>Impute missing values by mechanism
+<span class="mins">14 min</span></h2>
+<div class="why"><b>Why this matters</b><p>Not all missing values are equal. <code>aecb_score</code> is missing mostly for <strong>new-to-country</strong> customers (MNAR) — the <em>absence</em> is informative, so we add a flag. Salary missingness looks random within groups (MAR) — a <strong>group median</strong> is more accurate than a global one. Final model-time imputation happens inside pipelines; here we fix what is safe and add indicators.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Show churn rate and median tenure for rows with vs without <code>aecb_score</code> — is missingness random?</li><li>Add <code>aecb_missing</code> and <code>salary_missing</code> 0/1 indicator columns.</li><li>Impute salary with the median of its (<code>employer_category</code>, <code>nationality_group</code>) group; fall back to the global median.</li><li>Fill <code>employer_category</code> with <code>'Unknown'</code>, <code>digital_logins_30d</code> with its median, <code>age</code> with the median age by <code>employment_type</code>.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>Customers without a bureau score have much shorter tenure (MNAR). Afterwards only <code>aecb_score</code> still has NaNs — on purpose, for the model pipeline to handle.</p></div>
+<details class="hint"><summary>💡 Hint</summary><p><code>groupby(...).transform('median')</code> returns a Series aligned to the original rows — perfect for <code>fillna</code>.</p></details>
+
+<div class="think"><b>Think like a practitioner</b><p>Why not fill <code>aecb_score</code> with 300 (the minimum)? What message would that send to a credit model?</p></div>
+</section>
+<section id="step7" class="step"><h2><span class="num">7</span>Type optimisation, validation gate and DQ report
+<span class="mins">10 min</span></h2>
+<div class="why"><b>Why this matters</b><p>A cleaned table is only trustworthy if a <strong>validation gate</strong> proves it. The DQ report is your audit evidence for Model Risk Management, and the parquet file (typed, compressed) is the contract with every downstream lab.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Cast integer-like columns to integers and low-cardinality text to <code>category</code>; compare memory with <code>raw</code>.</li><li>Write <code>validate(df)</code> with ≥ 6 rule checks returning a dict of rule → pass/fail; assert all pass.</li><li>Build <code>dq_report</code> with before/after rows, duplicate IDs, missing %, invalid ages, distinct emirates and memory MB; save it and the parquet file to <code>CKPT</code>.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>All 8 checks <code>True</code>; memory falls by ≈40–45% (category dtypes, no PII strings); <code>customers_clean.parquet</code> written (≈10 MB).</p></div>
+
+
+<div class="think"><b>Think like a practitioner</b><p>Turn <code>validate()</code> into a scheduled job: what should happen at 02:00 if <code>seven_emirates</code> fails? (block the load, alert the data owner, keep yesterday’s table)</p></div>
+</section>
+<section id="stretch"><h2>Stretch challenges</h2><ol>
+<li>Package <code>std_emirate</code>, <code>profile</code> and <code>validate</code> into <code>mizan_dq.py</code> and import it — the first step towards production code.</li>
+<li>Detect <em>statistical</em> outliers in <code>avg_balance_aed</code> with the IQR rule per <code>employer_category</code>. Would you cap, transform or keep them?</li>
+<li>Use <code>pandas.read_csv(..., chunksize=50_000)</code> to compute the duplicate-ID count without loading the whole file. When would this matter?</li>
+</ol></section>
+<section id="trouble"><h2>Troubleshooting</h2><ul>
+<li><strong><code>ImportError: pyarrow</code></strong> → <code>pip install pyarrow</code>.</li>
+<li><strong>Assert on 250,000 fails</strong> → you de-duplicated <em>before</em> standardising emirate, or forgot exact duplicates.</li>
+<li><strong>Dates fail to parse</strong> → check you passed <code>format='mixed'</code> (pandas ≥ 2.0).</li>
+</ul></section></main></div><script>function copyCode(btn){const t=btn.parentElement.querySelector('code').innerText;
+const done=()=>{btn.textContent='Copied ✓';btn.classList.add('ok');setTimeout(()=>{btn.textContent='Copy';btn.classList.remove('ok')},1400)};
+if(navigator.clipboard){navigator.clipboard.writeText(t).then(done).catch(()=>fallback(t,done))}else fallback(t,done)}
+function fallback(t,done){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(e){}a.remove();done()}
+function toggleTheme(){const r=document.documentElement;const cur=r.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+const nxt=cur==='dark'?'light':'dark';r.setAttribute('data-theme',nxt);try{localStorage.setItem('mizan-theme',nxt)}catch(e){}}
+(function(){try{const t=localStorage.getItem('mizan-theme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}
+// light-weight python highlighter
+const KW=/\b(import|from|as|def|return|for|in|if|elif|else|while|with|try|except|finally|class|lambda|and|or|not|is|None|True|False|print|assert|yield|raise|pass|break|continue|global)\b/g;
+// placeholders use private-use characters so the keyword/number passes can never match inside them
+const enc=n=>String(n).split('').map(d=>String.fromCharCode(0xE000+ +d)).join('');
+const dec=t=>+t.split('').map(c=>c.charCodeAt(0)-0xE000).join('');
+document.querySelectorAll('pre code.lang-python').forEach(el=>{let s=el.innerHTML;const store=[];
+const keep=cls=>m=>{store.push('<span class="'+cls+'">'+m+'</span>');return ''+enc(store.length-1)+''};
+s=s.replace(/(&quot;.*?&quot;|&#x27;.*?&#x27;|"[^"\n]*"|'[^'\n]*')/g,keep('tok-s'));
+s=s.replace(/(#[^\n]*)/g,keep('tok-c'));
+s=s.replace(KW,'<span class="tok-k">$1</span>').replace(/\b(\d+\.?\d*)\b/g,'<span class="tok-n">$1</span>');
+s=s.replace(/([-]+)/g,(m,t)=>store[dec(t)]);el.innerHTML=s});
+const links=[...document.querySelectorAll('nav.toc a')];const secs=links.map(a=>document.querySelector(a.getAttribute('href')));
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.classList.remove('active'));
+const i=secs.indexOf(e.target);if(i>=0)links[i].classList.add('active')}})},{rootMargin:'-20% 0px -70% 0px'});secs.forEach(s=>s&&io.observe(s))})();
+</script></body></html>
