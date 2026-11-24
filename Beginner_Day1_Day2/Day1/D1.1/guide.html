@@ -1,0 +1,363 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>D1.1 · Problem framing and data exploration</title><style>body{margin:0;background:#f3f7fa;color:#203447;font:16px/1.6 system-ui,sans-serif}
+main{max-width:1050px;margin:auto;padding:2rem 1rem}h1,h2,h3{line-height:1.25}
+section{background:#fff;border:1px solid #d9e4ec;border-radius:8px;margin:1rem 0;padding:1.25rem}
+pre{overflow:auto;background:#eef4f8;padding:1rem;white-space:pre-wrap}
+code{font-family:Consolas,monospace}a{color:#07598f}nav ul{columns:2}
+.intro{background:#eaf4f9;padding:1rem} @media(max-width:650px){nav ul{columns:1}}</style></head><body><main><h1>D1.1 · Problem framing and data exploration</h1><p class='intro'><strong>What and why.</strong> We will turn a question into a prediction task and inspect a small table. This shows what the data contains before anyone builds a model.</p><p><a href='starter.py'>Starter code</a> · <a href='solution.py'>Complete solution</a> · <a href='../Demo_D1.1.ipynb'>Notebook</a></p><p>Open the starter or solution in VS Code. Run Setup first, then run each numbered section in order. The starter is fully runnable, so a learner can practise by changing a value. For a terminal, open this activity's folder and run <code>python solution.py</code>.</p><section><h2>Setup</h2><pre><code>import numpy as np
+import pandas as pd</code></pre></section><section id='step-1'><h2>1. Build one row per time point</h2><h3>What we are doing and why</h3><p>One row is a time point. The current and previous readings are available by that point.</p><h3>How to do it</h3><p>Run step 1 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import pandas as pd
+from sklearn.metrics import mean_absolute_error
+
+series = pd.Series([10, 13, 12, 16, 15], name=&quot;reading&quot;)
+
+rows = series.to_frame().assign(previous=series.shift(1))
+print(rows)</code></pre><h3>Look for</h3><p>At time 1, the current reading is 13 and the previous reading is 10.</p></section><section id='step-2'><h2>2. Define a one-step target</h2><h3>What we are doing and why</h3><p>The prediction horizon is one step. We can build the label from the next reading while preparing historical examples.</p><h3>How to do it</h3><p>Run step 2 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import pandas as pd
+from sklearn.metrics import mean_absolute_error
+
+series = pd.Series([10, 13, 12, 16, 15], name=&quot;reading&quot;)
+
+rows[&quot;next_reading&quot;] = series.shift(-1)
+print(rows)
+labelled = rows.dropna(subset=[&quot;previous&quot;, &quot;next_reading&quot;])</code></pre><h3>Look for</h3><p>At time 1, the target is 12. The final row has no observed target yet.</p></section><section id='step-3'><h2>3. Score a baseline</h2><h3>What we are doing and why</h3><p>Suppose we predict that the next reading equals the current one. Mean absolute error measures the typical size of the miss in the original units.</p><h3>How to do it</h3><p>Run step 3 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import pandas as pd
+from sklearn.metrics import mean_absolute_error
+
+series = pd.Series([10, 13, 12, 16, 15], name=&quot;reading&quot;)
+
+error = mean_absolute_error(labelled[&quot;next_reading&quot;], labelled[&quot;reading&quot;])
+print(&quot;Baseline MAE:&quot;, error)</code></pre><h3>Look for</h3><p>Across these three rows, the mean absolute error is 2.0.</p></section><section id='step-4'><h2>4. Array, shape, dtype, and boolean mask</h2><h3>What we are doing and why</h3><p>Shape tells us the size of each axis. A comparison gives one True or False per value. The mask keeps only True entries.</p><h3>How to do it</h3><p>Run step 4 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>from time import perf_counter
+
+import numpy as np
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+
+values = np.array([10, 20, 30])
+big = np.arange(300_000)
+table = pd.DataFrame({&quot;id&quot;: [1, 2, 3, 4], &quot;group&quot;: [&quot;a&quot;, &quot;a&quot;, &quot;b&quot;, &quot;b&quot;],
+                      &quot;value&quot;: [2, 4, 6, 8]})
+labels = pd.DataFrame({&quot;group&quot;: [&quot;a&quot;, &quot;b&quot;], &quot;name&quot;: [&quot;alpha&quot;, &quot;beta&quot;]})
+train_x = [[1], [2], [3]]
+train_y = [2, 4, 6]
+
+print(&quot;Shape:&quot;, values.shape, &quot;dtype:&quot;, values.dtype)
+mask = values &gt;= 20
+print(&quot;Mask:&quot;, mask.tolist(), &quot;Selected:&quot;, values[mask].tolist())</code></pre><h3>Look for</h3><p>The array has shape (3,), contains integers, and the mask selects 20 and 30.</p></section><section id='step-5'><h2>5. Vectorized maths vs a Python loop</h2><h3>What we are doing and why</h3><p>The operation is doubling. The loop calls Python for each value. The array expression passes the job to NumPy.</p><h3>How to do it</h3><p>Run step 5 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>from time import perf_counter
+
+import numpy as np
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+
+values = np.array([10, 20, 30])
+big = np.arange(300_000)
+table = pd.DataFrame({&quot;id&quot;: [1, 2, 3, 4], &quot;group&quot;: [&quot;a&quot;, &quot;a&quot;, &quot;b&quot;, &quot;b&quot;],
+                      &quot;value&quot;: [2, 4, 6, 8]})
+labels = pd.DataFrame({&quot;group&quot;: [&quot;a&quot;, &quot;b&quot;], &quot;name&quot;: [&quot;alpha&quot;, &quot;beta&quot;]})
+train_x = [[1], [2], [3]]
+train_y = [2, 4, 6]
+
+start = perf_counter()
+doubled_loop = []
+for value in big:
+    doubled_loop.append(value * 2)
+loop_seconds = perf_counter() - start
+start = perf_counter()
+doubled_array = big * 2
+array_seconds = perf_counter() - start
+print(&quot;Same values:&quot;, np.array_equal(doubled_loop, doubled_array))
+print(f&quot;Loop: {loop_seconds:.5f}s | Array: {array_seconds:.5f}s&quot;)</code></pre><h3>Look for</h3><p>The outputs match. The measured timings vary by machine and run.</p></section><section id='step-6'><h2>6. Load, size, and preview</h2><h3>What we are doing and why</h3><p>Start by confirming what came in. A CSV read creates a DataFrame.</p><h3>How to do it</h3><p>Run step 6 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>from io import StringIO
+import sys
+
+import pandas as pd
+
+csv_text = &quot;&quot;&quot;id,group,x,y
+1,a,10,2
+2,A,11,3
+3,b,12,4
+3,b,12,4
+4,b,,5
+5,a,14,6
+6,b,100,10
+7,c,16,7
+8,c,-2,8
+&quot;&quot;&quot;
+df = pd.read_csv(StringIO(csv_text))
+
+print(&quot;Rows, columns:&quot;, df.shape)
+print(&quot;Column names:&quot;, df.columns.tolist())
+print(df.head(3))</code></pre><h3>Look for</h3><p>There are 9 rows and 4 columns. head() shows the first three rows.</p></section><section id='step-7'><h2>7. Types and memory</h2><h3>What we are doing and why</h3><p>Check which columns are numeric and how much memory the DataFrame uses.</p><h3>How to do it</h3><p>Run step 7 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>from io import StringIO
+import sys
+
+import pandas as pd
+
+csv_text = &quot;&quot;&quot;id,group,x,y
+1,a,10,2
+2,A,11,3
+3,b,12,4
+3,b,12,4
+4,b,,5
+5,a,14,6
+6,b,100,10
+7,c,16,7
+8,c,-2,8
+&quot;&quot;&quot;
+df = pd.read_csv(StringIO(csv_text))
+
+df.info()
+print(&quot;Total memory in bytes:&quot;, df.memory_usage(deep=True).sum())</code></pre><h3>Look for</h3><p>x has a floating type because one value is missing. The group column stores text.</p></section><section id='step-8'><h2>8. Reduce memory for repeated text</h2><h3>What we are doing and why</h3><p>When the same category labels repeat, pandas can store a short code per row and keep the text once.</p><h3>How to do it</h3><p>Run step 8 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>from io import StringIO
+import sys
+
+import pandas as pd
+
+csv_text = &quot;&quot;&quot;id,group,x,y
+1,a,10,2
+2,A,11,3
+3,b,12,4
+3,b,12,4
+4,b,,5
+5,a,14,6
+6,b,100,10
+7,c,16,7
+8,c,-2,8
+&quot;&quot;&quot;
+df = pd.read_csv(StringIO(csv_text))
+
+repeated = pd.concat([df[&quot;group&quot;]] * 100, ignore_index=True)
+category = repeated.astype(&quot;category&quot;)
+print(&quot;Text bytes:&quot;, repeated.memory_usage(index=False, deep=True))
+print(&quot;Category bytes:&quot;, category.memory_usage(index=False, deep=True))</code></pre><h3>Look for</h3><p>On the repeated group values, the categorical dtype takes fewer bytes.</p></section><section id='step-9'><h2>9. Missing values</h2><h3>What we are doing and why</h3><p>Count blanks and divide by the row count to compare columns.</p><h3>How to do it</h3><p>Run step 9 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>from io import StringIO
+import sys
+
+import pandas as pd
+
+csv_text = &quot;&quot;&quot;id,group,x,y
+1,a,10,2
+2,A,11,3
+3,b,12,4
+3,b,12,4
+4,b,,5
+5,a,14,6
+6,b,100,10
+7,c,16,7
+8,c,-2,8
+&quot;&quot;&quot;
+df = pd.read_csv(StringIO(csv_text))
+
+print(&quot;Missing counts:\n&quot;, df.isna().sum())
+print(&quot;Missing percent:\n&quot;, (100 * df.isna().mean()).round(1))</code></pre><h3>Look for</h3><p>x has one blank, which is about 11.1% of the rows.</p></section><section id='step-10'><h2>10. Duplicates</h2><h3>What we are doing and why</h3><p>Check for repeated rows and repeated IDs. Those answer different questions.</p><h3>How to do it</h3><p>Run step 10 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>from io import StringIO
+import sys
+
+import pandas as pd
+
+csv_text = &quot;&quot;&quot;id,group,x,y
+1,a,10,2
+2,A,11,3
+3,b,12,4
+3,b,12,4
+4,b,,5
+5,a,14,6
+6,b,100,10
+7,c,16,7
+8,c,-2,8
+&quot;&quot;&quot;
+df = pd.read_csv(StringIO(csv_text))
+
+print(&quot;Duplicate rows:&quot;, df.duplicated().sum())
+print(&quot;Duplicate IDs after the first:&quot;, df[&quot;id&quot;].duplicated().sum())</code></pre><h3>Look for</h3><p>There is one repeated row and one repeated ID after its first occurrence.</p></section><section id='step-11'><h2>11. Categorical counts</h2><h3>What we are doing and why</h3><p>Frequency counts can surface a spelling or case issue.</p><h3>How to do it</h3><p>Run step 11 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>from io import StringIO
+import sys
+
+import pandas as pd
+
+csv_text = &quot;&quot;&quot;id,group,x,y
+1,a,10,2
+2,A,11,3
+3,b,12,4
+3,b,12,4
+4,b,,5
+5,a,14,6
+6,b,100,10
+7,c,16,7
+8,c,-2,8
+&quot;&quot;&quot;
+df = pd.read_csv(StringIO(csv_text))
+
+print(df[&quot;group&quot;].value_counts(dropna=False))</code></pre><h3>Look for</h3><p>The counts list a and A as separate values.</p></section><section id='step-12'><h2>12. Numeric summary</h2><h3>What we are doing and why</h3><p>Use the summary and quantiles to get a quick sense of the centre, spread, and extremes.</p><h3>How to do it</h3><p>Run step 12 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>from io import StringIO
+import sys
+
+import pandas as pd
+
+csv_text = &quot;&quot;&quot;id,group,x,y
+1,a,10,2
+2,A,11,3
+3,b,12,4
+3,b,12,4
+4,b,,5
+5,a,14,6
+6,b,100,10
+7,c,16,7
+8,c,-2,8
+&quot;&quot;&quot;
+df = pd.read_csv(StringIO(csv_text))
+
+print(df[[&quot;x&quot;, &quot;y&quot;]].describe().round(2))
+print(&quot;x skew:&quot;, round(df[&quot;x&quot;].skew(), 2))</code></pre><h3>Look for</h3><p>For x, the mean is higher than the median and the maximum is 100.</p></section><section id='step-13'><h2>13. Validity and possible outliers</h2><h3>What we are doing and why</h3><p>A known range can flag invalid values. An IQR rule flags values to investigate.</p><h3>How to do it</h3><p>Run step 13 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>from io import StringIO
+import sys
+
+import pandas as pd
+
+csv_text = &quot;&quot;&quot;id,group,x,y
+1,a,10,2
+2,A,11,3
+3,b,12,4
+3,b,12,4
+4,b,,5
+5,a,14,6
+6,b,100,10
+7,c,16,7
+8,c,-2,8
+&quot;&quot;&quot;
+df = pd.read_csv(StringIO(csv_text))
+
+print(&quot;Negative x:\n&quot;, df.loc[df[&quot;x&quot;] &lt; 0, [&quot;id&quot;, &quot;x&quot;]])
+q1, q3 = df[&quot;x&quot;].quantile([0.25, 0.75])
+upper = q3 + 1.5 * (q3 - q1)
+print(&quot;Above upper IQR fence:\n&quot;, df.loc[df[&quot;x&quot;] &gt; upper, [&quot;id&quot;, &quot;x&quot;]])</code></pre><h3>Look for</h3><p>The negative x breaks the non-negative rule. The high value 100 is above the upper IQR fence.</p></section><section id='step-14'><h2>14. Group summaries and correlation</h2><h3>What we are doing and why</h3><p>Compare groups with a simple summary. Then use correlation to check for a linear association between two numeric columns.</p><h3>How to do it</h3><p>Run step 14 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>from io import StringIO
+import sys
+
+import pandas as pd
+
+csv_text = &quot;&quot;&quot;id,group,x,y
+1,a,10,2
+2,A,11,3
+3,b,12,4
+3,b,12,4
+4,b,,5
+5,a,14,6
+6,b,100,10
+7,c,16,7
+8,c,-2,8
+&quot;&quot;&quot;
+df = pd.read_csv(StringIO(csv_text))
+
+print(&quot;Group means:\n&quot;, df.groupby(&quot;group&quot;)[[&quot;x&quot;, &quot;y&quot;]].mean().round(2))
+print(&quot;Correlation:\n&quot;, df[[&quot;x&quot;, &quot;y&quot;]].corr().round(2))</code></pre><h3>Look for</h3><p>Grouping reveals different means. The correlation matrix gives an initial relationship to check on a scatter plot.</p></section><section id='step-15'><h2>15. Histogram, box plot, and scatter plot</h2><h3>What we are doing and why</h3><p>A histogram shows the shape, a box plot flags extremes, and a scatter plot shows pairs of values.</p><h3>How to do it</h3><p>Run step 15 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>from io import StringIO
+import sys
+
+import pandas as pd
+
+csv_text = &quot;&quot;&quot;id,group,x,y
+1,a,10,2
+2,A,11,3
+3,b,12,4
+3,b,12,4
+4,b,,5
+5,a,14,6
+6,b,100,10
+7,c,16,7
+8,c,-2,8
+&quot;&quot;&quot;
+df = pd.read_csv(StringIO(csv_text))
+
+if &quot;--plot&quot; in sys.argv:
+    import matplotlib.pyplot as plt
+
+    fig, axes = plt.subplots(1, 3, figsize=(10, 3))
+    axes[0].hist(df[&quot;x&quot;].dropna(), bins=8)
+    axes[0].set(xlabel=&quot;x&quot;, ylabel=&quot;Count&quot;, title=&quot;Histogram&quot;)
+    axes[1].boxplot(df[&quot;x&quot;].dropna())
+    axes[1].set(ylabel=&quot;x&quot;, title=&quot;Box plot&quot;)
+    axes[2].scatter(df[&quot;x&quot;], df[&quot;y&quot;])
+    axes[2].set(xlabel=&quot;x&quot;, ylabel=&quot;y&quot;, title=&quot;Scatter plot&quot;)
+    fig.tight_layout()
+    plt.show()</code></pre><h3>Look for</h3><p>With --plot, the display shows three plots. Look for how the isolated value affects each view.</p></section><section id='step-16'><h2>16. Mean and median</h2><h3>What we are doing and why</h3><p>The mean uses every magnitude. The median sits at the middle of the sorted values.</p><h3>How to do it</h3><p>Run step 16 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import sys
+
+import numpy as np
+import pandas as pd
+
+values = pd.Series([1, 2, 2, 3, 12])
+rng = np.random.default_rng(42)
+
+print(&quot;Mean:&quot;, values.mean(), &quot;Median:&quot;, values.median())</code></pre><h3>Look for</h3><p>The mean is 4.0 and the median is 2.0.</p></section><section id='step-17'><h2>17. Variance and standard deviation</h2><h3>What we are doing and why</h3><p>Both describe spread. Standard deviation is the square root of variance and is in the same units as the values.</p><h3>How to do it</h3><p>Run step 17 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import sys
+
+import numpy as np
+import pandas as pd
+
+values = pd.Series([1, 2, 2, 3, 12])
+rng = np.random.default_rng(42)
+
+print(&quot;Sample variance:&quot;, round(values.var(), 2))
+print(&quot;Sample standard deviation:&quot;, round(values.std(), 2))</code></pre><h3>Look for</h3><p>Using sample formulas, variance is 20.5 and standard deviation is about 4.53.</p></section><section id='step-18'><h2>18. Skew and a log</h2><h3>What we are doing and why</h3><p>The large value makes a right tail. A log compresses the higher values more than the lower ones.</p><h3>How to do it</h3><p>Run step 18 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import sys
+
+import numpy as np
+import pandas as pd
+
+values = pd.Series([1, 2, 2, 3, 12])
+rng = np.random.default_rng(42)
+
+print(&quot;Skew before log:&quot;, round(values.skew(), 2))
+print(&quot;Skew after log:&quot;, round(np.log(values).skew(), 2))</code></pre><h3>Look for</h3><p>The skew is positive and decreases after the log.</p></section><section id='step-19'><h2>19. Base rate</h2><h3>What we are doing and why</h3><p>The base rate uses all eight rows. The mean of a Boolean column is its True fraction.</p><h3>How to do it</h3><p>Run step 19 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import pandas as pd
+
+table = pd.DataFrame({
+    &quot;X&quot;: [True, True, True, True, False, False, False, False],
+    &quot;Y&quot;: [True, True, True, False, True, False, False, False],
+})
+
+base = table[&quot;Y&quot;].mean()
+print(&quot;P(Y):&quot;, base)</code></pre><h3>Look for</h3><p>P(Y) is 4 out of 8, or 0.50.</p></section><section id='step-20'><h2>20. Conditional probability and lift</h2><h3>What we are doing and why</h3><p>Keep the rows where X is true. The fraction of Y in these rows answers P(Y given X). Lift divides that fraction by the base rate.</p><h3>How to do it</h3><p>Run step 20 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import pandas as pd
+
+table = pd.DataFrame({
+    &quot;X&quot;: [True, True, True, True, False, False, False, False],
+    &quot;Y&quot;: [True, True, True, False, True, False, False, False],
+})
+
+y_given_x = table.loc[table[&quot;X&quot;], &quot;Y&quot;].mean()
+print(&quot;P(Y given X):&quot;, y_given_x, &quot;Lift:&quot;, y_given_x / base)</code></pre><h3>Look for</h3><p>P(Y given X) is 0.75 and lift is 1.5.</p></section><section id='step-21'><h2>21. Bayes&#x27; rule</h2><h3>What we are doing and why</h3><p>Reverse the condition using P(Y given X), P(X), and P(Y). Then check it by counting directly.</p><h3>How to do it</h3><p>Run step 21 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import pandas as pd
+
+table = pd.DataFrame({
+    &quot;X&quot;: [True, True, True, True, False, False, False, False],
+    &quot;Y&quot;: [True, True, True, False, True, False, False, False],
+})
+
+bayes = y_given_x * table[&quot;X&quot;].mean() / base
+direct = table.loc[table[&quot;Y&quot;], &quot;X&quot;].mean()
+print(&quot;P(X given Y), Bayes:&quot;, bayes, &quot;Direct count:&quot;, direct)</code></pre><h3>Look for</h3><p>Both approaches return 0.75 for P(X given Y).</p></section><section id='step-22'><h2>22. Vector and dot product</h2><h3>What we are doing and why</h3><p>Multiply matching entries, add the products, and then add the intercept.</p><h3>How to do it</h3><p>Run step 22 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import sys
+
+import numpy as np
+from sklearn.metrics import log_loss
+
+x = np.array([2, 3])
+w = np.array([4, 1])
+b = 1
+
+score = x @ w
+print(&quot;Dot product:&quot;, score, &quot;Prediction:&quot;, score + b)</code></pre><h3>Look for</h3><p>The dot product is 11 and the prediction is 12.</p></section><section id='step-23'><h2>23. Mean squared error</h2><h3>What we are doing and why</h3><p>Subtract actual values from predictions, square each error, and average.</p><h3>How to do it</h3><p>Run step 23 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import sys
+
+import numpy as np
+from sklearn.metrics import log_loss
+
+x = np.array([2, 3])
+w = np.array([4, 1])
+b = 1
+
+squared_errors = (np.array([2, 7]) - np.array([1, 5])) ** 2
+print(&quot;Squared errors:&quot;, squared_errors.tolist(), &quot;MSE:&quot;, squared_errors.mean())</code></pre><h3>Look for</h3><p>The two squared errors are 1 and 4. MSE is 2.5.</p></section><section id='step-24'><h2>24. Gradient descent and learning rate</h2><h3>What we are doing and why</h3><p>At each step, subtract the gradient times the learning rate. Watch where the weight goes when I make the step too large.</p><h3>How to do it</h3><p>Run step 24 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import sys
+
+import numpy as np
+from sklearn.metrics import log_loss
+
+x = np.array([2, 3])
+w = np.array([4, 1])
+b = 1
+
+paths = {}
+for rate in [0.25, 1.1]:
+    weight = 0.0
+    weights = [weight]
+    for _ in range(4):
+        gradient = 2 * (weight - 3)
+        weight -= rate * gradient
+        weights.append(weight)
+    paths[rate] = np.array(weights)
+    print(&quot;Rate:&quot;, rate, &quot;Weights:&quot;, paths[rate].round(2),
+          &quot;Losses:&quot;, ((paths[rate] - 3) ** 2).round(2))</code></pre><h3>Look for</h3><p>Rate 0.25 moves toward weight 3 and loss 0. Rate 1.1 overshoots and the loss grows.</p></section></main></body></html>

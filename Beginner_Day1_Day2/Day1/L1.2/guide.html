@@ -1,0 +1,264 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>L1.2 · Credit features and preprocessing</title><style>body{margin:0;background:#f3f7fa;color:#203447;font:16px/1.6 system-ui,sans-serif}
+main{max-width:1050px;margin:auto;padding:2rem 1rem}h1,h2,h3{line-height:1.25}
+section{background:#fff;border:1px solid #d9e4ec;border-radius:8px;margin:1rem 0;padding:1.25rem}
+pre{overflow:auto;background:#eef4f8;padding:1rem;white-space:pre-wrap}
+code{font-family:Consolas,monospace}a{color:#07598f}nav ul{columns:2}
+.intro{background:#eaf4f9;padding:1rem} @media(max-width:650px){nav ul{columns:1}}</style></head><body><main><h1>L1.2 · Credit features and preprocessing</h1><p class='intro'><strong>What and why.</strong> We will identify safe inputs, calculate features, split by time and prepare values. This builds the reasoning behind the full credit pipeline.</p><p><a href='starter.py'>Starter code</a> · <a href='solution.py'>Complete solution</a> · <a href='../Lab_L1.2.ipynb'>Notebook</a></p><p>Open the starter or solution in VS Code. Run Setup first, then run each numbered section in order. The starter is fully runnable, so a learner can practise by changing a value. For a terminal, open this activity's folder and run <code>python solution.py</code>.</p><section><h2>Setup</h2><pre><code>import numpy as np
+import pandas as pd</code></pre></section><section id='step-1'><h2>1. Define the chronological split</h2><h3>What we are doing and why</h3><p>All rows in the first group precede the second. Only number and group are available when we predict.</p><h3>How to do it</h3><p>Run step 1 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import numpy as np
+import pandas as pd
+from sklearn.compose import ColumnTransformer
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import roc_auc_score
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import FunctionTransformer, OneHotEncoder, StandardScaler
+
+data = pd.DataFrame({
+    &quot;time&quot;: range(1, 13),
+    &quot;number&quot;: [1, 20, 2, 30, 3, 40, 4, 50, 5, 60, 6, 70],
+    &quot;group&quot;: [&quot;a&quot;, &quot;b&quot;, &quot;a&quot;, &quot;a&quot;, &quot;b&quot;, &quot;b&quot;, &quot;a&quot;, &quot;b&quot;, &quot;new&quot;, &quot;a&quot;, &quot;a&quot;, &quot;b&quot;],
+    &quot;label&quot;: [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+})
+data[&quot;after_outcome&quot;] = data[&quot;label&quot;]
+
+train, test = data[data[&quot;time&quot;] &lt;= 8], data[data[&quot;time&quot;] &gt; 8]
+features = [&quot;number&quot;, &quot;group&quot;]
+print(&quot;Training times:&quot;, train[&quot;time&quot;].tolist())
+print(&quot;Testing times:&quot;, test[&quot;time&quot;].tolist())
+print(&quot;Selected features:&quot;, features)</code></pre><h3>Look for</h3><p>Training covers time 1 to 8 and testing covers 9 to 12.</p></section><section id='step-2'><h2>2. Log, scale, and encode</h2><h3>What we are doing and why</h3><p>The numeric pipeline compresses large numbers and scales using the training values. The categorical encoder handles a new group in the later rows.</p><h3>How to do it</h3><p>Run step 2 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import numpy as np
+import pandas as pd
+from sklearn.compose import ColumnTransformer
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import roc_auc_score
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import FunctionTransformer, OneHotEncoder, StandardScaler
+
+data = pd.DataFrame({
+    &quot;time&quot;: range(1, 13),
+    &quot;number&quot;: [1, 20, 2, 30, 3, 40, 4, 50, 5, 60, 6, 70],
+    &quot;group&quot;: [&quot;a&quot;, &quot;b&quot;, &quot;a&quot;, &quot;a&quot;, &quot;b&quot;, &quot;b&quot;, &quot;a&quot;, &quot;b&quot;, &quot;new&quot;, &quot;a&quot;, &quot;a&quot;, &quot;b&quot;],
+    &quot;label&quot;: [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+})
+data[&quot;after_outcome&quot;] = data[&quot;label&quot;]
+
+numbers = Pipeline([(&quot;log&quot;, FunctionTransformer(np.log1p)), (&quot;scale&quot;, StandardScaler())])
+preprocess = ColumnTransformer([
+    (&quot;number&quot;, numbers, [&quot;number&quot;]),
+    (&quot;group&quot;, OneHotEncoder(handle_unknown=&quot;ignore&quot;, sparse_output=False), [&quot;group&quot;]),
+])
+pipeline = Pipeline([(&quot;preprocess&quot;, preprocess), (&quot;model&quot;, LogisticRegression())])
+pipeline.fit(train[features], train[&quot;label&quot;])
+transformed = pipeline.named_steps[&quot;preprocess&quot;].transform(test[features])
+print(&quot;Later matrix shape:&quot;, transformed.shape)
+print(&quot;Unseen group&#x27;s indicators:&quot;, transformed[0, 1:].tolist())</code></pre><h3>Look for</h3><p>The later rows transform into a matrix of shape (4, 3). The unseen group has zeros in its two indicator columns.</p></section><section id='step-3'><h2>3. Text and image as numbers</h2><h3>What we are doing and why</h3><p>An array of word counts represents text. An image is already a grid of intensity values.</p><h3>How to do it</h3><p>Run step 3 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import numpy as np
+import pandas as pd
+from sklearn.compose import ColumnTransformer
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import roc_auc_score
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import FunctionTransformer, OneHotEncoder, StandardScaler
+
+data = pd.DataFrame({
+    &quot;time&quot;: range(1, 13),
+    &quot;number&quot;: [1, 20, 2, 30, 3, 40, 4, 50, 5, 60, 6, 70],
+    &quot;group&quot;: [&quot;a&quot;, &quot;b&quot;, &quot;a&quot;, &quot;a&quot;, &quot;b&quot;, &quot;b&quot;, &quot;a&quot;, &quot;b&quot;, &quot;new&quot;, &quot;a&quot;, &quot;a&quot;, &quot;b&quot;],
+    &quot;label&quot;: [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+})
+data[&quot;after_outcome&quot;] = data[&quot;label&quot;]
+
+matrix = CountVectorizer().fit_transform([&quot;red blue&quot;, &quot;red green&quot;])
+pixels = np.array([[0, 255], [255, 0]])
+print(&quot;Word-count shape:&quot;, matrix.shape)
+print(&quot;Image pixels:\n&quot;, pixels)</code></pre><h3>Look for</h3><p>The word-count matrix has 2 rows and 3 columns. The image is a 2-by-2 intensity grid.</p></section><section id='step-4'><h2>4. Evaluate and revisit the leakage traps</h2><h3>What we are doing and why</h3><p>Print the score and check it against what the model could know. Even a perfect score on four simple rows gives very little evidence. The after-outcome column would just reveal the answer.</p><h3>How to do it</h3><p>Run step 4 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import numpy as np
+import pandas as pd
+from sklearn.compose import ColumnTransformer
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import roc_auc_score
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import FunctionTransformer, OneHotEncoder, StandardScaler
+
+data = pd.DataFrame({
+    &quot;time&quot;: range(1, 13),
+    &quot;number&quot;: [1, 20, 2, 30, 3, 40, 4, 50, 5, 60, 6, 70],
+    &quot;group&quot;: [&quot;a&quot;, &quot;b&quot;, &quot;a&quot;, &quot;a&quot;, &quot;b&quot;, &quot;b&quot;, &quot;a&quot;, &quot;b&quot;, &quot;new&quot;, &quot;a&quot;, &quot;a&quot;, &quot;b&quot;],
+    &quot;label&quot;: [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+})
+data[&quot;after_outcome&quot;] = data[&quot;label&quot;]
+
+probabilities = pipeline.predict_proba(test[features])[:, 1]
+print(&quot;Test AUC on four rows:&quot;, round(roc_auc_score(test[&quot;label&quot;], probabilities), 2))
+print(&quot;After-outcome column copies label:&quot;, data[&quot;after_outcome&quot;].equals(data[&quot;label&quot;]))</code></pre><h3>Look for</h3><p>The holdout score is printed along with the prohibited column&#x27;s exact match to the labels. The training-only fit and ordered split are visible above.</p></section><section id='step-5'><h2>5. Domain ratios and disposable income</h2><h3>What we are doing and why</h3><p>Compute LTI with annual income. Compute DBR and remaining income using the same monthly units as the payments.</p><h3>How to do it</h3><p>Run step 5 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import numpy as np
+import pandas as pd
+from sklearn.feature_selection import RFE, mutual_info_regression
+from sklearn.linear_model import Lasso, LinearRegression
+from sklearn.tree import DecisionTreeRegressor
+
+values = pd.DataFrame({&quot;amount&quot;: [1200, 2400], &quot;monthly_income&quot;: [100, 200],
+                       &quot;existing_payment&quot;: [10, 40], &quot;new_payment&quot;: [20, 60]})
+series = pd.Series([4, 8, 6, 10], name=&quot;value&quot;)
+points = pd.DataFrame({&quot;id&quot;: [&quot;a&quot;, &quot;a&quot;, &quot;b&quot;], &quot;units&quot;: [2, 3, 4],
+                       &quot;price&quot;: [5, 5, 2]})
+rng = np.random.default_rng(42)
+signal = np.linspace(-2, 2, 81)
+noise = rng.normal(size=len(signal))
+X = pd.DataFrame({&quot;signal&quot;: signal, &quot;noise&quot;: noise})
+y = 5 * signal + 0.05 * noise
+
+payments = values[&quot;existing_payment&quot;] + values[&quot;new_payment&quot;]
+monthly = values[&quot;monthly_income&quot;]
+ratios = values.assign(lti=values[&quot;amount&quot;] / (12 * monthly),
+                       dbr=payments / monthly, disposable=monthly - payments)
+print(ratios[[&quot;lti&quot;, &quot;dbr&quot;, &quot;disposable&quot;]])</code></pre><h3>Look for</h3><p>Both LTI values are 1.0, DBR values are 0.3 and 0.5, and disposable amounts are 70 and 100.</p></section><section id='step-6'><h2>6. Lag, rolling average, and recency</h2><h3>What we are doing and why</h3><p>Use previous rows for a lag or trailing average. Recency counts how long ago the last available event happened.</p><h3>How to do it</h3><p>Run step 6 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import numpy as np
+import pandas as pd
+from sklearn.feature_selection import RFE, mutual_info_regression
+from sklearn.linear_model import Lasso, LinearRegression
+from sklearn.tree import DecisionTreeRegressor
+
+values = pd.DataFrame({&quot;amount&quot;: [1200, 2400], &quot;monthly_income&quot;: [100, 200],
+                       &quot;existing_payment&quot;: [10, 40], &quot;new_payment&quot;: [20, 60]})
+series = pd.Series([4, 8, 6, 10], name=&quot;value&quot;)
+points = pd.DataFrame({&quot;id&quot;: [&quot;a&quot;, &quot;a&quot;, &quot;b&quot;], &quot;units&quot;: [2, 3, 4],
+                       &quot;price&quot;: [5, 5, 2]})
+rng = np.random.default_rng(42)
+signal = np.linspace(-2, 2, 81)
+noise = rng.normal(size=len(signal))
+X = pd.DataFrame({&quot;signal&quot;: signal, &quot;noise&quot;: noise})
+y = 5 * signal + 0.05 * noise
+
+previous = series.shift(1)
+print(pd.DataFrame({&quot;current&quot;: series, &quot;lag&quot;: previous,
+                    &quot;previous_two_mean&quot;: previous.rolling(2).mean()}))
+cutoff = pd.Timestamp(&quot;2025-01-05&quot;)
+events = pd.to_datetime([&quot;2025-01-01&quot;, &quot;2025-01-03&quot;, &quot;2025-01-07&quot;])
+last_known = events[events &lt;= cutoff].max()
+print(&quot;Recency in days:&quot;, (cutoff - last_known).days)</code></pre><h3>Look for</h3><p>The final row&#x27;s lag is 6 and its previous-two average is 7. The most recent event was 2 days before the cutoff.</p></section><section id='step-7'><h2>7. Interactions and aggregation</h2><h3>What we are doing and why</h3><p>Multiplying two columns creates a new feature. Grouping turns multiple rows into one summary per ID.</p><h3>How to do it</h3><p>Run step 7 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import numpy as np
+import pandas as pd
+from sklearn.feature_selection import RFE, mutual_info_regression
+from sklearn.linear_model import Lasso, LinearRegression
+from sklearn.tree import DecisionTreeRegressor
+
+values = pd.DataFrame({&quot;amount&quot;: [1200, 2400], &quot;monthly_income&quot;: [100, 200],
+                       &quot;existing_payment&quot;: [10, 40], &quot;new_payment&quot;: [20, 60]})
+series = pd.Series([4, 8, 6, 10], name=&quot;value&quot;)
+points = pd.DataFrame({&quot;id&quot;: [&quot;a&quot;, &quot;a&quot;, &quot;b&quot;], &quot;units&quot;: [2, 3, 4],
+                       &quot;price&quot;: [5, 5, 2]})
+rng = np.random.default_rng(42)
+signal = np.linspace(-2, 2, 81)
+noise = rng.normal(size=len(signal))
+X = pd.DataFrame({&quot;signal&quot;: signal, &quot;noise&quot;: noise})
+y = 5 * signal + 0.05 * noise
+
+features = points.assign(total=points[&quot;units&quot;] * points[&quot;price&quot;])
+print(features.groupby(&quot;id&quot;).agg(count=(&quot;total&quot;, &quot;size&quot;),
+                                sum_total=(&quot;total&quot;, &quot;sum&quot;)))</code></pre><h3>Look for</h3><p>ID a has 2 rows with total 25. ID b has 1 row with total 8.</p></section><section id='step-8'><h2>8. Filter with correlation and mutual information</h2><h3>What we are doing and why</h3><p>Correlation measures linear association. Mutual information can find a relationship even when a positive and negative slope cancel in correlation.</p><h3>How to do it</h3><p>Run step 8 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import numpy as np
+import pandas as pd
+from sklearn.feature_selection import RFE, mutual_info_regression
+from sklearn.linear_model import Lasso, LinearRegression
+from sklearn.tree import DecisionTreeRegressor
+
+values = pd.DataFrame({&quot;amount&quot;: [1200, 2400], &quot;monthly_income&quot;: [100, 200],
+                       &quot;existing_payment&quot;: [10, 40], &quot;new_payment&quot;: [20, 60]})
+series = pd.Series([4, 8, 6, 10], name=&quot;value&quot;)
+points = pd.DataFrame({&quot;id&quot;: [&quot;a&quot;, &quot;a&quot;, &quot;b&quot;], &quot;units&quot;: [2, 3, 4],
+                       &quot;price&quot;: [5, 5, 2]})
+rng = np.random.default_rng(42)
+signal = np.linspace(-2, 2, 81)
+noise = rng.normal(size=len(signal))
+X = pd.DataFrame({&quot;signal&quot;: signal, &quot;noise&quot;: noise})
+y = 5 * signal + 0.05 * noise
+
+curve = pd.Series(signal ** 2)
+print(&quot;Correlation:\n&quot;, X.corrwith(curve).round(3))
+mi = mutual_info_regression(X, curve, random_state=0)
+print(&quot;Mutual information:\n&quot;, pd.Series(mi, index=X.columns).round(3))</code></pre><h3>Look for</h3><p>The signal&#x27;s correlation with its square is near zero. Mutual information identifies that relationship.</p></section><section id='step-9'><h2>9. Wrapper selection with RFE</h2><h3>What we are doing and why</h3><p>Recursive feature elimination fits a model, removes lower-ranked inputs, and repeats until the requested number is left.</p><h3>How to do it</h3><p>Run step 9 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import numpy as np
+import pandas as pd
+from sklearn.feature_selection import RFE, mutual_info_regression
+from sklearn.linear_model import Lasso, LinearRegression
+from sklearn.tree import DecisionTreeRegressor
+
+values = pd.DataFrame({&quot;amount&quot;: [1200, 2400], &quot;monthly_income&quot;: [100, 200],
+                       &quot;existing_payment&quot;: [10, 40], &quot;new_payment&quot;: [20, 60]})
+series = pd.Series([4, 8, 6, 10], name=&quot;value&quot;)
+points = pd.DataFrame({&quot;id&quot;: [&quot;a&quot;, &quot;a&quot;, &quot;b&quot;], &quot;units&quot;: [2, 3, 4],
+                       &quot;price&quot;: [5, 5, 2]})
+rng = np.random.default_rng(42)
+signal = np.linspace(-2, 2, 81)
+noise = rng.normal(size=len(signal))
+X = pd.DataFrame({&quot;signal&quot;: signal, &quot;noise&quot;: noise})
+y = 5 * signal + 0.05 * noise
+
+selector = RFE(LinearRegression(), n_features_to_select=1).fit(X, y)
+print(&quot;RFE selects:&quot;, X.columns[selector.support_].tolist())</code></pre><h3>Look for</h3><p>The wrapper selects signal.</p></section><section id='step-10'><h2>10. Embedded selection with Lasso and a tree</h2><h3>What we are doing and why</h3><p>Lasso can shrink a coefficient to zero during fitting. A tree also learns which features it used to reduce error. We can use those importances to rank features.</p><h3>How to do it</h3><p>Run step 10 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import numpy as np
+import pandas as pd
+from sklearn.feature_selection import RFE, mutual_info_regression
+from sklearn.linear_model import Lasso, LinearRegression
+from sklearn.tree import DecisionTreeRegressor
+
+values = pd.DataFrame({&quot;amount&quot;: [1200, 2400], &quot;monthly_income&quot;: [100, 200],
+                       &quot;existing_payment&quot;: [10, 40], &quot;new_payment&quot;: [20, 60]})
+series = pd.Series([4, 8, 6, 10], name=&quot;value&quot;)
+points = pd.DataFrame({&quot;id&quot;: [&quot;a&quot;, &quot;a&quot;, &quot;b&quot;], &quot;units&quot;: [2, 3, 4],
+                       &quot;price&quot;: [5, 5, 2]})
+rng = np.random.default_rng(42)
+signal = np.linspace(-2, 2, 81)
+noise = rng.normal(size=len(signal))
+X = pd.DataFrame({&quot;signal&quot;: signal, &quot;noise&quot;: noise})
+y = 5 * signal + 0.05 * noise
+
+lasso = Lasso(alpha=0.15).fit(X, y)
+tree = DecisionTreeRegressor(max_depth=2, random_state=0).fit(X, y)
+print(&quot;Lasso coefficients:&quot;, dict(zip(X.columns, lasso.coef_.round(3).tolist())))
+print(&quot;Tree importances:&quot;, dict(zip(X.columns, tree.feature_importances_.round(3).tolist())))</code></pre><h3>Look for</h3><p>Lasso sets the noise coefficient to zero. The small tree uses signal.</p></section><section id='step-11'><h2>11. Target leakage</h2><h3>What we are doing and why</h3><p>This feature is a copy of the label produced after the outcome. A model gets a perfect score because the answer is in the input.</p><h3>How to do it</h3><p>Run step 11 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import numpy as np
+import pandas as pd
+from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.tree import DecisionTreeClassifier
+
+train = pd.DataFrame({&quot;input&quot;: [0, 0, 1, 1, 0, 0, 1, 1],
+                      &quot;label&quot;: [0, 0, 1, 1, 0, 1, 0, 1]})
+test = pd.DataFrame({&quot;input&quot;: [0, 0, 0, 1, 1, 1, 1, 0],
+                     &quot;label&quot;: [0, 0, 0, 1, 1, 0, 1, 1]})
+
+train[&quot;outcome_copy&quot;] = train[&quot;label&quot;]
+test[&quot;outcome_copy&quot;] = test[&quot;label&quot;]
+for names in [[&quot;input&quot;], [&quot;input&quot;, &quot;outcome_copy&quot;]]:
+    model = DecisionTreeClassifier(max_depth=1, random_state=0).fit(train[names], train[&quot;label&quot;])
+    score = roc_auc_score(test[&quot;label&quot;], model.predict_proba(test[names])[:, 1])
+    print(names, &quot;test AUC:&quot;, round(score, 2))</code></pre><h3>Look for</h3><p>The model with the copied outcome gets AUC 1.00. The available-only input gets 0.75.</p></section><section id='step-12'><h2>12. Train-test contamination</h2><h3>What we are doing and why</h3><p>The mean belongs to the training set. Fitting a scaler after combining both sets lets the test set change that mean.</p><h3>How to do it</h3><p>Run step 12 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import numpy as np
+import pandas as pd
+from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.tree import DecisionTreeClassifier
+
+train = pd.DataFrame({&quot;input&quot;: [0, 0, 1, 1, 0, 0, 1, 1],
+                      &quot;label&quot;: [0, 0, 1, 1, 0, 1, 0, 1]})
+test = pd.DataFrame({&quot;input&quot;: [0, 0, 0, 1, 1, 1, 1, 0],
+                     &quot;label&quot;: [0, 0, 0, 1, 1, 0, 1, 1]})
+
+train_values = [[1], [2], [3]]
+test_values = [[30], [30]]
+honest = StandardScaler().fit(train_values)
+contaminated = StandardScaler().fit(train_values + test_values)
+print(&quot;Training-only mean:&quot;, honest.mean_[0])
+print(&quot;Contaminated mean:&quot;, contaminated.mean_[0])</code></pre><h3>Look for</h3><p>The training-only scaler learns mean 2.0. The contaminated scaler learns mean 13.2.</p></section><section id='step-13'><h2>13. Temporal leakage</h2><h3>What we are doing and why</h3><p>When the model will predict future rows, test on later rows. A shuffled split can train on dates after the ones in the test set.</p><h3>How to do it</h3><p>Run step 13 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import numpy as np
+import pandas as pd
+from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.tree import DecisionTreeClassifier
+
+train = pd.DataFrame({&quot;input&quot;: [0, 0, 1, 1, 0, 0, 1, 1],
+                      &quot;label&quot;: [0, 0, 1, 1, 0, 1, 0, 1]})
+test = pd.DataFrame({&quot;input&quot;: [0, 0, 0, 1, 1, 1, 1, 0],
+                     &quot;label&quot;: [0, 0, 0, 1, 1, 0, 1, 1]})
+
+time = np.arange(1, 11)
+random_train, random_test = train_test_split(time, test_size=3, random_state=0)
+ordered_train, ordered_test = time[:-3], time[-3:]
+print(&quot;Shuffled train:&quot;, sorted(random_train), &quot;test:&quot;, sorted(random_test))
+print(&quot;Ordered train max:&quot;, ordered_train.max(), &quot;test min:&quot;, ordered_test.min())</code></pre><h3>Look for</h3><p>The shuffled training set includes time points after some test points. In the ordered split, the latest training point is 7 and the earliest test point is 8.</p></section></main></body></html>

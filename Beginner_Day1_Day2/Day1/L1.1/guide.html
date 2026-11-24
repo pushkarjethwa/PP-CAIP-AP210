@@ -1,0 +1,268 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>L1.1 · Customer data quality</title><style>body{margin:0;background:#f3f7fa;color:#203447;font:16px/1.6 system-ui,sans-serif}
+main{max-width:1050px;margin:auto;padding:2rem 1rem}h1,h2,h3{line-height:1.25}
+section{background:#fff;border:1px solid #d9e4ec;border-radius:8px;margin:1rem 0;padding:1.25rem}
+pre{overflow:auto;background:#eef4f8;padding:1rem;white-space:pre-wrap}
+code{font-family:Consolas,monospace}a{color:#07598f}nav ul{columns:2}
+.intro{background:#eaf4f9;padding:1rem} @media(max-width:650px){nav ul{columns:1}}</style></head><body><main><h1>L1.1 · Customer data quality</h1><p class='intro'><strong>What and why.</strong> We will clean a small table in manageable steps. Each step exposes a different data-quality decision before learners see the full lab.</p><p><a href='starter.py'>Starter code</a> · <a href='solution.py'>Complete solution</a> · <a href='../Lab_L1.1.ipynb'>Notebook</a></p><p>Open the starter or solution in VS Code. Run Setup first, then run each numbered section in order. The starter is fully runnable, so a learner can practise by changing a value. For a terminal, open this activity's folder and run <code>python solution.py</code>.</p><section><h2>Setup</h2><pre><code>import numpy as np
+import pandas as pd</code></pre></section><section id='step-1'><h2>1. Load and profile</h2><h3>What we are doing and why</h3><p>Check row count, missing values, and duplicates before touching the data.</p><h3>How to do it</h3><p>Run step 1 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>from io import BytesIO, StringIO
+
+import pandas as pd
+
+csv_text = &quot;&quot;&quot;id,group,score,updated,email,future_flag
+1, a ,9.50,2025-01-01,a@example.invalid,1
+1,A,10.50,2025/01/03,a@example.invalid,1
+2,b,200,02 Jan 2025,b@example.invalid,0
+3,B,,2025-01-02,c@example.invalid,0
+4,c,12,2025/01/02,d@example.invalid,1
+&quot;&quot;&quot;
+
+raw = pd.read_csv(StringIO(csv_text), dtype={&quot;score&quot;: &quot;string&quot;})
+before = {&quot;rows&quot;: len(raw), &quot;missing_score&quot;: int(raw[&quot;score&quot;].isna().sum()),
+          &quot;duplicate_ids&quot;: int(raw[&quot;id&quot;].duplicated().sum())}
+print(&quot;Before:&quot;, before)</code></pre><h3>Look for</h3><p>There are 5 rows, 1 missing score, and 1 repeated ID.</p></section><section id='step-2'><h2>2. Remove sensitive and future columns</h2><h3>What we are doing and why</h3><p>Email identifies a person. The future flag is unavailable at the time the features are needed. Drop both for their respective reasons.</p><h3>How to do it</h3><p>Run step 2 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>from io import BytesIO, StringIO
+
+import pandas as pd
+
+csv_text = &quot;&quot;&quot;id,group,score,updated,email,future_flag
+1, a ,9.50,2025-01-01,a@example.invalid,1
+1,A,10.50,2025/01/03,a@example.invalid,1
+2,b,200,02 Jan 2025,b@example.invalid,0
+3,B,,2025-01-02,c@example.invalid,0
+4,c,12,2025/01/02,d@example.invalid,1
+&quot;&quot;&quot;
+
+clean = raw.drop(columns=[&quot;email&quot;, &quot;future_flag&quot;])
+print(&quot;Working columns:&quot;, clean.columns.tolist())</code></pre><h3>Look for</h3><p>The working columns are id, group, score, and updated.</p></section><section id='step-3'><h2>3. Standardise categories</h2><h3>What we are doing and why</h3><p>Trim spaces and use one case so the same group has the same value.</p><h3>How to do it</h3><p>Run step 3 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>from io import BytesIO, StringIO
+
+import pandas as pd
+
+csv_text = &quot;&quot;&quot;id,group,score,updated,email,future_flag
+1, a ,9.50,2025-01-01,a@example.invalid,1
+1,A,10.50,2025/01/03,a@example.invalid,1
+2,b,200,02 Jan 2025,b@example.invalid,0
+3,B,,2025-01-02,c@example.invalid,0
+4,c,12,2025/01/02,d@example.invalid,1
+&quot;&quot;&quot;
+
+clean[&quot;group&quot;] = clean[&quot;group&quot;].str.strip().str.lower()
+print(&quot;Groups:&quot;, sorted(clean[&quot;group&quot;].unique()))</code></pre><h3>Look for</h3><p>The spellings a and A become a, and b and B become b.</p></section><section id='step-4'><h2>4. Parse numbers and dates</h2><h3>What we are doing and why</h3><p>A text representation needs to become a number or a date before we can compare it consistently.</p><h3>How to do it</h3><p>Run step 4 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>from io import BytesIO, StringIO
+
+import pandas as pd
+
+csv_text = &quot;&quot;&quot;id,group,score,updated,email,future_flag
+1, a ,9.50,2025-01-01,a@example.invalid,1
+1,A,10.50,2025/01/03,a@example.invalid,1
+2,b,200,02 Jan 2025,b@example.invalid,0
+3,B,,2025-01-02,c@example.invalid,0
+4,c,12,2025/01/02,d@example.invalid,1
+&quot;&quot;&quot;
+
+clean[&quot;score&quot;] = pd.to_numeric(clean[&quot;score&quot;], errors=&quot;coerce&quot;)
+clean[&quot;updated&quot;] = pd.to_datetime(clean[&quot;updated&quot;], format=&quot;mixed&quot;, errors=&quot;coerce&quot;)
+print(clean.dtypes)</code></pre><h3>Look for</h3><p>score becomes numeric and updated becomes a datetime.</p></section><section id='step-5'><h2>5. Validate range and remove repeated IDs</h2><h3>What we are doing and why</h3><p>Mark out-of-range scores as missing. Keep the most recently updated row for each ID.</p><h3>How to do it</h3><p>Run step 5 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>from io import BytesIO, StringIO
+
+import pandas as pd
+
+csv_text = &quot;&quot;&quot;id,group,score,updated,email,future_flag
+1, a ,9.50,2025-01-01,a@example.invalid,1
+1,A,10.50,2025/01/03,a@example.invalid,1
+2,b,200,02 Jan 2025,b@example.invalid,0
+3,B,,2025-01-02,c@example.invalid,0
+4,c,12,2025/01/02,d@example.invalid,1
+&quot;&quot;&quot;
+
+clean[&quot;score&quot;] = clean[&quot;score&quot;].where(clean[&quot;score&quot;].between(0, 100))
+clean = clean.sort_values(&quot;updated&quot;).drop_duplicates(&quot;id&quot;, keep=&quot;last&quot;).copy()
+print(clean[[&quot;id&quot;, &quot;score&quot;, &quot;updated&quot;]].sort_values(&quot;id&quot;))</code></pre><h3>Look for</h3><p>The value 200 becomes missing and ID 1 keeps the score of 10.5.</p></section><section id='step-6'><h2>6. Flag and fill missing scores</h2><h3>What we are doing and why</h3><p>Save a missingness flag first so we can still see which values needed a fill.</p><h3>How to do it</h3><p>Run step 6 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>from io import BytesIO, StringIO
+
+import pandas as pd
+
+csv_text = &quot;&quot;&quot;id,group,score,updated,email,future_flag
+1, a ,9.50,2025-01-01,a@example.invalid,1
+1,A,10.50,2025/01/03,a@example.invalid,1
+2,b,200,02 Jan 2025,b@example.invalid,0
+3,B,,2025-01-02,c@example.invalid,0
+4,c,12,2025/01/02,d@example.invalid,1
+&quot;&quot;&quot;
+
+clean[&quot;score_missing&quot;] = clean[&quot;score&quot;].isna()
+clean[&quot;score&quot;] = clean[&quot;score&quot;].fillna(clean[&quot;score&quot;].median())
+print(clean[[&quot;id&quot;, &quot;score&quot;, &quot;score_missing&quot;]].sort_values(&quot;id&quot;))</code></pre><h3>Look for</h3><p>Two rows have the missing flag and get the observed median of 11.25.</p></section><section id='step-7'><h2>7. Validate and create the report</h2><h3>What we are doing and why</h3><p>Check that IDs are unique, scores are in range, and dates parsed. Save the before-and-after counts so someone can reproduce the check.</p><h3>How to do it</h3><p>Run step 7 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>from io import BytesIO, StringIO
+
+import pandas as pd
+
+csv_text = &quot;&quot;&quot;id,group,score,updated,email,future_flag
+1, a ,9.50,2025-01-01,a@example.invalid,1
+1,A,10.50,2025/01/03,a@example.invalid,1
+2,b,200,02 Jan 2025,b@example.invalid,0
+3,B,,2025-01-02,c@example.invalid,0
+4,c,12,2025/01/02,d@example.invalid,1
+&quot;&quot;&quot;
+
+clean[&quot;group&quot;] = clean[&quot;group&quot;].astype(&quot;category&quot;)
+assert clean[&quot;id&quot;].is_unique and clean[&quot;score&quot;].between(0, 100).all()
+assert clean[&quot;updated&quot;].notna().all()
+after = {&quot;rows&quot;: len(clean), &quot;missing_score&quot;: int(clean[&quot;score&quot;].isna().sum()),
+         &quot;duplicate_ids&quot;: int(clean[&quot;id&quot;].duplicated().sum())}
+report = pd.DataFrame({&quot;before&quot;: before, &quot;after&quot;: after}).rename_axis(&quot;check&quot;)
+print(report.to_csv(), end=&quot;&quot;)
+print(&quot;Scores filled:&quot;, clean[&quot;score_missing&quot;].sum())
+buffer = BytesIO()
+clean.to_parquet(buffer, engine=&quot;pyarrow&quot;, index=False)
+print(&quot;Clean rows read back:&quot;, len(pd.read_parquet(buffer, engine=&quot;pyarrow&quot;)))</code></pre><h3>Look for</h3><p>The result has 4 rows and no missing scores or repeated IDs. The report identifies 2 scores filled. Pandas writes the clean table as Parquet bytes in memory.</p></section><section id='step-8'><h2>8. Completeness</h2><h3>What we are doing and why</h3><p>Is the required value present?</p><h3>How to do it</h3><p>Run step 8 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import pandas as pd
+
+table = pd.DataFrame({
+    &quot;id&quot;: [1, 2, 2, 3, 4],
+    &quot;value&quot;: [12, 200, 20, None, 40],
+    &quot;reference&quot;: [10, 200, 20, 30, 40],
+    &quot;group&quot;: [&quot;red&quot;, &quot; BLUE &quot;, &quot;blue&quot;, &quot;red&quot;, &quot;green&quot;],
+    &quot;updated&quot;: pd.to_datetime([&quot;2025-01-09&quot;, &quot;2024-12-20&quot;, &quot;2025-01-08&quot;,
+                               &quot;2025-01-07&quot;, &quot;2025-01-06&quot;]),
+})
+snapshot = pd.Timestamp(&quot;2025-01-10&quot;)
+
+print(&quot;Missing value IDs:&quot;, table.loc[table[&quot;value&quot;].isna(), &quot;id&quot;].tolist())</code></pre><h3>Look for</h3><p>ID 3 has a missing value.</p></section><section id='step-9'><h2>9. Validity</h2><h3>What we are doing and why</h3><p>Does a present value obey the allowed range or format?</p><h3>How to do it</h3><p>Run step 9 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import pandas as pd
+
+table = pd.DataFrame({
+    &quot;id&quot;: [1, 2, 2, 3, 4],
+    &quot;value&quot;: [12, 200, 20, None, 40],
+    &quot;reference&quot;: [10, 200, 20, 30, 40],
+    &quot;group&quot;: [&quot;red&quot;, &quot; BLUE &quot;, &quot;blue&quot;, &quot;red&quot;, &quot;green&quot;],
+    &quot;updated&quot;: pd.to_datetime([&quot;2025-01-09&quot;, &quot;2024-12-20&quot;, &quot;2025-01-08&quot;,
+                               &quot;2025-01-07&quot;, &quot;2025-01-06&quot;]),
+})
+snapshot = pd.Timestamp(&quot;2025-01-10&quot;)
+
+present = table[&quot;value&quot;].notna()
+invalid = present &amp; ~table[&quot;value&quot;].between(0, 100)
+print(&quot;Invalid values:&quot;, table.loc[invalid, &quot;value&quot;].tolist())
+parsed = pd.to_datetime([&quot;2025-01-10&quot;, &quot;01/10/2025&quot;], format=&quot;%Y-%m-%d&quot;, errors=&quot;coerce&quot;)
+print(&quot;Invalid date format:&quot;, parsed.isna().tolist())</code></pre><h3>Look for</h3><p>200 is outside 0 to 100. The second date string fails the date format check.</p></section><section id='step-10'><h2>10. Consistency</h2><h3>What we are doing and why</h3><p>Are equivalent values represented the same way?</p><h3>How to do it</h3><p>Run step 10 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import pandas as pd
+
+table = pd.DataFrame({
+    &quot;id&quot;: [1, 2, 2, 3, 4],
+    &quot;value&quot;: [12, 200, 20, None, 40],
+    &quot;reference&quot;: [10, 200, 20, 30, 40],
+    &quot;group&quot;: [&quot;red&quot;, &quot; BLUE &quot;, &quot;blue&quot;, &quot;red&quot;, &quot;green&quot;],
+    &quot;updated&quot;: pd.to_datetime([&quot;2025-01-09&quot;, &quot;2024-12-20&quot;, &quot;2025-01-08&quot;,
+                               &quot;2025-01-07&quot;, &quot;2025-01-06&quot;]),
+})
+snapshot = pd.Timestamp(&quot;2025-01-10&quot;)
+
+canonical = table[&quot;group&quot;].str.strip().str.lower()
+print(&quot;Before:&quot;, table[&quot;group&quot;].unique().tolist())
+print(&quot;After:&quot;, canonical.unique().tolist())</code></pre><h3>Look for</h3><p>The two blue spellings collapse to one canonical value.</p></section><section id='step-11'><h2>11. Uniqueness</h2><h3>What we are doing and why</h3><p>Does the identifier occur once per entity?</p><h3>How to do it</h3><p>Run step 11 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import pandas as pd
+
+table = pd.DataFrame({
+    &quot;id&quot;: [1, 2, 2, 3, 4],
+    &quot;value&quot;: [12, 200, 20, None, 40],
+    &quot;reference&quot;: [10, 200, 20, 30, 40],
+    &quot;group&quot;: [&quot;red&quot;, &quot; BLUE &quot;, &quot;blue&quot;, &quot;red&quot;, &quot;green&quot;],
+    &quot;updated&quot;: pd.to_datetime([&quot;2025-01-09&quot;, &quot;2024-12-20&quot;, &quot;2025-01-08&quot;,
+                               &quot;2025-01-07&quot;, &quot;2025-01-06&quot;]),
+})
+snapshot = pd.Timestamp(&quot;2025-01-10&quot;)
+
+print(&quot;Repeated IDs:&quot;, table.loc[table.duplicated(&quot;id&quot;, keep=False), &quot;id&quot;].tolist())</code></pre><h3>Look for</h3><p>Both rows for ID 2 are flagged.</p></section><section id='step-12'><h2>12. Timeliness</h2><h3>What we are doing and why</h3><p>Is the value recent enough at the chosen date?</p><h3>How to do it</h3><p>Run step 12 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import pandas as pd
+
+table = pd.DataFrame({
+    &quot;id&quot;: [1, 2, 2, 3, 4],
+    &quot;value&quot;: [12, 200, 20, None, 40],
+    &quot;reference&quot;: [10, 200, 20, 30, 40],
+    &quot;group&quot;: [&quot;red&quot;, &quot; BLUE &quot;, &quot;blue&quot;, &quot;red&quot;, &quot;green&quot;],
+    &quot;updated&quot;: pd.to_datetime([&quot;2025-01-09&quot;, &quot;2024-12-20&quot;, &quot;2025-01-08&quot;,
+                               &quot;2025-01-07&quot;, &quot;2025-01-06&quot;]),
+})
+snapshot = pd.Timestamp(&quot;2025-01-10&quot;)
+
+age_days = (snapshot - table[&quot;updated&quot;]).dt.days
+print(&quot;Stale updates:&quot;, table.loc[age_days &gt; 7, &quot;updated&quot;].dt.date.tolist())</code></pre><h3>Look for</h3><p>The December 20 record is older than seven days.</p></section><section id='step-13'><h2>13. Accuracy</h2><h3>What we are doing and why</h3><p>Does the value agree with a trusted source? A number can be in range and still be wrong.</p><h3>How to do it</h3><p>Run step 13 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import pandas as pd
+
+table = pd.DataFrame({
+    &quot;id&quot;: [1, 2, 2, 3, 4],
+    &quot;value&quot;: [12, 200, 20, None, 40],
+    &quot;reference&quot;: [10, 200, 20, 30, 40],
+    &quot;group&quot;: [&quot;red&quot;, &quot; BLUE &quot;, &quot;blue&quot;, &quot;red&quot;, &quot;green&quot;],
+    &quot;updated&quot;: pd.to_datetime([&quot;2025-01-09&quot;, &quot;2024-12-20&quot;, &quot;2025-01-08&quot;,
+                               &quot;2025-01-07&quot;, &quot;2025-01-06&quot;]),
+})
+snapshot = pd.Timestamp(&quot;2025-01-10&quot;)
+
+disagrees = present &amp; ~invalid &amp; table[&quot;value&quot;].ne(table[&quot;reference&quot;])
+print(table.loc[disagrees, [&quot;id&quot;, &quot;value&quot;, &quot;reference&quot;]])</code></pre><h3>Look for</h3><p>ID 1 is in range but has 12 where the reference says 10.</p></section><section id='step-14'><h2>14. MCAR</h2><h3>What we are doing and why</h3><p>Missing completely at random means the chance of a blank is independent of both observed and missing values. We choose row positions at random.</p><h3>How to do it</h3><p>Run step 14 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import numpy as np
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+
+rng = np.random.default_rng(42)
+full = pd.DataFrame({&quot;group&quot;: [&quot;a&quot;, &quot;a&quot;, &quot;b&quot;, &quot;b&quot;, &quot;a&quot;, &quot;b&quot;],
+                     &quot;value&quot;: [2, 4, 6, 8, 10, 12]})
+incomplete = pd.DataFrame({&quot;x&quot;: [1, 2, 3, 4, 5, 6],
+                           &quot;group&quot;: [&quot;a&quot;, &quot;a&quot;, &quot;a&quot;, &quot;b&quot;, &quot;b&quot;, &quot;b&quot;],
+                           &quot;value&quot;: [2, np.nan, 6, 8, np.nan, 12]})
+
+mcar = full[&quot;value&quot;].copy().astype(float)
+random_rows = rng.choice(len(full), size=2, replace=False)
+mcar.iloc[random_rows] = np.nan
+print(&quot;MCAR:&quot;, mcar.tolist())</code></pre><h3>Look for</h3><p>Two values are blank after an independent random selection.</p></section><section id='step-15'><h2>15. MAR</h2><h3>What we are doing and why</h3><p>Missing at random means an observed variable explains the missingness. Here the observed group controls it.</p><h3>How to do it</h3><p>Run step 15 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import numpy as np
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+
+rng = np.random.default_rng(42)
+full = pd.DataFrame({&quot;group&quot;: [&quot;a&quot;, &quot;a&quot;, &quot;b&quot;, &quot;b&quot;, &quot;a&quot;, &quot;b&quot;],
+                     &quot;value&quot;: [2, 4, 6, 8, 10, 12]})
+incomplete = pd.DataFrame({&quot;x&quot;: [1, 2, 3, 4, 5, 6],
+                           &quot;group&quot;: [&quot;a&quot;, &quot;a&quot;, &quot;a&quot;, &quot;b&quot;, &quot;b&quot;, &quot;b&quot;],
+                           &quot;value&quot;: [2, np.nan, 6, 8, np.nan, 12]})
+
+print(&quot;MAR:&quot;, full[&quot;value&quot;].mask(full[&quot;group&quot;].eq(&quot;b&quot;)).tolist())</code></pre><h3>Look for</h3><p>Every group b value is dropped in this intentionally extreme illustration.</p></section><section id='step-16'><h2>16. MNAR</h2><h3>What we are doing and why</h3><p>Missing not at random means the missing value itself can influence whether it is recorded.</p><h3>How to do it</h3><p>Run step 16 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import numpy as np
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+
+rng = np.random.default_rng(42)
+full = pd.DataFrame({&quot;group&quot;: [&quot;a&quot;, &quot;a&quot;, &quot;b&quot;, &quot;b&quot;, &quot;a&quot;, &quot;b&quot;],
+                     &quot;value&quot;: [2, 4, 6, 8, 10, 12]})
+incomplete = pd.DataFrame({&quot;x&quot;: [1, 2, 3, 4, 5, 6],
+                           &quot;group&quot;: [&quot;a&quot;, &quot;a&quot;, &quot;a&quot;, &quot;b&quot;, &quot;b&quot;, &quot;b&quot;],
+                           &quot;value&quot;: [2, np.nan, 6, 8, np.nan, 12]})
+
+print(&quot;MNAR:&quot;, full[&quot;value&quot;].mask(full[&quot;value&quot;] &gt; 8).tolist())</code></pre><h3>Look for</h3><p>Only the two hidden values above 8 are blank.</p></section><section id='step-17'><h2>17. Drop rows or fill a simple median</h2><h3>What we are doing and why</h3><p>Dropping blanks changes which rows remain. A median fill leaves all rows in place and supplies one common replacement.</p><h3>How to do it</h3><p>Run step 17 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import numpy as np
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+
+rng = np.random.default_rng(42)
+full = pd.DataFrame({&quot;group&quot;: [&quot;a&quot;, &quot;a&quot;, &quot;b&quot;, &quot;b&quot;, &quot;a&quot;, &quot;b&quot;],
+                     &quot;value&quot;: [2, 4, 6, 8, 10, 12]})
+incomplete = pd.DataFrame({&quot;x&quot;: [1, 2, 3, 4, 5, 6],
+                           &quot;group&quot;: [&quot;a&quot;, &quot;a&quot;, &quot;a&quot;, &quot;b&quot;, &quot;b&quot;, &quot;b&quot;],
+                           &quot;value&quot;: [2, np.nan, 6, 8, np.nan, 12]})
+
+print(&quot;Rows after dropping:&quot;, len(incomplete.dropna(subset=[&quot;value&quot;])))
+values = incomplete[&quot;value&quot;]
+print(&quot;Median fill:&quot;, values.fillna(values.median()).tolist())</code></pre><h3>Look for</h3><p>Dropping leaves four rows. The simple fill replaces both gaps with 7.</p></section><section id='step-18'><h2>18. Fill using groups and keep an indicator</h2><h3>What we are doing and why</h3><p>Group medians can differ. Record which rows had missing values before filling.</p><h3>How to do it</h3><p>Run step 18 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import numpy as np
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+
+rng = np.random.default_rng(42)
+full = pd.DataFrame({&quot;group&quot;: [&quot;a&quot;, &quot;a&quot;, &quot;b&quot;, &quot;b&quot;, &quot;a&quot;, &quot;b&quot;],
+                     &quot;value&quot;: [2, 4, 6, 8, 10, 12]})
+incomplete = pd.DataFrame({&quot;x&quot;: [1, 2, 3, 4, 5, 6],
+                           &quot;group&quot;: [&quot;a&quot;, &quot;a&quot;, &quot;a&quot;, &quot;b&quot;, &quot;b&quot;, &quot;b&quot;],
+                           &quot;value&quot;: [2, np.nan, 6, 8, np.nan, 12]})
+
+missing = values.isna()
+group_medians = incomplete.groupby(&quot;group&quot;)[&quot;value&quot;].transform(&quot;median&quot;)
+print(incomplete.assign(value_filled=values.fillna(group_medians),
+                        value_missing=missing))</code></pre><h3>Look for</h3><p>The gaps in groups a and b get 4 and 10. Both rows have a True indicator.</p></section><section id='step-19'><h2>19. Model-based fill</h2><h3>What we are doing and why</h3><p>When another feature predicts the missing column, learn the relationship from observed rows and predict the blanks. In a modelling pipeline, learn this relationship on training rows.</p><h3>How to do it</h3><p>Run step 19 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import numpy as np
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+
+rng = np.random.default_rng(42)
+full = pd.DataFrame({&quot;group&quot;: [&quot;a&quot;, &quot;a&quot;, &quot;b&quot;, &quot;b&quot;, &quot;a&quot;, &quot;b&quot;],
+                     &quot;value&quot;: [2, 4, 6, 8, 10, 12]})
+incomplete = pd.DataFrame({&quot;x&quot;: [1, 2, 3, 4, 5, 6],
+                           &quot;group&quot;: [&quot;a&quot;, &quot;a&quot;, &quot;a&quot;, &quot;b&quot;, &quot;b&quot;, &quot;b&quot;],
+                           &quot;value&quot;: [2, np.nan, 6, 8, np.nan, 12]})
+
+imputer = LinearRegression().fit(incomplete.loc[~missing, [&quot;x&quot;]], values[~missing])
+predicted = imputer.predict(incomplete.loc[missing, [&quot;x&quot;]])
+print(&quot;Model fills:&quot;, predicted.round(2).tolist())</code></pre><h3>Look for</h3><p>The toy relationship is exact. The predictions for the missing entries are 4 and 10.</p></section></main></body></html>

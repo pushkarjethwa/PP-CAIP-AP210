@@ -1,0 +1,223 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>D1.2 · Transformations, categories and leakage</title><style>body{margin:0;background:#f3f7fa;color:#203447;font:16px/1.6 system-ui,sans-serif}
+main{max-width:1050px;margin:auto;padding:2rem 1rem}h1,h2,h3{line-height:1.25}
+section{background:#fff;border:1px solid #d9e4ec;border-radius:8px;margin:1rem 0;padding:1.25rem}
+pre{overflow:auto;background:#eef4f8;padding:1rem;white-space:pre-wrap}
+code{font-family:Consolas,monospace}a{color:#07598f}nav ul{columns:2}
+.intro{background:#eaf4f9;padding:1rem} @media(max-width:650px){nav ul{columns:1}}</style></head><body><main><h1>D1.2 · Transformations, categories and leakage</h1><p class='intro'><strong>What and why.</strong> We will change numbers and categories into model inputs and check whether any information comes from the future. This helps make model results trustworthy.</p><p><a href='starter.py'>Starter code</a> · <a href='solution.py'>Complete solution</a> · <a href='../Demo_D1.2.ipynb'>Notebook</a></p><p>Open the starter or solution in VS Code. Run Setup first, then run each numbered section in order. The starter is fully runnable, so a learner can practise by changing a value. For a terminal, open this activity's folder and run <code>python solution.py</code>.</p><section><h2>Setup</h2><pre><code>import numpy as np
+import pandas as pd</code></pre></section><section id='step-1'><h2>1. Standardisation</h2><h3>What we are doing and why</h3><p>Subtract the training mean and divide by the training standard deviation. The fitted training values then have mean 0 and standard deviation 1.</p><h3>How to do it</h3><p>Run step 1 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import sys
+
+import numpy as np
+import pandas as pd
+from scipy.stats import boxcox, skew
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
+
+train = np.array([1, 2, 4, 8, 32, 128], dtype=float).reshape(-1, 1)
+
+scaler = StandardScaler().fit(train)
+standard = scaler.transform(train).ravel()
+print(&quot;Standardised:&quot;, standard.round(2))
+print(f&quot;Mean {standard.mean():.2f} | Population SD {standard.std():.2f}&quot;)</code></pre><h3>Look for</h3><p>The standardised values have mean about 0 and population standard deviation 1.</p></section><section id='step-2'><h2>2. Min-max and outlier sensitivity</h2><h3>What we are doing and why</h3><p>The training minimum maps to 0 and the maximum maps to 1. One large training value squeezes most other values together.</p><h3>How to do it</h3><p>Run step 2 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import sys
+
+import numpy as np
+import pandas as pd
+from scipy.stats import boxcox, skew
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
+
+train = np.array([1, 2, 4, 8, 32, 128], dtype=float).reshape(-1, 1)
+
+minmax = MinMaxScaler().fit_transform(train).ravel()
+without_outlier = MinMaxScaler().fit_transform(train[:-1]).ravel()
+print(&quot;Min-max with 128:&quot;, minmax.round(2))
+print(&quot;Min-max without 128:&quot;, without_outlier.round(2))</code></pre><h3>Look for</h3><p>With the outlier, 32 maps to about 0.24. When 32 is the training maximum, it maps to 1.</p></section><section id='step-3'><h2>3. Log and Box-Cox</h2><h3>What we are doing and why</h3><p>Taking a log can compress a right tail. Box-Cox chooses a power from positive training values. For new inputs we would reuse that fitted power.</p><h3>How to do it</h3><p>Run step 3 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import sys
+
+import numpy as np
+import pandas as pd
+from scipy.stats import boxcox, skew
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
+
+train = np.array([1, 2, 4, 8, 32, 128], dtype=float).reshape(-1, 1)
+
+logged = np.log(train.ravel())
+powered, power = boxcox(train.ravel())
+for name, values in [(&quot;Raw&quot;, train.ravel()), (&quot;Standard&quot;, standard),
+                     (&quot;Min-max&quot;, minmax), (&quot;Log&quot;, logged), (&quot;Box-Cox&quot;, powered)]:
+    print(name, &quot;skew:&quot;, round(skew(values), 2))
+print(&quot;Fitted Box-Cox power:&quot;, round(power, 2))</code></pre><h3>Look for</h3><p>The raw, standardised, and min-max skews match. The log and fitted Box-Cox reduce the skew in this sample.</p></section><section id='step-4'><h2>4. Binning</h2><h3>What we are doing and why</h3><p>Choose the cut points ahead of time when fixed bands make the output easier to use.</p><h3>How to do it</h3><p>Run step 4 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import sys
+
+import numpy as np
+import pandas as pd
+from scipy.stats import boxcox, skew
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
+
+train = np.array([1, 2, 4, 8, 32, 128], dtype=float).reshape(-1, 1)
+
+bands = pd.cut(train.ravel(), bins=[0, 5, 35, np.inf],
+               labels=[&quot;small&quot;, &quot;medium&quot;, &quot;large&quot;], right=False)
+print(&quot;Bands:&quot;, list(zip(train.ravel().tolist(), bands.tolist())))</code></pre><h3>Look for</h3><p>4 is small, 8 and 32 are medium, and 128 is large.</p></section><section id='step-5'><h2>5. Fit on training, reuse on new values</h2><h3>What we are doing and why</h3><p>Only the training data determines the scale. A new value can exceed the training maximum and map outside 0 to 1.</p><h3>How to do it</h3><p>Run step 5 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import sys
+
+import numpy as np
+import pandas as pd
+from scipy.stats import boxcox, skew
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
+
+train = np.array([1, 2, 4, 8, 32, 128], dtype=float).reshape(-1, 1)
+
+print(&quot;New min-max value:&quot;, MinMaxScaler().fit(train).transform([[256]]).round(2))
+print(&quot;New standard value:&quot;, scaler.transform([[256]]).round(2))
+print(&quot;Unchanged training mean:&quot;, scaler.mean_)</code></pre><h3>Look for</h3><p>256 maps above 1. The standard scaler still uses the original training mean.</p></section><section id='step-6'><h2>6. See the shape</h2><h3>What we are doing and why</h3><p>Compare the right tail before and after scaling or logging.</p><h3>How to do it</h3><p>Run step 6 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import sys
+
+import numpy as np
+import pandas as pd
+from scipy.stats import boxcox, skew
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
+
+train = np.array([1, 2, 4, 8, 32, 128], dtype=float).reshape(-1, 1)
+
+if &quot;--plot&quot; in sys.argv:
+    import matplotlib.pyplot as plt
+
+    fig, axes = plt.subplots(1, 4, figsize=(10, 3))
+    for ax, (name, values) in zip(axes, [(&quot;Raw&quot;, train.ravel()),
+             (&quot;Standard&quot;, standard), (&quot;Min-max&quot;, minmax), (&quot;Log&quot;, logged)]):
+        ax.hist(values, bins=5)
+        ax.set(title=name, xlabel=&quot;Value&quot;, ylabel=&quot;Count&quot;)
+    fig.tight_layout()
+    plt.show()</code></pre><h3>Look for</h3><p>With --plot, the first three histograms show the same pattern on different axes. Log changes that pattern.</p></section><section id='step-7'><h2>7. One-hot encoding</h2><h3>What we are doing and why</h3><p>Each category gets its own indicator column. Red, blue, and green have no rank.</p><h3>How to do it</h3><p>Run step 7 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import numpy as np
+import pandas as pd
+from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, TargetEncoder
+
+colors = [[&quot;red&quot;], [&quot;red&quot;], [&quot;blue&quot;], [&quot;blue&quot;], [&quot;green&quot;], [&quot;yellow&quot;]]
+sizes = [[&quot;small&quot;], [&quot;medium&quot;], [&quot;large&quot;]]
+ids = np.array([[&quot;a&quot;], [&quot;b&quot;], [&quot;c&quot;], [&quot;d&quot;], [&quot;e&quot;], [&quot;f&quot;], [&quot;g&quot;], [&quot;h&quot;]])
+target = np.array([0., 1., 0., 1., 1., 0., 1., 0.])
+
+onehot = OneHotEncoder(handle_unknown=&quot;ignore&quot;, sparse_output=False).fit(colors)
+print(onehot.get_feature_names_out().tolist())
+print(onehot.transform([[&quot;red&quot;], [&quot;blue&quot;]]).astype(int))</code></pre><h3>Look for</h3><p>There is one 1 per known row, and the column names tell us which category it marks.</p></section><section id='step-8'><h2>8. Unknown category</h2><h3>What we are doing and why</h3><p>Use the encoder we already fitted. With handle_unknown set to ignore, a new category becomes all zeros.</p><h3>How to do it</h3><p>Run step 8 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import numpy as np
+import pandas as pd
+from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, TargetEncoder
+
+colors = [[&quot;red&quot;], [&quot;red&quot;], [&quot;blue&quot;], [&quot;blue&quot;], [&quot;green&quot;], [&quot;yellow&quot;]]
+sizes = [[&quot;small&quot;], [&quot;medium&quot;], [&quot;large&quot;]]
+ids = np.array([[&quot;a&quot;], [&quot;b&quot;], [&quot;c&quot;], [&quot;d&quot;], [&quot;e&quot;], [&quot;f&quot;], [&quot;g&quot;], [&quot;h&quot;]])
+target = np.array([0., 1., 0., 1., 1., 0., 1., 0.])
+
+print(&quot;Unseen purple:&quot;, onehot.transform([[&quot;purple&quot;]]).astype(int))</code></pre><h3>Look for</h3><p>Purple encodes as four zeros because it was absent from training.</p></section><section id='step-9'><h2>9. Ordinal encoding</h2><h3>What we are doing and why</h3><p>Small, medium, and large have an order, so we supply it explicitly.</p><h3>How to do it</h3><p>Run step 9 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import numpy as np
+import pandas as pd
+from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, TargetEncoder
+
+colors = [[&quot;red&quot;], [&quot;red&quot;], [&quot;blue&quot;], [&quot;blue&quot;], [&quot;green&quot;], [&quot;yellow&quot;]]
+sizes = [[&quot;small&quot;], [&quot;medium&quot;], [&quot;large&quot;]]
+ids = np.array([[&quot;a&quot;], [&quot;b&quot;], [&quot;c&quot;], [&quot;d&quot;], [&quot;e&quot;], [&quot;f&quot;], [&quot;g&quot;], [&quot;h&quot;]])
+target = np.array([0., 1., 0., 1., 1., 0., 1., 0.])
+
+ordinal = OrdinalEncoder(categories=[[&quot;small&quot;, &quot;medium&quot;, &quot;large&quot;]]).fit(sizes)
+print(&quot;Ordered size codes:&quot;, ordinal.transform(sizes).ravel().astype(int).tolist())</code></pre><h3>Look for</h3><p>Small maps to 0, medium to 1, and large to 2.</p></section><section id='step-10'><h2>10. Group rare categories</h2><h3>What we are doing and why</h3><p>Green and yellow each appear once. We can train the encoder to put those values in one infrequent column.</p><h3>How to do it</h3><p>Run step 10 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import numpy as np
+import pandas as pd
+from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, TargetEncoder
+
+colors = [[&quot;red&quot;], [&quot;red&quot;], [&quot;blue&quot;], [&quot;blue&quot;], [&quot;green&quot;], [&quot;yellow&quot;]]
+sizes = [[&quot;small&quot;], [&quot;medium&quot;], [&quot;large&quot;]]
+ids = np.array([[&quot;a&quot;], [&quot;b&quot;], [&quot;c&quot;], [&quot;d&quot;], [&quot;e&quot;], [&quot;f&quot;], [&quot;g&quot;], [&quot;h&quot;]])
+target = np.array([0., 1., 0., 1., 1., 0., 1., 0.])
+
+rare = OneHotEncoder(min_frequency=2, handle_unknown=&quot;infrequent_if_exist&quot;,
+                     sparse_output=False).fit(colors)
+print(rare.get_feature_names_out().tolist())
+print(rare.transform([[&quot;green&quot;], [&quot;yellow&quot;], [&quot;purple&quot;]]).astype(int))</code></pre><h3>Look for</h3><p>Green, yellow, and unseen purple all activate the infrequent category.</p></section><section id='step-11'><h2>11. Target encoding with cross-fitting</h2><h3>What we are doing and why</h3><p>A simple target encoding uses a category&#x27;s average target. If each ID occurs once, doing that on the same rows copies their answers. Cross-fitting uses other training rows to encode each training fold.</p><h3>How to do it</h3><p>Run step 11 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import numpy as np
+import pandas as pd
+from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, TargetEncoder
+
+colors = [[&quot;red&quot;], [&quot;red&quot;], [&quot;blue&quot;], [&quot;blue&quot;], [&quot;green&quot;], [&quot;yellow&quot;]]
+sizes = [[&quot;small&quot;], [&quot;medium&quot;], [&quot;large&quot;]]
+ids = np.array([[&quot;a&quot;], [&quot;b&quot;], [&quot;c&quot;], [&quot;d&quot;], [&quot;e&quot;], [&quot;f&quot;], [&quot;g&quot;], [&quot;h&quot;]])
+target = np.array([0., 1., 0., 1., 1., 0., 1., 0.])
+
+examples = pd.DataFrame({&quot;id&quot;: ids.ravel(), &quot;target&quot;: target})
+naive = examples.groupby(&quot;id&quot;)[&quot;target&quot;].transform(&quot;mean&quot;)
+encoder = TargetEncoder(target_type=&quot;continuous&quot;, smooth=0.0, cv=2,
+                        random_state=0)
+cross_fitted = encoder.fit_transform(ids, target).ravel()
+print(&quot;Naive:&quot;, naive.tolist())
+print(&quot;Cross-fitted:&quot;, cross_fitted.tolist())
+print(&quot;Unseen ID:&quot;, encoder.transform([[&quot;new&quot;]]).ravel().tolist())</code></pre><h3>Look for</h3><p>The naive ID encoding repeats the target. Cross-fitted singleton IDs get the other fold&#x27;s mean, and an unseen ID at inference gets the full training mean.</p></section><section id='step-12'><h2>12. Text tokens, counts, and embeddings</h2><h3>What we are doing and why</h3><p>Split into tokens and count each word. An embedding gives a token a short numeric vector. These tiny vectors are supplied to show their shape. Learned embeddings get their values from training.</p><h3>How to do it</h3><p>Run step 12 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import sys
+
+import numpy as np
+import pandas as pd
+from scipy.signal import spectrogram
+from sklearn.feature_extraction.text import CountVectorizer
+
+texts = [&quot;red red blue&quot;, &quot;blue green&quot;]
+image = np.array([[0, 0, 255], [0, 255, 255]], dtype=np.uint8)
+sample_rate = 1024
+
+tokens = texts[0].split()
+counts = CountVectorizer()
+matrix = counts.fit_transform(texts)
+print(&quot;Tokens:&quot;, tokens)
+print(&quot;Vocabulary:&quot;, counts.get_feature_names_out().tolist())
+print(&quot;Word counts:\n&quot;, matrix.toarray())
+embedding = {&quot;red&quot;: [1.0, 0.0], &quot;blue&quot;: [0.8, 0.2], &quot;green&quot;: [0.1, 0.9]}
+print(&quot;Lookup vectors:\n&quot;, np.array([embedding[token] for token in tokens]))</code></pre><h3>Look for</h3><p>Red appears twice in the first text. The embedding lookup represents its three tokens by a 3-by-2 array.</p></section><section id='step-13'><h2>13. Image pixels and flattening</h2><h3>What we are doing and why</h3><p>A grayscale image is a grid of pixel intensities. Flattening gives a row of numbers. Keeping the grid preserves the row and column layout as separate axes.</p><h3>How to do it</h3><p>Run step 13 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import sys
+
+import numpy as np
+import pandas as pd
+from scipy.signal import spectrogram
+from sklearn.feature_extraction.text import CountVectorizer
+
+texts = [&quot;red red blue&quot;, &quot;blue green&quot;]
+image = np.array([[0, 0, 255], [0, 255, 255]], dtype=np.uint8)
+sample_rate = 1024
+
+print(&quot;Image shape:&quot;, image.shape)
+print(&quot;Flattened pixels:&quot;, image.ravel().tolist())</code></pre><h3>Look for</h3><p>The image has shape (2, 3). The flattened version has six intensity values.</p></section><section id='step-14'><h2>14. Target leakage</h2><h3>What we are doing and why</h3><p>This feature is a copy of the label produced after the outcome. A model gets a perfect score because the answer is in the input.</p><h3>How to do it</h3><p>Run step 14 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import numpy as np
+import pandas as pd
+from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.tree import DecisionTreeClassifier
+
+train = pd.DataFrame({&quot;input&quot;: [0, 0, 1, 1, 0, 0, 1, 1],
+                      &quot;label&quot;: [0, 0, 1, 1, 0, 1, 0, 1]})
+test = pd.DataFrame({&quot;input&quot;: [0, 0, 0, 1, 1, 1, 1, 0],
+                     &quot;label&quot;: [0, 0, 0, 1, 1, 0, 1, 1]})
+
+train[&quot;outcome_copy&quot;] = train[&quot;label&quot;]
+test[&quot;outcome_copy&quot;] = test[&quot;label&quot;]
+for names in [[&quot;input&quot;], [&quot;input&quot;, &quot;outcome_copy&quot;]]:
+    model = DecisionTreeClassifier(max_depth=1, random_state=0).fit(train[names], train[&quot;label&quot;])
+    score = roc_auc_score(test[&quot;label&quot;], model.predict_proba(test[names])[:, 1])
+    print(names, &quot;test AUC:&quot;, round(score, 2))</code></pre><h3>Look for</h3><p>The model with the copied outcome gets AUC 1.00. The available-only input gets 0.75.</p></section><section id='step-15'><h2>15. Train-test contamination</h2><h3>What we are doing and why</h3><p>The mean belongs to the training set. Fitting a scaler after combining both sets lets the test set change that mean.</p><h3>How to do it</h3><p>Run step 15 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import numpy as np
+import pandas as pd
+from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.tree import DecisionTreeClassifier
+
+train = pd.DataFrame({&quot;input&quot;: [0, 0, 1, 1, 0, 0, 1, 1],
+                      &quot;label&quot;: [0, 0, 1, 1, 0, 1, 0, 1]})
+test = pd.DataFrame({&quot;input&quot;: [0, 0, 0, 1, 1, 1, 1, 0],
+                     &quot;label&quot;: [0, 0, 0, 1, 1, 0, 1, 1]})
+
+train_values = [[1], [2], [3]]
+test_values = [[30], [30]]
+honest = StandardScaler().fit(train_values)
+contaminated = StandardScaler().fit(train_values + test_values)
+print(&quot;Training-only mean:&quot;, honest.mean_[0])
+print(&quot;Contaminated mean:&quot;, contaminated.mean_[0])</code></pre><h3>Look for</h3><p>The training-only scaler learns mean 2.0. The contaminated scaler learns mean 13.2.</p></section><section id='step-16'><h2>16. Temporal leakage</h2><h3>What we are doing and why</h3><p>When the model will predict future rows, test on later rows. A shuffled split can train on dates after the ones in the test set.</p><h3>How to do it</h3><p>Run step 16 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>import numpy as np
+import pandas as pd
+from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.tree import DecisionTreeClassifier
+
+train = pd.DataFrame({&quot;input&quot;: [0, 0, 1, 1, 0, 0, 1, 1],
+                      &quot;label&quot;: [0, 0, 1, 1, 0, 1, 0, 1]})
+test = pd.DataFrame({&quot;input&quot;: [0, 0, 0, 1, 1, 1, 1, 0],
+                     &quot;label&quot;: [0, 0, 0, 1, 1, 0, 1, 1]})
+
+time = np.arange(1, 11)
+random_train, random_test = train_test_split(time, test_size=3, random_state=0)
+ordered_train, ordered_test = time[:-3], time[-3:]
+print(&quot;Shuffled train:&quot;, sorted(random_train), &quot;test:&quot;, sorted(random_test))
+print(&quot;Ordered train max:&quot;, ordered_train.max(), &quot;test min:&quot;, ordered_test.min())</code></pre><h3>Look for</h3><p>The shuffled training set includes time points after some test points. In the ordered split, the latest training point is 7 and the earliest test point is 8.</p></section></main></body></html>

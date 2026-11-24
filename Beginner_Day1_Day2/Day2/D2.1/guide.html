@@ -1,0 +1,32 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>D2.1 · Training, validation and learning</title><style>body{margin:0;background:#f3f7fa;color:#203447;font:16px/1.6 system-ui,sans-serif}
+main{max-width:1050px;margin:auto;padding:2rem 1rem}h1,h2,h3{line-height:1.25}
+section{background:#fff;border:1px solid #d9e4ec;border-radius:8px;margin:1rem 0;padding:1.25rem}
+pre{overflow:auto;background:#eef4f8;padding:1rem;white-space:pre-wrap}
+code{font-family:Consolas,monospace}a{color:#07598f}nav ul{columns:2}
+.intro{background:#eaf4f9;padding:1rem} @media(max-width:650px){nav ul{columns:1}}</style></head><body><main><h1>D2.1 · Training, validation and learning</h1><p class='intro'><strong>What and why.</strong> We will compare simple predictions, see what model complexity changes and practise splitting data. This helps learners understand how to judge a model fairly.</p><p><a href='starter.py'>Starter code</a> · <a href='solution.py'>Complete solution</a> · <a href='../Demo_D2.1.ipynb'>Notebook</a></p><p>Open the starter or solution in VS Code. Run Setup first, then run each numbered section in order. The starter is fully runnable, so a learner can practise by changing a value. For a terminal, open this activity's folder and run <code>python solution.py</code>.</p><section><h2>Setup</h2><pre><code>import numpy as np
+import pandas as pd</code></pre></section><section id='step-1'><h2>1. Start with a baseline</h2><h3>What we are doing and why</h3><p>The average training value is a simple first guess.</p><h3>How to do it</h3><p>Run step 1 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>training = np.array([2,4,6,8])
+print(&#x27;Average baseline:&#x27;, training.mean())</code></pre><h3>Look for</h3><p>The baseline prediction is 5.</p></section><section id='step-2'><h2>2. Underfitting and overfitting</h2><h3>What we are doing and why</h3><p>We compare polynomial curves of different complexity using the same points and separate checks.</p><h3>How to do it</h3><p>Run step 2 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.linear_model import LinearRegression
+x = np.array([0,1,2,3,4]).reshape(-1,1)
+y = np.array([0,1,4,9,16])
+for degree in [1,2,4]:
+    model = make_pipeline(PolynomialFeatures(degree), LinearRegression())
+    model.fit(x,y)
+    print(&#x27;Degree&#x27;, degree, &#x27;prediction for 5:&#x27;, round(model.predict([[5]])[0],2))</code></pre><h3>Look for</h3><p>The models produce different predictions. Complexity needs checking on held-out data.</p></section><section id='step-3'><h2>3. Learning with more examples</h2><h3>What we are doing and why</h3><p>We train on two different training sizes and compare their predictions.</p><h3>How to do it</h3><p>Run step 3 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>from sklearn.linear_model import LinearRegression
+x = np.array([1,2,3,4]).reshape(-1,1)
+y = np.array([2,4,6,8])
+for count in [2,4]:
+    model = LinearRegression().fit(x[:count], y[:count])
+    print(&#x27;Training rows:&#x27;, count, &#x27;prediction:&#x27;, round(model.predict([[5]])[0],1))</code></pre><h3>Look for</h3><p>Both predict 10 for this perfectly linear example. More data does not always change the result.</p></section><section id='step-4'><h2>4. Cross-validation and hyperparameters</h2><h3>What we are doing and why</h3><p>We change a tree&#x27;s maximum depth and evaluate each setting across several held-out folds.</p><h3>How to do it</h3><p>Run step 4 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>from sklearn.model_selection import cross_val_score
+from sklearn.tree import DecisionTreeRegressor
+x = np.arange(12).reshape(-1,1)
+y = np.arange(12)
+for depth in [1,2]:
+    model = DecisionTreeRegressor(max_depth=depth, random_state=0)
+    scores = cross_val_score(model,x,y,cv=3,scoring=&#x27;neg_mean_absolute_error&#x27;)
+    print(&#x27;Depth:&#x27;, depth, &#x27;mean error:&#x27;, round(-scores.mean(),2))</code></pre><h3>Look for</h3><p>Depth is a setting chosen before fitting. Each score uses a different hold-out fold.</p></section><section id='step-5'><h2>5. Gradient descent and learning rate</h2><h3>What we are doing and why</h3><p>We update a number in the direction that reduces a simple loss.</p><h3>How to do it</h3><p>Run step 5 in the solution after running Setup. In VS Code use the Run Cell link above the matching # %% heading, or run the whole solution from a terminal. To practise, run the starter and change one value where it is safe to do so. Run the example again and explain what changed.</p><pre><code>weight = 0.0
+for step_number in range(4):
+    gradient = 2 * (weight - 3)
+    weight = weight - 0.25 * gradient
+    print(&#x27;Step&#x27;, step_number + 1, &#x27;weight&#x27;, round(weight,2))</code></pre><h3>Look for</h3><p>The weight moves towards 3. A much larger learning rate can overshoot.</p></section></main></body></html>
