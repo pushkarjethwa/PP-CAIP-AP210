@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Demo D3.1 · Classification that a CRO can sign — probabilities, thresholds and the right metrics</title><style>:root{--bg:#f6f7f9;--panel:#fff;--ink:#1b2430;--muted:#5b6675;--line:#e3e7ee;--brand:#0b5e6b;--brand2:#c8963e;
+--code-bg:#0f1720;--code-ink:#e6edf3;--l1:#2f6fdb;--l2:#c8963e;--l3:#1f8f5f;--why:#eef6f7;--exp:#eef8f1;--think:#fbf5ea;--say:#eef2fb;--exam:#f4effa}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1117;--panel:#141a22;--ink:#e6edf3;--muted:#9aa6b2;--line:#263040;
+--brand:#4fb3c2;--why:#12262a;--exp:#122319;--think:#2a2214;--say:#151d2d;--exam:#211a2c;--code-bg:#0a0f15}}
+:root[data-theme="dark"]{--bg:#0d1117;--panel:#141a22;--ink:#e6edf3;--muted:#9aa6b2;--line:#263040;--brand:#4fb3c2;--why:#12262a;
+--exp:#122319;--think:#2a2214;--say:#151d2d;--exam:#211a2c;--code-bg:#0a0f15}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+header.top{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:10px 20px;
+background:var(--brand);color:#fff;font-size:14px;letter-spacing:.2px}
+.brand .logo{color:var(--brand2);margin-right:6px}.brand .sep{opacity:.5;margin:0 10px}
+.theme{background:transparent;border:1px solid rgba(255,255,255,.5);color:#fff;border-radius:6px;padding:2px 10px;cursor:pointer;font-size:16px}
+.layout{display:grid;grid-template-columns:260px minmax(0,1fr);max-width:1320px;margin:0 auto}
+nav.toc{position:sticky;top:46px;align-self:start;max-height:calc(100vh - 46px);overflow:auto;padding:24px 12px 24px 20px;font-size:13.5px}
+nav.toc a{display:block;color:var(--muted);text-decoration:none;padding:4px 8px;border-left:2px solid transparent;border-radius:0 4px 4px 0}
+nav.toc a:hover,nav.toc a.active{color:var(--brand);border-left-color:var(--brand);background:var(--panel)}
+.toc-title{font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:1px;color:var(--muted);margin:0 8px 8px}
+main{padding:24px 28px 80px;min-width:0}
+section{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px 26px;margin:0 0 18px}
+section.hero{background:linear-gradient(135deg,var(--brand),#083f48);color:#fff;border:0}
+section.hero.demo{background:linear-gradient(135deg,#3b2f6b,#1f1a3d)}
+.hero h1{margin:.2em 0 .3em;font-size:30px;line-height:1.2}.hero .lead{opacity:.92;font-size:17px;margin:0 0 16px}
+.kicker{text-transform:uppercase;letter-spacing:1.5px;font-size:12px;color:var(--brand2);font-weight:700}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.meta div{background:rgba(255,255,255,.1);border-radius:8px;padding:8px 12px}.meta .k{display:block;font-size:11px;text-transform:uppercase;opacity:.75;letter-spacing:1px}
+.meta .v{font-weight:600;font-size:14px}
+.diff i{display:inline-block;width:9px;height:9px;margin-right:2px;border-radius:2px;background:rgba(255,255,255,.25)}.diff i.on{background:var(--brand2)}
+h2{font-size:22px;margin:0 0 12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}h3{font-size:16px;margin:18px 0 8px;color:var(--brand)}
+.num{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--brand);color:#fff;font-size:15px;flex:none}
+.mins{margin-left:auto;font-size:12px;font-weight:600;color:var(--muted);background:var(--bg);padding:2px 10px;border-radius:20px}
+.why,.expect,.think,.say,.callout,.scenario{border-radius:8px;padding:12px 16px;margin:12px 0}
+.why{background:var(--why);border-left:4px solid var(--brand)}.expect{background:var(--exp);border-left:4px solid var(--l3)}
+.think{background:var(--think);border-left:4px solid var(--brand2)}.say{background:var(--say);border-left:4px solid #5b6bd6}
+.callout{background:var(--bg);border:1px dashed var(--line)}.callout.exam{background:var(--exam);border:0;border-left:4px solid #8a5cc7}
+.scenario{background:var(--bg)}
+.why>b,.expect>b,.think>b,.say>b,.callout>b{display:block;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.why p:last-child,.expect p:last-child,.think p:last-child,.say p:last-child{margin-bottom:0}
+ol.tasks li{margin:4px 0}
+.levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.lvl{border-radius:10px;padding:12px 16px;border:1px solid var(--line);border-top:5px solid}.lvl.l1{border-top-color:var(--l1)}.lvl.l2{border-top-color:var(--l2)}.lvl.l3{border-top-color:var(--l3)}
+.lvl p{margin:.4em 0 0;font-size:14px}.note{color:var(--muted);font-size:14px}
+details{border:1px solid var(--line);border-radius:8px;margin:10px 0;background:var(--bg)}
+details summary{cursor:pointer;padding:8px 14px;font-weight:600}details[open] summary{border-bottom:1px solid var(--line)}
+details>*:not(summary){margin:10px 14px}
+.code{position:relative;margin:10px 0}
+pre{background:var(--code-bg);color:var(--code-ink);padding:14px 16px;border-radius:8px;overflow:auto;font:13.5px/1.5 Consolas,"Cascadia Code",Menlo,monospace;margin:0}
+code{font-family:Consolas,"Cascadia Code",Menlo,monospace;font-size:.92em}
+:not(pre)>code{background:var(--bg);border:1px solid var(--line);padding:1px 5px;border-radius:4px}
+.copy{position:absolute;top:8px;right:8px;background:#ffffff1a;color:#e6edf3;border:1px solid #ffffff33;border-radius:5px;font-size:12px;padding:2px 10px;cursor:pointer}
+.copy:hover{background:#ffffff33}.copy.ok{background:var(--l3);border-color:var(--l3)}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:8px 0}th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+th{background:var(--bg)}table.files td:first-child{white-space:nowrap}
+.tok-k{color:#ff7b72}.tok-s{color:#a5d6ff}.tok-c{color:#8b949e;font-style:italic}.tok-n{color:#79c0ff}.tok-f{color:#d2a8ff}
+@media (max-width:900px){.layout{grid-template-columns:1fr}nav.toc{display:none}main{padding:16px}section{padding:16px}.hero h1{font-size:24px}}
+@media print{nav.toc,header.top,.copy{display:none}.layout{display:block}details{display:block}details>*{display:block!important}section{break-inside:avoid-page}}
+</style></head>
+<body class="demo-page">
+<header class="top"><div class="brand"><span class="logo">◆</span> Horizon Gulf Bank · Project MIZAN<span class="sep">|</span>CAIP AIP-210 · Certified AI Practitioner</div>
+<button class="theme" onclick="toggleTheme()" aria-label="Toggle theme">◐</button></header>
+<div class="layout"><nav class="toc"><div class="toc-title">On this page</div><a href="#context">Scenario context</a>
+<a href="#packages">Packages</a>
+<a href="#plan">Run sheet</a>
+<a href="#setup">Setup</a>
+<a href="#step1">1. Load the Day 1 contract and fit logistic regression</a>
+<a href="#step2">2. The accuracy paradox</a>
+<a href="#step3">3. ROC and precision–recall curves</a>
+<a href="#step4">4. Pick the threshold with a cost matrix</a>
+<a href="#step5">5. class_weight — what it does (and doesn’t) do</a>
+<a href="#wrap">Wrap-up &amp; transition</a></nav>
+<main><section class="hero demo"><div class="kicker">Day 3 · Guided Demo D3.1 · Instructor-led</div>
+<h1>Classification that a CRO can sign — probabilities, thresholds and the right metrics</h1><p class="lead">Why 92% accuracy can be a useless credit model, and how ROC, precision–recall and a cost matrix pick the decision threshold.</p>
+<div class="meta"><div><span class="k">Duration</span><span class="v">40 min</span></div><div><span class="k">Difficulty</span><span class="v"><span class="diff" title="6/10"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></span> 6/10</span></div><div><span class="k">Dataset(s)</span><span class="v">checkpoints/loan_features.parquet (from Lab L1.2)</span></div><div><span class="k">Leads into</span><span class="v">Lab L3.1 — Credit default classifier</span></div></div></section>
+<section id="context"><h2>Scenario context</h2><div class="scenario"><p><strong>Horizon Gulf Bank (HGB)</strong> is a fictional UAE retail bank with 250,000 customers. Its Board approved <strong>Project MIZAN</strong> — an AI decisioning platform covering credit, fraud, collateral valuation, cash logistics, customer retention and document automation. You are a junior ML practitioner in the MIZAN squad.</p>
+<p>The credit feature pipeline from Day 1 is ready. The CRO asks three questions: <em>How good is the model? Where do we set the cut-off? What does each mistake cost us?</em> This demo answers them.</p></div>
+<h3>Learners will see</h3><ul>
+<li>Logistic regression outputs <strong>probabilities</strong>; a threshold turns them into decisions</li>
+<li>The accuracy paradox under class imbalance</li>
+<li>Confusion matrix, precision, recall, F1; ROC-AUC vs PR-AUC</li>
+<li>Choosing the threshold from a <strong>business cost matrix</strong></li>
+<li>Effect of <code>class_weight</code> on probabilities</li>
+</ul><div class="callout exam"><b>AIP-210 exam link</b><p>AIP-210 <em>Classification</em>: confusion matrix, accuracy, precision, recall, F1, ROC/AUC, threshold trade-offs, class imbalance. Classic question: <em>for fraud/default, which metric matters more — precision or recall, and why?</em></p></div></section>
+<section id="packages"><h2>Starter &amp; complete solution packages</h2>
+<h3>Starter package (instructor opens this)</h3><table class="files"><thead><tr><th>File / artefact</th><th>Purpose</th></tr></thead><tbody><tr><td><code>checkpoints/loan_features.parquet</code></td><td>Engineered features + split</td></tr><tr><td><code>checkpoints/loan_preprocessor.joblib</code></td><td>Fitted preprocessing</td></tr><tr><td><code>D3.1_Demo_Starter.ipynb</code></td><td>Headings + setup</td></tr></tbody></table>
+<h3>Complete solution package</h3><table class="files"><thead><tr><th>File / artefact</th><th>Purpose</th></tr></thead><tbody><tr><td><code>D3.1_Demo_Solution.ipynb</code></td><td>Complete demo with plots</td></tr></tbody></table></section>
+<section id="plan"><h2>Run sheet</h2><table class="files"><thead><tr><th>#</th><th>Segment</th><th>Time</th></tr></thead><tbody><tr><td>1</td><td>Load the Day 1 contract and fit logistic regression</td><td>6 min</td></tr><tr><td>2</td><td>The accuracy paradox</td><td>7 min</td></tr><tr><td>3</td><td>ROC and precision–recall curves</td><td>9 min</td></tr><tr><td>4</td><td>Pick the threshold with a cost matrix</td><td>10 min</td></tr><tr><td>5</td><td>class_weight — what it does (and doesn’t) do</td><td>8 min</td></tr></tbody></table>
+<div class="callout"><b>Pre-demo checklist</b><ul>
+<li><code>checkpoints/loan_*</code> present (run L1.2 Level 3 if not)</li>
+<li>Draw a 2×2 confusion matrix on the whiteboard before starting</li>
+</ul></div></section>
+<section id="setup"><h2>Setup</h2><div class="code"><button class="copy" onclick="copyCode(this)">Copy</button><pre><code class="lang-python"># ── Project MIZAN course setup ─ run this cell first ──────────────────────────
+from pathlib import Path
+import warnings, time
+warnings.filterwarnings(&quot;ignore&quot;)
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Locate the course root (the folder that contains data/generate_data.py) from wherever this notebook lives
+ROOT = next(p for p in [Path.cwd(), *Path.cwd().parents] if (p / &quot;data&quot; / &quot;generate_data.py&quot;).exists())
+DATA = ROOT / &quot;data&quot;          # raw synthetic datasets (read-only)
+CKPT = ROOT / &quot;checkpoints&quot;   # hand-off artefacts between labs (lets you start any lab fresh)
+CKPT.mkdir(exist_ok=True)
+pd.set_option(&quot;display.max_columns&quot;, 60); pd.set_option(&quot;display.width&quot;, 160)
+plt.rcParams.update({&quot;figure.figsize&quot;: (9, 4.5), &quot;axes.grid&quot;: True, &quot;grid.alpha&quot;: .3})
+RNG = 42
+print(&quot;Course root:&quot;, ROOT)</code></pre></div></section>
+<section id="step1" class="step"><h2><span class="num">1</span>Load the Day 1 contract and fit logistic regression<span class="mins">6 min</span></h2>
+<div class="say"><b>🎙 Say</b><p>We reuse Day 1’s feature table and fitted preprocessor — no re-engineering. Logistic regression squashes a linear score through the <strong>sigmoid</strong> into a probability of default (PD).</p></div>
+<h3>Do — type or paste</h3><div class="code"><button class="copy" onclick="copyCode(this)">Copy</button><pre><code class="lang-python">import joblib, json
+from sklearn.base import clone
+feat = pd.read_parquet(CKPT / &quot;loan_features.parquet&quot;)
+spec = json.loads((CKPT / &quot;loan_feature_spec.json&quot;).read_text())
+preprocessor = joblib.load(CKPT / &quot;loan_preprocessor.joblib&quot;)      # fitted on train in Lab L1.2
+TARGET = spec[&quot;target&quot;]
+train, valid, test = (feat[feat.split == s] for s in [&quot;train&quot;, &quot;valid&quot;, &quot;test&quot;])
+print({s: len(d) for s, d in zip([&quot;train&quot;, &quot;valid&quot;, &quot;test&quot;], [train, valid, test])}, &quot;| honest baseline AUC from L1.2:&quot;, spec[&quot;honest_valid_auc&quot;])</code></pre></div><div class="code"><button class="copy" onclick="copyCode(this)">Copy</button><pre><code class="lang-python">from sklearn.pipeline import Pipeline
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import roc_auc_score
+logit = Pipeline([(&quot;prep&quot;, clone(preprocessor)), (&quot;clf&quot;, LogisticRegression(max_iter=2000))]).fit(train, train[TARGET])
+p = logit.predict_proba(valid)[:, 1]
+print(&quot;validation AUC:&quot;, round(roc_auc_score(valid[TARGET], p), 3))
+plt.hist(p[valid[TARGET] == 0], bins=60, alpha=.6, density=True, label=&quot;repaid&quot;)
+plt.hist(p[valid[TARGET] == 1], bins=60, alpha=.6, density=True, label=&quot;defaulted&quot;)
+plt.xlabel(&quot;predicted PD&quot;); plt.legend(); plt.title(&quot;Score distributions overlap — a threshold must trade errors&quot;); plt.show()</code></pre></div>
+<div class="expect"><b>Show — expected result</b><p>AUC ≈ 0.83; defaulters’ PDs are shifted right but overlap heavily with good borrowers.</p></div>
+
+</section>
+<section id="step2" class="step"><h2><span class="num">2</span>The accuracy paradox<span class="mins">7 min</span></h2>
+<div class="say"><b>🎙 Say</b><p>Predicting <strong>‘nobody defaults’</strong> is 93% accurate and approves every bad loan. At the default 0.5 threshold our model is barely more accurate but catches only a sliver of defaulters. Accuracy is the wrong metric for rare events.</p></div>
+<h3>Do — type or paste</h3><div class="code"><button class="copy" onclick="copyCode(this)">Copy</button><pre><code class="lang-python">from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay, classification_report
+y = valid[TARGET].to_numpy()
+print(&quot;always-approve accuracy:&quot;, round(accuracy_score(y, np.zeros_like(y)), 4))
+yhat = (p &gt;= 0.5).astype(int)
+print(&quot;model @0.5 accuracy   :&quot;, round(accuracy_score(y, yhat), 4))
+ConfusionMatrixDisplay(confusion_matrix(y, yhat), display_labels=[&quot;repaid&quot;, &quot;default&quot;]).plot(cmap=&quot;Blues&quot;); plt.show()
+print(classification_report(y, yhat, target_names=[&quot;repaid&quot;, &quot;default&quot;], digits=3))</code></pre></div>
+<div class="expect"><b>Show — expected result</b><p>Both ≈ 93% accurate; recall for <em>default</em> at 0.5 is very low (≈ 10–20%).</p></div>
+<div class="think"><b>❓ Ask the room</b><p>Which cell of the confusion matrix costs the bank the most money?</p></div>
+</section>
+<section id="step3" class="step"><h2><span class="num">3</span>ROC and precision–recall curves<span class="mins">9 min</span></h2>
+<div class="say"><b>🎙 Say</b><p>Instead of one threshold, sweep them all. <strong>ROC</strong> plots TPR vs FPR — AUC is the probability a random defaulter scores above a random good borrower. Under heavy imbalance the <strong>PR curve</strong> is more honest: its baseline is the default rate, not 0.5.</p></div>
+<h3>Do — type or paste</h3><div class="code"><button class="copy" onclick="copyCode(this)">Copy</button><pre><code class="lang-python">from sklearn.metrics import roc_curve, precision_recall_curve, average_precision_score
+fpr, tpr, _ = roc_curve(y, p); prec, rec, _ = precision_recall_curve(y, p)
+fig, ax = plt.subplots(1, 2, figsize=(12, 4.5))
+ax[0].plot(fpr, tpr, label=f&quot;AUC = {roc_auc_score(y, p):.3f}&quot;); ax[0].plot([0, 1], [0, 1], &quot;k--&quot;); ax[0].set(xlabel=&quot;False positive rate&quot;, ylabel=&quot;True positive rate (recall)&quot;, title=&quot;ROC&quot;)
+ax[1].plot(rec, prec, label=f&quot;AP = {average_precision_score(y, p):.3f}&quot;); ax[1].axhline(y.mean(), color=&quot;k&quot;, ls=&quot;--&quot;, label=f&quot;random = {y.mean():.3f}&quot;)
+ax[1].set(xlabel=&quot;Recall&quot;, ylabel=&quot;Precision&quot;, title=&quot;Precision–Recall&quot;); [a.legend() for a in ax]; plt.show()</code></pre></div>
+<div class="expect"><b>Show — expected result</b><p>ROC-AUC ≈ 0.83 looks strong; PR-AUC ≈ 0.3 against a 0.067 random baseline — informative but far from perfect.</p></div>
+
+</section>
+<section id="step4" class="step"><h2><span class="num">4</span>Pick the threshold with a cost matrix<span class="mins">10 min</span></h2>
+<div class="say"><b>🎙 Say</b><p>Each mistake has a price. A <strong>false negative</strong> (approve a defaulter) costs the loss amount. A <strong>false positive</strong> (reject a good borrower) costs the margin we would have earned — roughly 3% of the amount per year. We choose the threshold that <strong>minimises total cost</strong>.</p></div>
+<h3>Do — type or paste</h3><div class="code"><button class="copy" onclick="copyCode(this)">Copy</button><pre><code class="lang-python">fn_cost = valid.loss_amount_aed.to_numpy()                                    # realised loss if we approve a defaulter
+fp_cost = 0.03 * valid.loan_amount_aed.to_numpy() * np.maximum(valid.tenure_months.to_numpy(), 12) / 12   # forgone margin
+ths = np.linspace(0.01, 0.6, 60)
+cost = [((p &lt; t) &amp; (y == 1)) @ fn_cost + ((p &gt;= t) &amp; (y == 0)) @ fp_cost for t in ths]
+best = ths[int(np.argmin(cost))]
+plt.plot(ths, np.array(cost) / 1e6); plt.axvline(best, color=&quot;r&quot;, ls=&quot;--&quot;, label=f&quot;cost-optimal threshold {best:.2f}&quot;); plt.axvline(.5, color=&quot;grey&quot;, ls=&quot;:&quot;, label=&quot;default 0.5&quot;)
+plt.xlabel(&quot;threshold&quot;); plt.ylabel(&quot;total cost (AED m)&quot;); plt.legend(); plt.show()
+print(f&quot;approval rate at {best:.2f}: {(p &lt; best).mean():.1%} | cost saving vs 0.5: AED {(cost[np.argmin(np.abs(ths - .5))] - min(cost)) / 1e6:,.1f}m&quot;)</code></pre></div>
+<div class="expect"><b>Show — expected result</b><p>The cost-optimal threshold is ≈ 0.24 — far below 0.5 — with ≈ 92% approvals, saving ≈ AED 15m on the validation book versus the 0.5 default.</p></div>
+<div class="think"><b>❓ Ask the room</b><p>Marketing wants an 85% approval rate. How do you show them the cost of that constraint?</p></div>
+</section>
+<section id="step5" class="step"><h2><span class="num">5</span>class_weight — what it does (and doesn’t) do<span class="mins">8 min</span></h2>
+<div class="say"><b>🎙 Say</b><p><code>class_weight='balanced'</code> up-weights defaulters during training. Ranking (AUC) barely changes, but probabilities are <strong>inflated</strong> — the model is no longer calibrated as a PD. Use it for decisions, not for IFRS 9 provisioning, unless you recalibrate.</p></div>
+<h3>Do — type or paste</h3><div class="code"><button class="copy" onclick="copyCode(this)">Copy</button><pre><code class="lang-python">bal = Pipeline([(&quot;prep&quot;, clone(preprocessor)), (&quot;clf&quot;, LogisticRegression(max_iter=2000, class_weight=&quot;balanced&quot;))]).fit(train, train[TARGET])
+pb = bal.predict_proba(valid)[:, 1]
+print(pd.DataFrame({&quot;unweighted&quot;: [roc_auc_score(y, p), p.mean()], &quot;balanced&quot;: [roc_auc_score(y, pb), pb.mean()]},
+                   index=[&quot;AUC&quot;, &quot;mean predicted PD&quot;]).round(3))
+print(&quot;actual default rate:&quot;, round(y.mean(), 3))</code></pre></div>
+<div class="expect"><b>Show — expected result</b><p>Same AUC; mean predicted PD ≈ 0.07 unweighted (≈ actual) vs ≈ 0.3+ balanced.</p></div>
+<div class="think"><b>❓ Ask the room</b><p>Name two other ways to handle imbalance (resampling — under/over/SMOTE; threshold moving; cost-sensitive learning).</p></div>
+</section>
+<section id="wrap"><h2>Wrap-up &amp; transition</h2><ul>
+<li><strong>Recap:</strong> probabilities → threshold → decisions; accuracy misleads; ROC vs PR; thresholds come from business costs; class weights distort calibration.</li>
+<li><strong>Transition:</strong> <em>“In Lab 3.1 you’ll build the full credit classifier — logistic and KNN, calibration, a cost-optimal cut-off and a multi-class risk grade.”</em></li>
+</ul></section></main></div><script>function copyCode(btn){const t=btn.parentElement.querySelector('code').innerText;
+const done=()=>{btn.textContent='Copied ✓';btn.classList.add('ok');setTimeout(()=>{btn.textContent='Copy';btn.classList.remove('ok')},1400)};
+if(navigator.clipboard){navigator.clipboard.writeText(t).then(done).catch(()=>fallback(t,done))}else fallback(t,done)}
+function fallback(t,done){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(e){}a.remove();done()}
+function toggleTheme(){const r=document.documentElement;const cur=r.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+const nxt=cur==='dark'?'light':'dark';r.setAttribute('data-theme',nxt);try{localStorage.setItem('mizan-theme',nxt)}catch(e){}}
+(function(){try{const t=localStorage.getItem('mizan-theme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}
+// light-weight python highlighter
+const KW=/\b(import|from|as|def|return|for|in|if|elif|else|while|with|try|except|finally|class|lambda|and|or|not|is|None|True|False|print|assert|yield|raise|pass|break|continue|global)\b/g;
+// placeholders use private-use characters so the keyword/number passes can never match inside them
+const enc=n=>String(n).split('').map(d=>String.fromCharCode(0xE000+ +d)).join('');
+const dec=t=>+t.split('').map(c=>c.charCodeAt(0)-0xE000).join('');
+document.querySelectorAll('pre code.lang-python').forEach(el=>{let s=el.innerHTML;const store=[];
+const keep=cls=>m=>{store.push('<span class="'+cls+'">'+m+'</span>');return ''+enc(store.length-1)+''};
+s=s.replace(/(&quot;.*?&quot;|&#x27;.*?&#x27;|"[^"\n]*"|'[^'\n]*')/g,keep('tok-s'));
+s=s.replace(/(#[^\n]*)/g,keep('tok-c'));
+s=s.replace(KW,'<span class="tok-k">$1</span>').replace(/\b(\d+\.?\d*)\b/g,'<span class="tok-n">$1</span>');
+s=s.replace(/([-]+)/g,(m,t)=>store[dec(t)]);el.innerHTML=s});
+const links=[...document.querySelectorAll('nav.toc a')];const secs=links.map(a=>document.querySelector(a.getAttribute('href')));
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.classList.remove('active'));
+const i=secs.indexOf(e.target);if(i>=0)links[i].classList.add('active')}})},{rootMargin:'-20% 0px -70% 0px'});secs.forEach(s=>s&&io.observe(s))})();
+</script></body></html>

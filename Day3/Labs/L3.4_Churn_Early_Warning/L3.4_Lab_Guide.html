@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lab L3.4 · Churn early-warning — logistic vs k-NN vs tree vs forest, value-based targeting, and trees for regression</title><style>:root{--bg:#f6f7f9;--panel:#fff;--ink:#1b2430;--muted:#5b6675;--line:#e3e7ee;--brand:#0b5e6b;--brand2:#c8963e;
+--code-bg:#0f1720;--code-ink:#e6edf3;--l1:#2f6fdb;--l2:#c8963e;--l3:#1f8f5f;--why:#eef6f7;--exp:#eef8f1;--think:#fbf5ea;--say:#eef2fb;--exam:#f4effa}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1117;--panel:#141a22;--ink:#e6edf3;--muted:#9aa6b2;--line:#263040;
+--brand:#4fb3c2;--why:#12262a;--exp:#122319;--think:#2a2214;--say:#151d2d;--exam:#211a2c;--code-bg:#0a0f15}}
+:root[data-theme="dark"]{--bg:#0d1117;--panel:#141a22;--ink:#e6edf3;--muted:#9aa6b2;--line:#263040;--brand:#4fb3c2;--why:#12262a;
+--exp:#122319;--think:#2a2214;--say:#151d2d;--exam:#211a2c;--code-bg:#0a0f15}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+header.top{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:10px 20px;
+background:var(--brand);color:#fff;font-size:14px;letter-spacing:.2px}
+.brand .logo{color:var(--brand2);margin-right:6px}.brand .sep{opacity:.5;margin:0 10px}
+.theme{background:transparent;border:1px solid rgba(255,255,255,.5);color:#fff;border-radius:6px;padding:2px 10px;cursor:pointer;font-size:16px}
+.layout{display:grid;grid-template-columns:260px minmax(0,1fr);max-width:1320px;margin:0 auto}
+nav.toc{position:sticky;top:46px;align-self:start;max-height:calc(100vh - 46px);overflow:auto;padding:24px 12px 24px 20px;font-size:13.5px}
+nav.toc a{display:block;color:var(--muted);text-decoration:none;padding:4px 8px;border-left:2px solid transparent;border-radius:0 4px 4px 0}
+nav.toc a:hover,nav.toc a.active{color:var(--brand);border-left-color:var(--brand);background:var(--panel)}
+.toc-title{font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:1px;color:var(--muted);margin:0 8px 8px}
+main{padding:24px 28px 80px;min-width:0}
+section{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px 26px;margin:0 0 18px}
+section.hero{background:linear-gradient(135deg,var(--brand),#083f48);color:#fff;border:0}
+section.hero.demo{background:linear-gradient(135deg,#3b2f6b,#1f1a3d)}
+.hero h1{margin:.2em 0 .3em;font-size:30px;line-height:1.2}.hero .lead{opacity:.92;font-size:17px;margin:0 0 16px}
+.kicker{text-transform:uppercase;letter-spacing:1.5px;font-size:12px;color:var(--brand2);font-weight:700}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.meta div{background:rgba(255,255,255,.1);border-radius:8px;padding:8px 12px}.meta .k{display:block;font-size:11px;text-transform:uppercase;opacity:.75;letter-spacing:1px}
+.meta .v{font-weight:600;font-size:14px}
+.diff i{display:inline-block;width:9px;height:9px;margin-right:2px;border-radius:2px;background:rgba(255,255,255,.25)}.diff i.on{background:var(--brand2)}
+h2{font-size:22px;margin:0 0 12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}h3{font-size:16px;margin:18px 0 8px;color:var(--brand)}
+.num{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--brand);color:#fff;font-size:15px;flex:none}
+.mins{margin-left:auto;font-size:12px;font-weight:600;color:var(--muted);background:var(--bg);padding:2px 10px;border-radius:20px}
+.why,.expect,.think,.say,.callout,.scenario{border-radius:8px;padding:12px 16px;margin:12px 0}
+.why{background:var(--why);border-left:4px solid var(--brand)}.expect{background:var(--exp);border-left:4px solid var(--l3)}
+.think{background:var(--think);border-left:4px solid var(--brand2)}.say{background:var(--say);border-left:4px solid #5b6bd6}
+.callout{background:var(--bg);border:1px dashed var(--line)}.callout.exam{background:var(--exam);border:0;border-left:4px solid #8a5cc7}
+.scenario{background:var(--bg)}
+.why>b,.expect>b,.think>b,.say>b,.callout>b{display:block;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.why p:last-child,.expect p:last-child,.think p:last-child,.say p:last-child{margin-bottom:0}
+ol.tasks li{margin:4px 0}
+.levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.lvl{border-radius:10px;padding:12px 16px;border:1px solid var(--line);border-top:5px solid}.lvl.l1{border-top-color:var(--l1)}.lvl.l2{border-top-color:var(--l2)}.lvl.l3{border-top-color:var(--l3)}
+.lvl p{margin:.4em 0 0;font-size:14px}.note{color:var(--muted);font-size:14px}
+details{border:1px solid var(--line);border-radius:8px;margin:10px 0;background:var(--bg)}
+details summary{cursor:pointer;padding:8px 14px;font-weight:600}details[open] summary{border-bottom:1px solid var(--line)}
+details>*:not(summary){margin:10px 14px}
+.code{position:relative;margin:10px 0}
+pre{background:var(--code-bg);color:var(--code-ink);padding:14px 16px;border-radius:8px;overflow:auto;font:13.5px/1.5 Consolas,"Cascadia Code",Menlo,monospace;margin:0}
+code{font-family:Consolas,"Cascadia Code",Menlo,monospace;font-size:.92em}
+:not(pre)>code{background:var(--bg);border:1px solid var(--line);padding:1px 5px;border-radius:4px}
+.copy{position:absolute;top:8px;right:8px;background:#ffffff1a;color:#e6edf3;border:1px solid #ffffff33;border-radius:5px;font-size:12px;padding:2px 10px;cursor:pointer}
+.copy:hover{background:#ffffff33}.copy.ok{background:var(--l3);border-color:var(--l3)}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:8px 0}th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+th{background:var(--bg)}table.files td:first-child{white-space:nowrap}
+.tok-k{color:#ff7b72}.tok-s{color:#a5d6ff}.tok-c{color:#8b949e;font-style:italic}.tok-n{color:#79c0ff}.tok-f{color:#d2a8ff}
+@media (max-width:900px){.layout{grid-template-columns:1fr}nav.toc{display:none}main{padding:16px}section{padding:16px}.hero h1{font-size:24px}}
+@media print{nav.toc,header.top,.copy{display:none}.layout{display:block}details{display:block}details>*{display:block!important}section{break-inside:avoid-page}}
+</style></head>
+<body class="lab-page">
+<header class="top"><div class="brand"><span class="logo">◆</span> Horizon Gulf Bank · Project MIZAN<span class="sep">|</span>CAIP AIP-210 · Certified AI Practitioner</div>
+<button class="theme" onclick="toggleTheme()" aria-label="Toggle theme">◐</button></header>
+<div class="layout"><nav class="toc"><div class="toc-title">On this page</div><a href="#overview">Overview</a>
+<a href="#levels">How to use the 3 levels</a>
+<a href="#packages">Starter &amp; solution packages</a>
+<a href="#setup">Setup</a>
+<a href="#step1">1. Assemble, guard against leakage, split</a>
+<a href="#step2">2. Algorithm bake-off on one validation set</a>
+<a href="#step3">3. Depth controls over-fitting — a validation curve for trees</a>
+<a href="#step4">4. Gains, lift and the call list</a>
+<a href="#step5">5. Target by expected value, not by rank alone</a>
+<a href="#step6">6. Trees for regression — and why they cannot extrapolate</a>
+<a href="#step7">7. Explain, test once, save the champion</a>
+<a href="#stretch">Stretch challenges</a>
+<a href="#trouble">Troubleshooting</a></nav>
+<main><section class="hero lab"><div class="kicker">Day 3 · Independent Lab L3.4</div>
+<h1>Churn early-warning — logistic vs k-NN vs tree vs forest, value-based targeting, and trees for regression</h1><p class="lead">Run a fair bake-off of every Day 3 algorithm on 250k customers, control tree depth, turn scores into a retention campaign with gains and expected value, and see what trees do (and cannot do) on a regression problem.</p>
+<div class="meta"><div><span class="k">Duration</span><span class="v">60 min</span></div><div><span class="k">Difficulty</span><span class="v"><span class="diff" title="8/10"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i></span> 8/10</span></div><div><span class="k">Dataset(s)</span><span class="v">checkpoints/customers_clean.parquet (L1.1) · customer_segments.parquet (L3.2) · customer_txn_features.parquet (L1.3) · property_valuations.csv</span></div><div><span class="k">Builds on</span><span class="v">Labs L1.1, L1.3, L3.1 (thresholds), L3.2 (segments), L3.3 (forests) · Day 2 AVM (L2.1)</span></div><div><span class="k">Produces</span><span class="v">checkpoints/churn_model.joblib · checkpoints/churn_scores.parquet</span></div></div></section>
+<section id="overview"><h2>Objective &amp; scenario alignment</h2>
+<div class="scenario"><p><strong>Horizon Gulf Bank (HGB)</strong> is a fictional UAE retail bank with 250,000 customers. Its Board approved <strong>Project MIZAN</strong> — an AI decisioning platform covering credit, fraud, collateral valuation, cash logistics, customer retention and document automation. You are a junior ML practitioner in the MIZAN squad.</p>
+<p>About <strong>12% of customers leave within six months</strong>. The Retail Retention team can call 10% of the base per half-year and offers a fee waiver worth ≈ AED 150 per accepted offer. They ask MIZAN: <em>who should we call?</em> You will choose the algorithm on evidence, explain why depth matters for trees, and turn probabilities into a campaign list that maximises <strong>net value</strong>, not accuracy. The Mortgage team then asks a side question: can trees replace the Day 2 linear valuation model?</p>
+<p><strong>Progressive architecture:</strong> combines L1.1 (master), L1.3 (transaction features) and L3.2 (segments). The churn model is upgraded with a neural network in L4.3 and deployed in the Day 5 capstone (L5.3).</p></div><h3>By the end of this lab you will be able to</h3><ul>
+<li>Compare logistic regression, k-NN, a decision tree and a random forest on the <em>same</em> split and metrics</li>
+<li>Use a depth sweep (validation curve) to see tree over-fitting and pick the depth</li>
+<li>Read cumulative-gains and lift charts; size a campaign from a contact budget</li>
+<li>Choose targets by <strong>expected value</strong> (probability × value − cost)</li>
+<li>Fit regression trees and forests, and discover why trees cannot extrapolate a trend</li>
+</ul>
+<div class="callout exam"><b>AIP-210 exam link</b><p>AIP-210 <em>Classification</em>: model tuning, class imbalance, threshold trade-offs; <em>Decision trees and random forests</em>: depth/pruning, trees for classification <strong>and regression</strong>, ensembles, feature importance.</p></div></section>
+<section id="levels"><h2>How to use the three levels</h2><div class="levels">
+<div class="lvl l1"><b>Level 1 · From scratch</b><p>Work from <i>this guide</i> in <code>L3.4_Level1_From_Scratch.ipynb</code>. Every step tells you <i>what</i> to build and <i>why</i>; you write all the code. Open a hint only when stuck for &gt;5 min.</p></div>
+<div class="lvl l2"><b>Level 2 · Guided starter — ★ recommended for this cohort</b><p>Open <code>L3.4_Level2_Guided_Starter.ipynb</code>. The scaffolding is written; you complete the numbered <code>✏️ BLANK</code>s. Each blank explains what to write, where, and why.</p></div>
+<div class="lvl l3"><b>Level 3 · Complete solution</b><p>Run <code>L3.4_Level3_Solution.ipynb</code> top-to-bottom, then use the <i>Think like a practitioner</i> prompts to modify and break it on purpose.</p></div>
+</div><p class="note"><b>Default: Level 2.</b> Start in the guided starter. Finished early or already confident? Try the next step at Level 1. Stuck? Open Level 3. All three levels produce the same artefacts, so you can switch level at any step.</p></section>
+<section id="packages"><h2>Starter &amp; solution packages</h2>
+<h3>Starter package (what you begin with)</h3><table class="files"><thead><tr><th>File / artefact</th><th>Purpose</th></tr></thead><tbody><tr><td><code>checkpoints/customers_clean.parquet</code></td><td>From L1.1</td></tr><tr><td><code>checkpoints/customer_segments.parquet</code></td><td>From L3.2</td></tr><tr><td><code>checkpoints/customer_txn_features.parquet</code></td><td>From L1.3</td></tr><tr><td><code>checkpoints/valuation_metrics.json</code></td><td>From L2.1 (Day 2 AVM benchmark)</td></tr><tr><td><code>L3.4_Level1_From_Scratch.ipynb</code></td><td>Level 1</td></tr><tr><td><code>L3.4_Level2_Guided_Starter.ipynb</code></td><td>Level 2</td></tr></tbody></table>
+<h3>Complete solution package (what you finish with)</h3><table class="files"><thead><tr><th>File / artefact</th><th>Purpose</th></tr></thead><tbody><tr><td><code>L3.4_Level3_Solution.ipynb</code></td><td>Complete solution</td></tr><tr><td><code>checkpoints/churn_model.joblib</code></td><td>Champion churn pipeline + metadata</td></tr><tr><td><code>checkpoints/churn_scores.parquet</code></td><td>customer_id → p_churn, decile, split</td></tr></tbody></table>
+<div class="callout"><b>Fell behind?</b> <p>Needs <code>customers_clean.parquet</code> (L1.1), <code>customer_txn_features.parquet</code> (L1.3), <code>customer_segments.parquet</code> (L3.2) and <code>valuation_metrics.json</code> (L2.1). Run those Level 3 solutions to re-create any that are missing.</p></div></section>
+<section id="setup"><h2>Setup</h2>
+<p>Run the standard course setup cell first (it locates <code>data/</code> and <code>checkpoints/</code> from anywhere inside the course folder):</p>
+<div class="code"><button class="copy" onclick="copyCode(this)">Copy</button><pre><code class="lang-python"># ── Project MIZAN course setup ─ run this cell first ──────────────────────────
+from pathlib import Path
+import warnings, time
+warnings.filterwarnings(&quot;ignore&quot;)
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Locate the course root (the folder that contains data/generate_data.py) from wherever this notebook lives
+ROOT = next(p for p in [Path.cwd(), *Path.cwd().parents] if (p / &quot;data&quot; / &quot;generate_data.py&quot;).exists())
+DATA = ROOT / &quot;data&quot;          # raw synthetic datasets (read-only)
+CKPT = ROOT / &quot;checkpoints&quot;   # hand-off artefacts between labs (lets you start any lab fresh)
+CKPT.mkdir(exist_ok=True)
+pd.set_option(&quot;display.max_columns&quot;, 60); pd.set_option(&quot;display.width&quot;, 160)
+plt.rcParams.update({&quot;figure.figsize&quot;: (9, 4.5), &quot;axes.grid&quot;: True, &quot;grid.alpha&quot;: .3})
+RNG = 42
+print(&quot;Course root:&quot;, ROOT)</code></pre></div></section>
+<section id="step1" class="step"><h2><span class="num">1</span>Assemble, guard against leakage, split
+<span class="mins">6 min</span></h2>
+<div class="why"><b>Why this matters</b><p>Three earlier labs contribute features. Before modelling we assert that <strong>leaky</strong> columns (the account-closure date, retention offers made <em>after</em> the customer started leaving) and <strong>protected attributes</strong> are not in the feature list, then make a stratified 60/20/20 split so every model is judged on the same validation and test rows.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Merge master + segments + transaction features (one-to-one). Build <code>NUM</code> and <code>CAT</code> lists.</li><li>Assert <code>FORBIDDEN</code> ∩ features is empty.</li><li>Stratified split into <code>tr</code>, <code>va</code>, <code>te</code> (60/20/20); print sizes and churn rates.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>150k / 50k / 50k rows, each with a churn rate of 0.12.</p></div>
+
+<details class="sol"><summary>🔑 Reference solution (Level 3 code)</summary><div class="code"><button class="copy" onclick="copyCode(this)">Copy</button><pre><code class="lang-python">import json
+cust = pd.read_parquet(CKPT / &quot;customers_clean.parquet&quot;)                    # L1.1
+seg = pd.read_parquet(CKPT / &quot;customer_segments.parquet&quot;)                  # L3.2
+txf = pd.read_parquet(CKPT / &quot;customer_txn_features.parquet&quot;)              # L1.3
+TXN = [&quot;has_card_activity&quot;, &quot;txn_count&quot;, &quot;log_amt_mean&quot;, &quot;recency_days&quot;, &quot;spend_trend&quot;, &quot;ecom_share&quot;, &quot;n_mcc&quot;]
+df = (cust.merge(seg[[&quot;customer_id&quot;, &quot;segment&quot;]], on=&quot;customer_id&quot;, validate=&quot;one_to_one&quot;)
+          .merge(txf[[&quot;customer_id&quot;] + TXN], on=&quot;customer_id&quot;, validate=&quot;one_to_one&quot;))
+df[&quot;log_balance&quot;], df[&quot;log_salary&quot;] = np.log1p(df.avg_balance_aed), np.log1p(df.monthly_salary_aed)
+NUM = [&quot;age&quot;, &quot;tenure_months&quot;, &quot;num_products&quot;, &quot;salary_transfer&quot;, &quot;has_credit_card&quot;, &quot;has_personal_loan&quot;, &quot;has_auto_loan&quot;, &quot;has_mortgage&quot;,
+       &quot;log_balance&quot;, &quot;log_salary&quot;, &quot;digital_logins_30d&quot;, &quot;branch_visits_90d&quot;, &quot;complaints_12m&quot;, &quot;days_since_last_txn&quot;, &quot;aecb_score&quot;] + TXN
+CAT = [&quot;segment&quot;, &quot;employment_type&quot;, &quot;emirate&quot;]
+FORBIDDEN = {&quot;account_closed_date&quot;, &quot;retention_offer_made&quot;, &quot;gender&quot;, &quot;nationality_group&quot;}   # leakage + protected attributes
+from sklearn.model_selection import train_test_split
+assert not FORBIDDEN &amp; set(NUM + CAT), &quot;leaky or protected column in the feature list!&quot;
+tr, rest = train_test_split(df, test_size=0.4, stratify=df.churned_6m, random_state=RNG)
+va, te = train_test_split(rest, test_size=0.5, stratify=rest.churned_6m, random_state=RNG)
+pd.DataFrame({&quot;rows&quot;: [len(tr), len(va), len(te)], &quot;churn_rate&quot;: [tr.churned_6m.mean(), va.churned_6m.mean(), te.churned_6m.mean()]},
+             index=[&quot;train&quot;, &quot;valid&quot;, &quot;test&quot;]).round(4)</code></pre></div></details>
+<div class="think"><b>Think like a practitioner</b><p>Why is <code>days_since_last_txn</code> fine as a feature but <code>account_closed_date</code> is not, although both describe inactivity?</p></div>
+</section>
+<section id="step2" class="step"><h2><span class="num">2</span>Algorithm bake-off on one validation set
+<span class="mins">14 min</span></h2>
+<div class="why"><b>Why this matters</b><p>Every algorithm gets the <strong>same</strong> features, training rows and validation rows, and is judged on the metrics the business uses: ROC-AUC (ranking), PR-AUC (imbalance-aware) and <strong>capture in the top 10%</strong> (the call budget). Fit time and scoring time matter too: k-NN has no training cost but must compare each new customer with every stored one.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Shared preprocessing: impute + scale numerics, one-hot categoricals.</li><li>Models: <code>LogisticRegression</code>, <code>KNeighborsClassifier(k=75)</code> (trained on a 30k sample), <code>DecisionTreeClassifier(max_depth=8, min_samples_leaf=50)</code>, <code>RandomForestClassifier(300 trees, min_samples_leaf=20, max_samples=0.5)</code>.</li><li>Write <code>top_capture(y, p, 0.10)</code>; build a leaderboard with ROC-AUC, PR-AUC, capture@10%, fit and predict seconds.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p><strong>Logistic regression wins</strong> (ROC-AUC ≈ 0.71, PR-AUC ≈ 0.26, capture@10% ≈ 0.26) just ahead of the forest, which takes ≈ 10× longer to fit; the depth-8 tree follows, and k-NN is last <em>and</em> the slowest to predict. Churn is a noisy, hard target — AUC ≈ 0.7 is typical in banking. A random 10% call list would reach only 10% of churners.</p></div>
+
+<details class="sol"><summary>🔑 Reference solution (Level 3 code)</summary><div class="code"><button class="copy" onclick="copyCode(this)">Copy</button><pre><code class="lang-python">from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.impute import SimpleImputer
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import roc_auc_score, average_precision_score
+def prep():
+    return ColumnTransformer([(&quot;num&quot;, make_pipeline(SimpleImputer(strategy=&quot;median&quot;), StandardScaler()), NUM),
+                              (&quot;cat&quot;, OneHotEncoder(handle_unknown=&quot;ignore&quot;), CAT)])
+def top_capture(y, p, budget=0.10):
+    &quot;&quot;&quot;share of all churners found when calling the top `budget` of customers&quot;&quot;&quot;
+    top = np.argsort(-p)[: int(len(p) * budget)]
+    return float(np.asarray(y)[top].sum() / np.sum(y))
+models = {&quot;logistic&quot;: make_pipeline(prep(), LogisticRegression(max_iter=1000)),
+          &quot;k-NN (k=75)&quot;: make_pipeline(prep(), KNeighborsClassifier(n_neighbors=75, n_jobs=-1)),
+          &quot;decision tree&quot;: make_pipeline(prep(), DecisionTreeClassifier(max_depth=8, min_samples_leaf=50, random_state=RNG)),
+          &quot;random forest&quot;: make_pipeline(prep(), RandomForestClassifier(n_estimators=300, min_samples_leaf=20, max_samples=0.5, n_jobs=-1, random_state=RNG))}
+X, Xv = tr[NUM + CAT], va[NUM + CAT]
+board, P = {}, {}
+for name, m in models.items():
+    fit_rows = tr.sample(30_000, random_state=RNG) if name.startswith(&quot;k-NN&quot;) else tr
+    t0 = time.time(); m.fit(fit_rows[NUM + CAT], fit_rows.churned_6m); t_fit = time.time() - t0
+    t0 = time.time(); P[name] = p = m.predict_proba(Xv)[:, 1]; t_pred = time.time() - t0
+    board[name] = {&quot;ROC_AUC&quot;: roc_auc_score(va.churned_6m, p), &quot;PR_AUC&quot;: average_precision_score(va.churned_6m, p),
+                   &quot;capture@10%&quot;: top_capture(va.churned_6m, p), &quot;fit_s&quot;: t_fit, &quot;predict_s&quot;: t_pred}
+board = pd.DataFrame(board).T.sort_values(&quot;PR_AUC&quot;, ascending=False); board.round(3)</code></pre></div></details>
+<div class="think"><b>Think like a practitioner</b><p>The simplest model wins. What does that suggest about how the churn signal is structured — and what is the business bonus of a linear champion?</p></div>
+</section>
+<section id="step3" class="step"><h2><span class="num">3</span>Depth controls over-fitting — a validation curve for trees
+<span class="mins">8 min</span></h2>
+<div class="why"><b>Why this matters</b><p>A tree grown without limits memorises the training set: training AUC → 1, validation AUC falls. <strong>Depth</strong> (and minimum leaf size, cost-complexity pruning) is the main lever. Plotting training <em>and</em> validation score against depth shows the under-fit → sweet spot → over-fit shape you met on Day 2.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>For depth in 2, 4, 6, 8, 10, 12, 16, 20, None fit a <code>DecisionTreeClassifier</code> (min_samples_leaf=1) and record train and validation ROC-AUC.</li><li>Plot both curves; print the best depth on validation and the gap at <code>None</code>.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>Validation AUC peaks at depth 6 (≈ 0.70) while training AUC keeps rising; the unlimited tree has ≈ 19k leaves, training AUC = 1.00 and validation AUC ≈ 0.53 — barely better than a coin. Textbook over-fitting.</p></div>
+
+<details class="sol"><summary>🔑 Reference solution (Level 3 code)</summary><div class="code"><button class="copy" onclick="copyCode(this)">Copy</button><pre><code class="lang-python">pre = prep().fit(X)
+Xt, Xvt = pre.transform(X), pre.transform(Xv)
+rows = []
+for d in [2, 4, 6, 8, 10, 12, 16, 20, None]:
+    t = DecisionTreeClassifier(max_depth=d, random_state=RNG).fit(Xt, tr.churned_6m)
+    rows.append((str(d), roc_auc_score(tr.churned_6m, t.predict_proba(Xt)[:, 1]),
+                 roc_auc_score(va.churned_6m, t.predict_proba(Xvt)[:, 1]), t.get_n_leaves()))
+vc = pd.DataFrame(rows, columns=[&quot;max_depth&quot;, &quot;train_AUC&quot;, &quot;valid_AUC&quot;, &quot;leaves&quot;]).set_index(&quot;max_depth&quot;)
+vc[[&quot;train_AUC&quot;, &quot;valid_AUC&quot;]].plot(marker=&quot;o&quot;, title=&quot;Decision tree: depth vs ROC-AUC&quot;); plt.ylabel(&quot;ROC-AUC&quot;); plt.show()
+print(&quot;best depth on validation:&quot;, vc.valid_AUC.idxmax()); vc.round(3)</code></pre></div></details>
+<div class="think"><b>Think like a practitioner</b><p>The forest uses trees grown much deeper than 8. Why does averaging 300 over-fitted trees not over-fit?</p></div>
+</section>
+<section id="step4" class="step"><h2><span class="num">4</span>Gains, lift and the call list
+<span class="mins">8 min</span></h2>
+<div class="why"><b>Why this matters</b><p>A <strong>cumulative-gains</strong> chart answers the campaign question directly: <em>if we call the top x% by score, what share of all churners do we reach?</em> <strong>Lift</strong> = that share ÷ x. Decile tables are how retention and collections teams consume models.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>For the champion (best PR-AUC) compute a decile table on validation: churn rate, lift, cumulative capture.</li><li>Plot cumulative gains for every model plus the random diagonal.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>Decile 1 churn rate ≈ 31% (lift ≈ 2.6×); decile 10 ≈ 2%. The top 30% of customers hold ≈ 56% of all churners.</p></div>
+<details class="hint"><summary>💡 Hint</summary><p>Use <code>rank(method='first')</code> before <code>qcut</code> — tied scores otherwise break the equal-sized bins.</p></details>
+<details class="sol"><summary>🔑 Reference solution (Level 3 code)</summary><div class="code"><button class="copy" onclick="copyCode(this)">Copy</button><pre><code class="lang-python">champ = board.index[0]
+dec = pd.DataFrame({&quot;y&quot;: va.churned_6m.to_numpy(), &quot;p&quot;: P[champ]})
+dec[&quot;decile&quot;] = pd.qcut(dec.p.rank(method=&quot;first&quot;, ascending=False), 10, labels=range(1, 11))
+table = dec.groupby(&quot;decile&quot;, observed=True).agg(customers=(&quot;y&quot;, &quot;size&quot;), churners=(&quot;y&quot;, &quot;sum&quot;), churn_rate=(&quot;y&quot;, &quot;mean&quot;))
+table[&quot;lift&quot;] = table.churn_rate / dec.y.mean()
+table[&quot;cum_capture&quot;] = table.churners.cumsum() / dec.y.sum()
+display(table.round(3))
+for name, p in P.items():
+    order = np.argsort(-p); cum = np.cumsum(va.churned_6m.to_numpy()[order]) / va.churned_6m.sum()
+    plt.plot(np.arange(1, len(p) + 1) / len(p), cum, label=name)
+plt.plot([0, 1], [0, 1], &quot;k--&quot;, label=&quot;random&quot;); plt.axvline(0.10, color=&quot;grey&quot;, ls=&quot;:&quot;)
+plt.xlabel(&quot;share of customers called&quot;); plt.ylabel(&quot;share of churners reached&quot;); plt.legend(); plt.title(&quot;Cumulative gains&quot;); plt.show()</code></pre></div></details>
+
+</section>
+<section id="step5" class="step"><h2><span class="num">5</span>Target by expected value, not by rank alone
+<span class="mins">8 min</span></h2>
+<div class="why"><b>Why this matters</b><p>Calling a customer costs AED 25 and a fee waiver AED 150 if accepted; ≈ 30% of would-be churners are saved, and a saved customer is worth ≈ 2% of their balance per year plus AED 400 product margin. <strong>Expected value</strong> = P(churn) × 0.30 × value − cost. Ranking by EV contacts high-value customers with moderate risk ahead of low-value customers with high risk.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Compute <code>value = 0.02 × balance + 400</code> and <code>ev = p × 0.30 × value − (25 + p × 0.30 × 150)</code> for validation customers.</li><li>Compare three policies: top 10% by probability, top 10% by EV, and <em>everyone with EV &gt; 0</em>. Report customers called, churners reached and total EV.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>Top 10% by EV reaches fewer churners (≈ 990 vs ≈ 1,530) but more than <strong>doubles</strong> expected value (≈ AED 329k vs ≈ 140k). ‘All with EV &gt; 0’ calls ≈ 17k customers (34%) for ≈ AED 445k — the most value, but over three times the call budget.</p></div>
+
+<details class="sol"><summary>🔑 Reference solution (Level 3 code)</summary><div class="code"><button class="copy" onclick="copyCode(this)">Copy</button><pre><code class="lang-python">v = va.assign(p=P[champ], value=0.02 * np.expm1(va.log_balance) + 400)
+v[&quot;ev&quot;] = v.p * 0.30 * v.value - (25 + v.p * 0.30 * 150)
+n10 = int(0.10 * len(v))
+policies = {&quot;top 10% by P(churn)&quot;: v.nlargest(n10, &quot;p&quot;), &quot;top 10% by EV&quot;: v.nlargest(n10, &quot;ev&quot;), &quot;all with EV &gt; 0&quot;: v[v.ev &gt; 0]}
+pd.DataFrame({k: {&quot;called&quot;: len(s), &quot;churners_reached&quot;: int(s.churned_6m.sum()), &quot;expected_value_AED&quot;: s.ev.sum()}
+              for k, s in policies.items()}).T.round(0)</code></pre></div></details>
+<div class="think"><b>Think like a practitioner</b><p>EV targeting favours wealthy customers. Is that acceptable for a retention campaign? Would it be for a <em>hardship</em> programme?</p></div>
+</section>
+<section id="step6" class="step"><h2><span class="num">6</span>Trees for regression — and why they cannot extrapolate
+<span class="mins">10 min</span></h2>
+<div class="why"><b>Why this matters</b><p>Trees also <strong>regress</strong>: each leaf predicts the mean of its training rows. That makes them flexible (no need for log transforms or splines) but <strong>piecewise constant</strong>: they can never predict outside the range seen in training. The Day 2 AVM was tested <em>out-of-time</em> on 2025 valuations, when prices kept rising. Can trees beat it?</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Reload valuations, remove entry errors (psf ratio outside [0.25, 4]), ordinal-encode categoricals, train on &lt; 2025, test on 2025.</li><li>Fit <code>DecisionTreeRegressor</code> (depth 6, 12, 20) and <code>RandomForestRegressor</code> on log(valuation); report OOT MAPE next to the Day 2 linear OOT MAPE from <code>valuation_metrics.json</code>.</li><li>Print the median prediction bias on 2025 for the forest.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>Depth 6 → 28% MAPE, depth 20 → 12.7%, forest → ≈ 10.8% — yet <strong>every tree model loses to the Day 2 linear AVM (≈ 9.7%) out-of-time</strong>, and the forest under-values 2025 properties (median bias ≈ −3%). A tree's prediction for <code>months_since_2018</code> beyond the training range is frozen at the last leaf — it cannot follow a rising market.</p></div>
+
+<details class="sol"><summary>🔑 Reference solution (Level 3 code)</summary><div class="code"><button class="copy" onclick="copyCode(this)">Copy</button><pre><code class="lang-python">from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.preprocessing import OrdinalEncoder
+val = pd.read_csv(DATA / &quot;property_valuations.csv&quot;, parse_dates=[&quot;valuation_date&quot;])
+ratio = (val.valuation_aed / val.size_sqft) / (val.valuation_aed / val.size_sqft).groupby([val.community, val.property_type]).transform(&quot;median&quot;)
+val = val[ratio.between(0.25, 4)].copy()
+val[&quot;months_since_2018&quot;] = (val.valuation_date - pd.Timestamp(&quot;2018-01-01&quot;)).dt.days / 30.44
+VC = [&quot;emirate&quot;, &quot;community&quot;, &quot;property_type&quot;, &quot;view&quot;]
+VN = [&quot;bedrooms&quot;, &quot;size_sqft&quot;, &quot;building_age_years&quot;, &quot;floor&quot;, &quot;furnished&quot;, &quot;private_pool&quot;, &quot;parking_spaces&quot;,
+      &quot;distance_to_metro_km&quot;, &quot;service_charge_aed_sqft&quot;, &quot;off_plan&quot;, &quot;months_since_2018&quot;]
+enc = OrdinalEncoder(handle_unknown=&quot;use_encoded_value&quot;, unknown_value=-1)
+past, fut = val[val.valuation_date &lt; &quot;2025-01-01&quot;], val[val.valuation_date &gt;= &quot;2025-01-01&quot;]
+Xp = np.c_[past[VN], enc.fit_transform(past[VC])]; Xf = np.c_[fut[VN], enc.transform(fut[VC])]
+oot = lambda pred: np.mean(np.abs(np.exp(pred) / fut.valuation_aed - 1))
+res = {f&quot;tree depth {d}&quot;: oot(DecisionTreeRegressor(max_depth=d, min_samples_leaf=20, random_state=RNG).fit(Xp, np.log(past.valuation_aed)).predict(Xf))
+       for d in [6, 12, 20]}
+rf_reg = RandomForestRegressor(n_estimators=150, min_samples_leaf=3, max_features=0.6, max_samples=0.5, n_jobs=-1, random_state=RNG)
+p_rf = rf_reg.fit(Xp, np.log(past.valuation_aed)).predict(Xf)
+res[&quot;random forest&quot;] = oot(p_rf)
+res[&quot;Day 2 linear AVM (L2.1)&quot;] = json.loads((CKPT / &quot;valuation_metrics.json&quot;).read_text())[&quot;oot_2025_mape&quot;]
+display(pd.Series(res, name=&quot;2025 out-of-time MAPE&quot;).round(4).to_frame())
+print(f&quot;forest median bias on 2025: {np.median(np.exp(p_rf) / fut.valuation_aed - 1):+.1%}&quot;)</code></pre></div></details>
+<div class="think"><b>Think like a practitioner</b><p>How could you keep the forest but fix the trend problem? (Hint: model price <em>relative</em> to a market index, or combine linear + tree.)</p></div>
+</section>
+<section id="step7" class="step"><h2><span class="num">7</span>Explain, test once, save the champion
+<span class="mins">6 min</span></h2>
+<div class="why"><b>Why this matters</b><p>Retention managers will ask <em>why</em> a customer is on the list. <strong>Permutation importance</strong> on validation shows which features the champion actually relies on. Then the test set — untouched so far — gives the number we report, and the scores are saved for the Day 4 neural challenger and the Day 5 capstone.</p></div>
+<h3>Your tasks</h3><ol class="tasks"><li>Permutation importance (PR-AUC drop, 3 repeats) on a 15k validation sample; plot the top 12.</li><li>Test-set ROC-AUC, PR-AUC and capture@10% for the champion.</li><li>Save the pipeline + metadata to <code>churn_model.joblib</code>; save <code>customer_id, p_churn, decile, split</code> for <em>all</em> customers to <code>churn_scores.parquet</code>.</li></ol>
+<div class="expect"><b>Checkpoint — you should see</b><p>Complaints, salary transfer, days since last transaction, digital logins, tenure and number of products dominate. Test metrics match validation (ROC-AUC ≈ 0.71, PR-AUC ≈ 0.25, capture@10% ≈ 0.26) — no sign of over-fitting to validation. Two files saved.</p></div>
+
+<details class="sol"><summary>🔑 Reference solution (Level 3 code)</summary><div class="code"><button class="copy" onclick="copyCode(this)">Copy</button><pre><code class="lang-python">import joblib
+from sklearn.inspection import permutation_importance
+m = models[champ]
+vs = va.sample(15_000, random_state=RNG)
+pi = permutation_importance(m, vs[NUM + CAT], vs.churned_6m, scoring=&quot;average_precision&quot;, n_repeats=3, random_state=RNG, n_jobs=-1)
+pd.Series(pi.importances_mean, index=NUM + CAT).sort_values().tail(12).plot.barh(title=f&quot;{champ}: permutation importance (PR-AUC drop)&quot;); plt.show()
+p_te = m.predict_proba(te[NUM + CAT])[:, 1]
+test = {&quot;ROC_AUC&quot;: roc_auc_score(te.churned_6m, p_te), &quot;PR_AUC&quot;: average_precision_score(te.churned_6m, p_te), &quot;capture@10%&quot;: top_capture(te.churned_6m, p_te)}
+print(&quot;TEST&quot;, champ, {k: round(v, 3) for k, v in test.items()})
+all_p = m.predict_proba(df[NUM + CAT])[:, 1]
+split = pd.Series(&quot;train&quot;, index=df.index); split[va.index] = &quot;valid&quot;; split[te.index] = &quot;test&quot;
+scores = pd.DataFrame({&quot;customer_id&quot;: df.customer_id, &quot;p_churn&quot;: all_p, &quot;split&quot;: split,
+                       &quot;decile&quot;: pd.qcut(pd.Series(all_p).rank(method=&quot;first&quot;, ascending=False), 10, labels=range(1, 11)).astype(int).to_numpy()})
+scores.to_parquet(CKPT / &quot;churn_scores.parquet&quot;, index=False)
+joblib.dump({&quot;model&quot;: m, &quot;name&quot;: champ, &quot;features&quot;: NUM + CAT, &quot;test&quot;: test, &quot;valid&quot;: board.loc[champ].to_dict(),
+             &quot;split_ids&quot;: {s: df.customer_id[split == s].tolist() for s in [&quot;train&quot;, &quot;valid&quot;, &quot;test&quot;]}}, CKPT / &quot;churn_model.joblib&quot;, compress=3)
+print(&quot;saved churn_model.joblib and churn_scores.parquet&quot;)</code></pre></div></details>
+
+</section>
+<section id="stretch"><h2>Stretch challenges</h2><ol>
+<li>Add <code>HistGradientBoostingClassifier</code> to the bake-off. Does boosting beat the forest here, and at what training time?</li>
+<li>Use <code>cost_complexity_pruning_path</code> to prune a full tree instead of limiting depth. Which <code>ccp_alpha</code> matches the validation AUC of depth 6?</li>
+<li>Build a <strong>two-stage</strong> AVM: linear model for the market trend + a forest on the linear model's residuals. Does it beat both out-of-time?</li>
+</ol></section>
+<section id="trouble"><h2>Troubleshooting</h2><ul>
+<li><strong>k-NN very slow</strong> → keep the 30k training sample; prediction cost grows with training size.</li>
+<li><strong>Forest uses too much RAM</strong> → lower <code>n_estimators</code> to 150 or <code>max_samples</code> to 0.3.</li>
+<li><strong>Merge row count drops</strong> → a checkpoint is from a different data generation; re-run L1.1, L1.3 and L3.2.</li>
+</ul></section></main></div><script>function copyCode(btn){const t=btn.parentElement.querySelector('code').innerText;
+const done=()=>{btn.textContent='Copied ✓';btn.classList.add('ok');setTimeout(()=>{btn.textContent='Copy';btn.classList.remove('ok')},1400)};
+if(navigator.clipboard){navigator.clipboard.writeText(t).then(done).catch(()=>fallback(t,done))}else fallback(t,done)}
+function fallback(t,done){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(e){}a.remove();done()}
+function toggleTheme(){const r=document.documentElement;const cur=r.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+const nxt=cur==='dark'?'light':'dark';r.setAttribute('data-theme',nxt);try{localStorage.setItem('mizan-theme',nxt)}catch(e){}}
+(function(){try{const t=localStorage.getItem('mizan-theme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}
+// light-weight python highlighter
+const KW=/\b(import|from|as|def|return|for|in|if|elif|else|while|with|try|except|finally|class|lambda|and|or|not|is|None|True|False|print|assert|yield|raise|pass|break|continue|global)\b/g;
+// placeholders use private-use characters so the keyword/number passes can never match inside them
+const enc=n=>String(n).split('').map(d=>String.fromCharCode(0xE000+ +d)).join('');
+const dec=t=>+t.split('').map(c=>c.charCodeAt(0)-0xE000).join('');
+document.querySelectorAll('pre code.lang-python').forEach(el=>{let s=el.innerHTML;const store=[];
+const keep=cls=>m=>{store.push('<span class="'+cls+'">'+m+'</span>');return ''+enc(store.length-1)+''};
+s=s.replace(/(&quot;.*?&quot;|&#x27;.*?&#x27;|"[^"\n]*"|'[^'\n]*')/g,keep('tok-s'));
+s=s.replace(/(#[^\n]*)/g,keep('tok-c'));
+s=s.replace(KW,'<span class="tok-k">$1</span>').replace(/\b(\d+\.?\d*)\b/g,'<span class="tok-n">$1</span>');
+s=s.replace(/([-]+)/g,(m,t)=>store[dec(t)]);el.innerHTML=s});
+const links=[...document.querySelectorAll('nav.toc a')];const secs=links.map(a=>document.querySelector(a.getAttribute('href')));
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.classList.remove('active'));
+const i=secs.indexOf(e.target);if(i>=0)links[i].classList.add('active')}})},{rootMargin:'-20% 0px -70% 0px'});secs.forEach(s=>s&&io.observe(s))})();
+</script></body></html>
